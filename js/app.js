@@ -25,7 +25,8 @@ const i18n = {
     heroTitle:'Connect volunteers with seniors for warm companionship and daily help',
     heroLead:'BuddyLink supports <strong>senior sign‑up</strong> and <strong>volunteer sign‑up</strong>. We match by interests and availability. Services include friendly chats, video companionship, reading mail, short walks, groceries/meds pickup, and basic tech help.',
     ctaSenior:"I'm a senior, need help", ctaVolunteer:"I'm a volunteer, want to help",
-    registerTitle:'Registration', registerSub:'Choose your role to sign up. Fields are demo only (client‑side validation). Hook up your backend at <code>/api/register-senior</code> and <code>/api/register-volunteer</code>.',
+    registerTitle:'Registration',
+    registerSub:'Choose your role to sign up. Fields are demo only (client‑side validation). Hook up your backend at <code>/register/senior</code> and <code>/register/volunteer</code>.',
     tabSenior:'Senior Sign‑up', tabVolunteer:'Volunteer Sign‑up',
     name:'Name', namePh:'Enter full name', age:'Age', agePh:'e.g., 70', ageHelp:'Optional; helps us prioritize age‑appropriate services.',
     phone:'Phone', phonePh:'e.g., 647-123-4567', email:'Email', emailPh:'example@email.com',
@@ -62,7 +63,8 @@ const i18n = {
     heroTitle:"Relier des bénévoles aux aînés pour une compagnie chaleureuse et une aide au quotidien",
     heroLead:"BuddyLink prend en charge <strong>l'inscription des aînés</strong> et <strong>l'inscription des bénévoles</strong>. Nous faisons l'appariement selon les intérêts et les disponibilités. Services : conversation amicale, accompagnement vidéo, lecture du courrier, petites promenades, achats d'épicerie/médicaments, et aide technologique de base.",
     ctaSenior:"Je suis un aîné, j'ai besoin d'aide", ctaVolunteer:"Je suis bénévole, je veux aider",
-    registerTitle:'Inscription', registerSub:"Choisissez votre rôle pour vous inscrire. Les champs sont en démonstration (validation côté client). Reliez votre serveur à <code>/api/register-senior</code> et <code>/api/register-volunteer</code>.",
+    registerTitle:'Inscription',
+    registerSub:"Choisissez votre rôle pour vous inscrire. Les champs sont en démonstration (validation côté client). Reliez votre serveur à <code>/register/senior</code> et <code>/register/volunteer</code>.",
     tabSenior:'Inscription aîné', tabVolunteer:'Inscription bénévole',
     name:'Nom', namePh:'Nom complet', age:'Âge', agePh:'ex. 70', ageHelp:"Optionnel ; nous aide à prioriser des services adaptés à l'âge.",
     phone:'Téléphone', phonePh:'ex. 647-123-4567', email:'Courriel', emailPh:'exemple@courriel.com',
@@ -154,10 +156,10 @@ handleSubmit('form-vol','v-msg');
 
 // prefill demo on register page
 document.getElementById('prefill')?.addEventListener('click',()=>{
-  const n = document.getElementById('v-name'); if (n) n.value='Alex Zhang';
+  const n = document.getElementById('v-name'); if (n) n.value='Alex Kate';
   const e = document.getElementById('v-email'); if (e) e.value='alex@example.com';
   const p = document.getElementById('v-phone'); if (p) p.value='647-555-1212';
-  const c = document.getElementById('v-city'); if (c) c.value='Toronto';
+  const c = document.getElementById('v-city'); if (c) c.value='Ottawa';
   const a = document.getElementById('v-availability'); if (a) a.value='Weekend mornings; weekday evenings';
   document.querySelector('input[name="skills"][value="chat"]')?.setAttribute('checked','checked');
   document.querySelector('input[name="skills"][value="walk"]')?.setAttribute('checked','checked');
@@ -167,19 +169,107 @@ document.getElementById('prefill')?.addEventListener('click',()=>{
 if (location.hash === '#volunteer') activate('vol');
 if (location.hash === '#senior') activate('senior');
 
-// ---- Login form handler (only if present) ----
+// ---- Login form handler ----
+const API_BASE = "http://localhost:5050";
+
 const loginForm = document.getElementById('loginForm');
 if (loginForm) {
-  loginForm.addEventListener('submit', function(e){
+  loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const lang = document.documentElement.lang || 'en';
     const dict = i18n[lang] || i18n.en;
-    const email = document.getElementById('loginEmail')?.value.trim();
-    const pwd = document.getElementById('loginPassword')?.value;
-    if (!email || !pwd) {
-      alert(dict.loginMissing);
-      return;
+
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+
+    if (!email || !password) {
+      alert(dict.loginMissing); return;
     }
-    alert(dict.loginSuccess);
+
+    try {
+      const res = await fetch(`${API_BASE}/login`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message || 'Login failed');
+
+      localStorage.setItem('token', data.data.token);
+      alert(dict.loginSuccess);
+
+    } catch (err) {
+      alert(err.message);
+    }
   });
 }
+
+async function handleSubmitToApi(formId, msgId, endpoint, buildPayload){
+  const form = document.getElementById(formId);
+  const msg = document.getElementById(msgId);
+  if (!form) return;
+
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const lang = document.documentElement.lang || 'en';
+    const dict = i18n[lang] || i18n.en;
+
+    const payload = buildPayload(form);
+
+    if (payload.__invalid) {
+      alert(dict.requiredAlert);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}${endpoint}`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message || 'Submit failed');
+
+      msg.hidden = false;
+      form.reset();
+      form.querySelector('input,select,textarea')?.focus();
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+}
+
+// Senior register -> /register/senior
+handleSubmitToApi('form-senior','s-msg','/register/senior', (form) => {
+  const needs = [...form.querySelectorAll('input[name="needs"]:checked')].map(i=>i.value);
+  return {
+    name: form.querySelector('#s-name').value.trim(),
+    age: form.querySelector('#s-age').value || null,
+    phone: form.querySelector('#s-phone').value.trim(),
+    email: form.querySelector('#s-email').value.trim(),
+    city: form.querySelector('#s-city').value.trim(),
+    contactPref: form.querySelector('#s-contact').value,
+    needs,
+    availability: form.querySelector('#s-availability').value.trim(),
+    language: form.querySelector('#s-language').value,
+    notes: form.querySelector('#s-notes').value.trim(),
+    __invalid: !(form.querySelector('#s-name').value && form.querySelector('#s-phone').value)
+  };
+});
+
+// Volunteer register -> /register/volunteer
+handleSubmitToApi('form-vol','v-msg','/register/volunteer', (form) => {
+  const skills = [...form.querySelectorAll('input[name="skills"]:checked')].map(i=>i.value);
+  const consent = form.querySelector('input[name="consent"]').checked;
+  return {
+    name: form.querySelector('#v-name').value.trim(),
+    email: form.querySelector('#v-email').value.trim(),
+    phone: form.querySelector('#v-phone').value.trim(),
+    city: form.querySelector('#v-city').value.trim(),
+    skills,
+    availability: form.querySelector('#v-availability').value.trim(),
+    background: form.querySelector('#v-id').value,
+    consent,
+    __invalid: !(consent && form.querySelector('#v-name').value && form.querySelector('#v-email').value && form.querySelector('#v-phone').value && form.querySelector('#v-availability').value)
+  };
+});

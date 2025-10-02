@@ -26,7 +26,8 @@ python -m http.server 5500
 .
 ├── index.html
 ├── pages/
-│   └── register.html
+│   ├── register.html
+│   └── login.html
 ├── css/
 │   └── styles.css
 ├── js/
