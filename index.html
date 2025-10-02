@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BuddyLink – Volunteer & Senior Registration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="js/app.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <nav class="nav" aria-label="Primary">
+        <div class="logo">
+          <img
+            src="https://replicate.delivery/xezq/aAGhLtFohkr4LVTzJevFduZrNYh3MeAYR9jGk0pw9PNrbgaVA/out-0.png"
+            alt="BuddyLink logo"
+          />
+          <span>BuddyLink</span>
+        </div>
+        <div class="menu">
+          <a href="pages/register.html" data-i18n="navRegister">Register</a>
+          <a href="#about" data-i18n="navAbout">About</a>
+          <a class="btn" id="ctaJoin" href="pages/login.html" role="button">
+            <i class="fas fa-hands-helping"></i>
+            <span data-i18n="login">Login</span>
+          </a>
+          <label class="lang" aria-label="Language switcher">
+            <i class="fas fa-globe"></i>
+            <select id="langSelect" aria-label="Language">
+              <option value="en">English</option>
+              <option value="fr">Français</option>
+            </select>
+          </label>
+        </div>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="wrap grid cols-2">
+        <div>
+          <h1 data-i18n="heroTitle">
+            Connect volunteers with seniors for warm companionship and daily
+            help
+          </h1>
+          <p class="lead" data-i18n="heroLead">
+            BuddyLink supports <strong>senior sign‑up</strong> and
+            <strong>volunteer sign‑up</strong>. We match by interests and
+            availability. Services include friendly chats, video companionship,
+            reading mail, short walks, groceries/meds pickup, and basic tech
+            help.
+          </p>
+          <div
+            style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap"
+          >
+            <a class="btn" href="pages/login.html" id="ctaSenior"
+              ><i class="fas fa-user-plus"></i>
+              <span data-i18n="ctaSenior">I'm a senior, need help</span></a
+            >
+            <a class="btn outline" href="pages/login.html" id="ctaVolunteer"
+              ><i class="fas fa-user-friends"></i>
+              <span data-i18n="ctaVolunteer"
+                >I'm a volunteer, want to help</span
+              ></a
+            >
+          </div>
+        </div>
+        <div>
+          <img
+            src="https://replicate.delivery/xezq/A5IqLpugTupGPh4Eil4St6iultO3Ws1cfAYVqkAYUZM1NQtKA/out-0.png"
+            alt="Volunteer helping senior"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="hero" aria-labelledby="about-title">
+      <div class="wrap grid cols-2">
+        <div>
+          <h2 id="about-title" data-i18n="aboutTitle">About BuddyLink</h2>
+          <p class="lead" data-i18n="aboutLead">
+            This is a demo page in a modern nonprofit style. Integrate it into
+            your project and connect both forms to your backend
+            (Node/Flask/Spring, etc.).
+          </p>
+          <ul class="lead" style="padding-left: 18px">
+            <li data-i18n="about1">Fully responsive layout</li>
+            <li data-i18n="about2">Accessibility: labels & ARIA</li>
+            <li data-i18n="about3">Basic client validation & messages</li>
+            <li data-i18n="about4">Extensible to auth/database</li>
+          </ul>
+        </div>
+        <div>
+          <img
+            src="https://replicate.delivery/xezq/tuSsejxdZGVDPCefxxnZU82ppHjGzn54K9kkrRalKtezuBqVB/out-0.png"
+            alt="About image"
+          />
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="foot">
+        <div>© 2025 BuddyLink</div>
+        <div
+          class="notice"
+          style="background: transparent; border-color: #fff; color: #fff"
+          data-i18n="demoNote"
+        >
+          Demo only: submissions show a local success message
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

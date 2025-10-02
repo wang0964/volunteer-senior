@@ -1,0 +1,355 @@
+:root {
+  --brand: #E6993B;
+  --ink: #222;
+  --muted: #555;
+  --bg: #FFF9F2;
+  --dark: #19284B;
+  --card: #f9f9f9
+}
+
+* {
+  box-sizing: border-box
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  color: var(--ink);
+  background: #fff
+}
+
+a {
+  color: inherit;
+  text-decoration: none
+}
+
+/* header */
+header {
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid #eee
+}
+
+.nav {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700
+}
+
+.logo img {
+  height: 24px
+}
+
+.menu {
+  display: flex;
+  gap: 18px;
+  align-items: center
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--brand);
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer
+}
+
+.btn.outline {
+  background: #fff;
+  color: var(--brand);
+  border: 1px solid var(--brand)
+}
+
+
+.btn.primary {
+  display: block;
+  width: 100%;
+  text-align: center;  
+}
+
+
+.lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: #fff
+}
+
+select {
+  font-family: inherit
+}
+
+/* hero */
+.hero {
+  background: var(--bg);
+  padding: 64px 20px
+}
+
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto
+}
+
+.grid {
+  display: grid;
+  gap: 28px
+}
+
+@media(min-width:900px) {
+  .grid.cols-2 {
+    grid-template-columns: 1.1fr .9fr
+  }
+}
+
+h1 {
+  font-size: 34px;
+  margin: 0 0 10px
+}
+
+p.lead {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.7
+}
+
+.hero img {
+  width: 100%;
+  border-radius: 12px
+}
+
+/* register */
+section {
+  padding: 64px 20px
+}
+
+h2 {
+  font-size: 28px;
+  margin: 0 0 22px
+}
+
+.section-sub {
+  color: var(--muted);
+  margin-bottom: 26px
+}
+
+.card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 18px
+}
+
+.tab {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, .06);
+  overflow: hidden
+}
+
+.tab-head {
+  display: flex;
+  gap: 6px;
+  background: #fafafa;
+  padding: 6px
+}
+
+.tab-btn {
+  flex: 1;
+  border: 0;
+  padding: 12px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #fff
+}
+
+.tab-btn[aria-selected="true"] {
+  background: var(--dark);
+  color: #fff
+}
+
+.tab-panel {
+  display: none;
+  padding: 20px
+}
+
+.tab-panel.active {
+  display: block
+}
+
+form {
+  display: grid;
+  gap: 14px
+}
+
+.row {
+  display: grid;
+  gap: 12px
+}
+
+@media(min-width:700px) {
+  .row.cols-2 {
+    grid-template-columns: 1fr 1fr
+  }
+}
+
+label {
+  font-weight: 600;
+  font-size: 14px
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-family: inherit
+}
+
+.help {
+  font-size: 12px;
+  color: #777
+}
+
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #ddd;
+  padding: 8px 10px;
+  border-radius: 20px;
+  background: #fff
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap
+}
+
+.notice {
+  border-left: 4px solid var(--brand);
+  background: #fff7ec;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #7a4e11
+}
+
+/* footer */
+footer {
+  background: var(--dark);
+  color: #fff;
+  padding: 40px 20px
+}
+
+.foot {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap
+}
+
+/* --- Modal (Login) --- */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+}
+
+.modal.is-open {
+  display: block;
+}
+
+.modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, .5);
+}
+
+.modal__content {
+  position: relative;
+  margin: 8vh auto;
+  max-width: 480px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .2);
+}
+
+.modal__close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 24px;
+  line-height: 1;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+@media (max-width: 520px) {
+  .modal__content {
+    margin: 6vh 16px;
+  }
+}
+
+
+/* No-JS fallback: open modal when targeted via URL hash */
+.modal:target {
+  display: block !important;
+}
+
+/* 让普通输入框保持 100% 宽，但排除 checkbox/radio */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  width: 100%;
+}
+
+/* 复选框和文字并排、垂直居中 */
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;       /* 复选框与文字间距 */
+}
+
+/* 避免复选框被通用 input 样式影响 */
+input[type="checkbox"],
+input[type="radio"] {
+  width: auto;
+  padding: 0;
+  border: none;   /* 可选：避免继承边框样式 */
+}
+
+.menu nav a:not(.btn) { margin-right: 32px; }
+.menu nav a:not(.btn):last-child { margin-right: 0; }
