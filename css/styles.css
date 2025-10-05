@@ -364,14 +364,15 @@ p.lead {
 }
 
 /* Small right-top quarter cutout for body (32×32) */
-.hero-step--body::after {
+.hero-visual::after {
   content: "";
   position: absolute;
   width: 32px;
   height: 32px;
-  right: -32px;
+  right: 234px;
   bottom: 34px;
   z-index: 20;
+  /* background-color: #000; */
   pointer-events: none;
   background-repeat: no-repeat;
   background-size: 100% 100%;
