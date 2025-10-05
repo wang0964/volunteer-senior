@@ -40,3 +40,16 @@ python -m http.server 5500
 ### Pages
 - `pages/register.html` — Registration page
 - `pages/login.html` — Login page
+
+
+### Local Deployment
+Append the following code into httpd.conf
+```
+Alias /vs "F:/volunteer-senior"
+
+<Directory "F:/volunteer-senior">
+    Options Indexes FollowSymLinks
+    AllowOverride All
+    Require all granted
+</Directory>
+```

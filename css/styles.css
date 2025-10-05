@@ -68,14 +68,49 @@ header {
   border-radius: 8px;
   padding: 10px 16px;
   font-weight: 600;
-  cursor: pointer
+  cursor: pointer;
+
 }
 
 .btn.outline {
   background: #fff;
   color: var(--brand);
-  border: 1px solid var(--brand)
+  border: 1px solid var(--brand);
+
 }
+
+  .grid.cols-2 {
+    grid-template-columns: 1.1fr .9fr
+  }
+
+@media (max-width: 1110px) {
+
+  .hero .btn,
+  .hero .btn.outline {
+    width: 300px;
+  }
+}
+
+
+/* 当宽度小于 1110px 时，让 Hero 图片移到上方 */
+@media (max-width: 1110px) {
+  .hero .grid.cols-2 {
+    display: flex;
+    flex-direction: column-reverse; /* ✅ 图片移动到文字上方 */
+  }
+
+  .hero .grid.cols-2 > div {
+    width: 100%;
+  }
+
+  .hero img {
+    max-width: 500px;       /* 控制图片大小适配移动端 */
+    margin: 0 auto 20px;    /* 居中并与文字区分 */
+    display: block;
+  }
+}
+
+
 
 
 .btn.primary {
@@ -115,11 +150,11 @@ select {
   gap: 28px
 }
 
-@media(min-width:900px) {
+/* @media(min-width:900px) {
   .grid.cols-2 {
     grid-template-columns: 1.1fr .9fr
   }
-}
+} */
 
 h1 {
   font-size: 34px;
@@ -353,3 +388,128 @@ input[type="radio"] {
 
 .menu nav a:not(.btn) { margin-right: 32px; }
 .menu nav a:not(.btn):last-child { margin-right: 0; }
+
+
+/* ===== Upcoming Event (card) ===== */
+.event .wrap { max-width: 1100px; }
+.event-title { margin-bottom: 14px; }
+
+/* .event-card {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 28px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.06);
+  padding: 24px;
+  align-items: center;
+} */
+
+
+.event-card {
+  display: grid;
+  grid-template-columns: 320px 1fr;  /* 左图片右文字 */
+  align-items: start;
+  gap: 30px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  padding: 24px;
+  
+}
+
+@media (max-width: 860px) {
+  .event-card { grid-template-columns: 1fr; }
+}
+
+.event-poster {
+  background: #f6f6f6;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+}
+.event-poster img { width: 100%; border-radius: 12px; }
+
+
+
+.event-headline {
+  color: var(--brand);
+  font-size: 22px;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.event-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.event-when {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.event-date-pill {
+  width: 54px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  text-align: center;
+  padding: 6px 0;
+  background: #fff;
+}
+.event-date-pill .month {
+  display: block; font-size: 12px; color: #888; letter-spacing: .5px;
+}
+.event-date-pill .day {
+  display: block; font-size: 20px; font-weight: 700; color: var(--ink);
+}
+
+.event-time .event-weekday { font-weight: 600; }
+.event-time .event-hours { color: var(--muted); font-size: 14px; }
+
+.event-where { color: var(--ink); display: inline-flex; align-items: center; gap: 8px; }
+.event-where .event-city { font-weight: 600; }
+.event-where .event-pin { opacity: .6; }
+
+
+.event-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: space-between;
+  flex: 1;               
+  min-height: 0;
+
+}
+
+.event-cta {
+  align-self: flex-end; 
+  background: var(--brand);
+  border: none;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-weight: 700;
+  width: fit-content;
+  margin-top: auto; 
+  
+}
+
+
+
+.btn.event-cta {
+  width: auto !important;   
+  min-width: 150px;        
+  max-width: none;         
+  box-sizing: border-box;
+  white-space: nowrap;    
+  flex: 0 0 auto; 
+  justify-content: center; 
+  text-align: center;           
+}
