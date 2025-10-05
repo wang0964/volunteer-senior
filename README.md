@@ -27,7 +27,9 @@ python -m http.server 5500
 ├── index.html
 ├── pages/
 │   ├── register.html
-│   └── login.html
+│   ├── login.html
+│   └── event-xxx.html
+|
 ├── css/
 │   └── styles.css
 ├── js/
@@ -45,6 +47,7 @@ python -m http.server 5500
 ### Local Deployment
 Append the following code into httpd.conf
 ```
+# The project is stored in  "F:/volunteer-senior"
 Alias /vs "F:/volunteer-senior"
 
 <Directory "F:/volunteer-senior">
