@@ -18,11 +18,14 @@
     <script src="js/app.js" defer></script>
   </head>
   <body>
+
+
+
     <header>
       <nav class="nav" aria-label="Primary">
         <div class="logo">
-          <img
-            src="https://replicate.delivery/xezq/aAGhLtFohkr4LVTzJevFduZrNYh3MeAYR9jGk0pw9PNrbgaVA/out-0.png"
+          <img 
+            src="assets/img/logo.png"
             alt="logo"
           />
           <span>BuddyLink</span>
@@ -45,43 +48,42 @@
       </nav>
     </header>
 
-    <section class="hero">
-      <div class="wrap grid cols-2">
-        <div>
-          <h1 data-i18n="heroTitle">
-            Connect volunteers with seniors for warm companionship and daily
-            help
-          </h1>
-          <p class="lead" data-i18n="heroLead">
-            BuddyLink supports <strong>senior sign‑up</strong> and
-            <strong>volunteer sign‑up</strong>. We match by interests and
+
+
+<section class="hero hero--overlay" aria-labelledby="hero-title">
+  <div class="wrap">
+    <div class="hero-visual">
+      <!-- <img src="assets/img/volunteer-helping-senior.jpg" alt="Volunteers with senior"> -->
+      <img src="assets/img/volunteer-helping-senior.jpg" alt="">
+    </div>
+
+    <!-- 两层“台阶” -->
+    <div class="hero-steps">
+      <div class="hero-step hero-step--title">
+        <h1 id="hero-title">
+          Connect volunteers with seniors for warm companionship and daily help
+        </h1>
+      </div>
+
+      <div class="hero-step hero-step--body">
+        <p class="lead">
+          BuddyLink supports <strong>senior sign-up</strong> and <strong>volunteer sign-up</strong>
+          We match by interests and
             availability. Services include friendly chats, video companionship,
             reading mail, short walks, groceries/meds pickup, and basic tech
             help.
-          </p>
-          <div
-            style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap"
-          >
-            <a class="btn" href="pages/login.html" id="ctaSenior"
-              ><i class="fas fa-user-plus"></i>
-              <span data-i18n="ctaSenior">I'm a senior, need help</span></a
-            >
-            <a class="btn outline" href="pages/login.html" id="ctaVolunteer"
-              ><i class="fas fa-user-friends"></i>
-              <span data-i18n="ctaVolunteer"
-                >I'm a volunteer, want to help</span
-              ></a
-            >
-          </div>
+        </p>
+        <div class="hero-actions">
+          <a class="btn" href="pages/login.html"><i class="fas fa-user-plus"></i> I’m a senior, need help</a>
+          <a class="btn outline" href="pages/login.html"><i class="fas fa-user-friends"></i> I’m a volunteer, want to help</a>
         </div>
-        <div>
-          <img
-            src="https://replicate.delivery/xezq/A5IqLpugTupGPh4Eil4St6iultO3Ws1cfAYVqkAYUZM1NQtKA/out-0.png"
-            alt="Volunteer helping senior"
-          />
-        </div>
+
+
       </div>
-    </section>
+    </div>
+    
+  </div>
+</section>
 
 
 

@@ -1,35 +1,43 @@
+/* =========================
+   Design Tokens
+========================= */
 :root {
   --brand: #E6993B;
   --ink: #222;
   --muted: #555;
   --bg: #FFF9F2;
   --dark: #19284B;
-  --card: #f9f9f9
+  --card: #f9f9f9;
 }
 
+/* =========================
+   Base
+========================= */
 * {
-  box-sizing: border-box
+  box-sizing: border-box;
 }
 
 body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
   color: var(--ink);
-  background: #fff
+  background: #fff;
 }
 
 a {
   color: inherit;
-  text-decoration: none
+  text-decoration: none;
 }
 
-/* header */
+/* =========================
+   Header / Nav
+========================= */
 header {
   background: #fff;
   position: sticky;
   top: 0;
   z-index: 50;
-  border-bottom: 1px solid #eee
+  border-bottom: 1px solid #eee;
 }
 
 .nav {
@@ -38,26 +46,27 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 20px
+  padding: 14px 20px;
 }
 
 .logo {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-weight: 700
+  font-weight: 700;
 }
 
 .logo img {
-  height: 24px
+  height: 60px;
 }
 
 .menu {
   display: flex;
   gap: 18px;
-  align-items: center
+  align-items: center;
 }
 
+/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -69,57 +78,21 @@ header {
   padding: 10px 16px;
   font-weight: 600;
   cursor: pointer;
-
 }
 
 .btn.outline {
   background: #fff;
   color: var(--brand);
   border: 1px solid var(--brand);
-
 }
-
-  .grid.cols-2 {
-    grid-template-columns: 1.1fr .9fr
-  }
-
-@media (max-width: 1110px) {
-
-  .hero .btn,
-  .hero .btn.outline {
-    width: 300px;
-  }
-}
-
-
-/* 当宽度小于 1110px 时，让 Hero 图片移到上方 */
-@media (max-width: 1110px) {
-  .hero .grid.cols-2 {
-    display: flex;
-    flex-direction: column-reverse; /* ✅ 图片移动到文字上方 */
-  }
-
-  .hero .grid.cols-2 > div {
-    width: 100%;
-  }
-
-  .hero img {
-    max-width: 500px;       /* 控制图片大小适配移动端 */
-    margin: 0 auto 20px;    /* 居中并与文字区分 */
-    display: block;
-  }
-}
-
-
-
 
 .btn.primary {
   display: block;
   width: 100%;
-  text-align: center;  
+  text-align: center;
 }
 
-
+/* Language picker */
 .lang {
   display: inline-flex;
   align-items: center;
@@ -127,299 +100,77 @@ header {
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 8px 10px;
-  background: #fff
+  background: #fff;
 }
 
-select {
-  font-family: inherit
-}
-
-/* hero */
-.hero {
-  background: var(--bg);
-  padding: 64px 20px
-}
-
+/* =========================
+   Layout Helpers
+========================= */
 .wrap {
   max-width: 1100px;
-  margin: 0 auto
+  margin: 0 auto;
 }
 
 .grid {
   display: grid;
-  gap: 28px
+  gap: 28px;
 }
 
-/* @media(min-width:900px) {
-  .grid.cols-2 {
-    grid-template-columns: 1.1fr .9fr
-  }
-} */
+.grid.cols-2 {
+  grid-template-columns: 1.1fr .9fr;
+}
+
+/* =========================
+   Hero (generic)
+========================= */
+.hero {
+  background: var(--bg);
+  padding: 64px 20px;
+}
+
+.hero img {
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+}
 
 h1 {
   font-size: 34px;
-  margin: 0 0 10px
+  margin: 0 0 10px;
 }
 
 p.lead {
   color: var(--muted);
   font-size: 16px;
-  line-height: 1.7
+  line-height: 1.7;
 }
 
-.hero img {
-  width: 100%;
-  border-radius: 12px
-}
-
-/* register */
-section {
-  padding: 64px 20px
-}
-
-h2 {
-  font-size: 28px;
-  margin: 0 0 22px
-}
-
-.section-sub {
-  color: var(--muted);
-  margin-bottom: 26px
-}
-
-.card {
-  background: var(--card);
-  border-radius: 14px;
-  padding: 18px
-}
-
-.tab {
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, .06);
-  overflow: hidden
-}
-
-.tab-head {
-  display: flex;
-  gap: 6px;
-  background: #fafafa;
-  padding: 6px
-}
-
-.tab-btn {
-  flex: 1;
-  border: 0;
-  padding: 12px;
-  font-weight: 600;
-  border-radius: 10px;
-  cursor: pointer;
-  background: #fff
-}
-
-.tab-btn[aria-selected="true"] {
-  background: var(--dark);
-  color: #fff
-}
-
-.tab-panel {
-  display: none;
-  padding: 20px
-}
-
-.tab-panel.active {
-  display: block
-}
-
-form {
-  display: grid;
-  gap: 14px
-}
-
-.row {
-  display: grid;
-  gap: 12px
-}
-
-@media(min-width:700px) {
-  .row.cols-2 {
-    grid-template-columns: 1fr 1fr
-  }
-}
-
-label {
-  font-weight: 600;
-  font-size: 14px
-}
-
-input,
-select,
-textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  font-family: inherit
-}
-
-.help {
-  font-size: 12px;
-  color: #777
-}
-
-.checks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px
-}
-
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid #ddd;
-  padding: 8px 10px;
-  border-radius: 20px;
-  background: #fff
-}
-
-.form-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap
-}
-
-.notice {
-  border-left: 4px solid var(--brand);
-  background: #fff7ec;
-  padding: 10px 12px;
-  border-radius: 8px;
-  color: #7a4e11
-}
-
-/* footer */
-footer {
-  background: var(--dark);
-  color: #fff;
-  padding: 40px 20px
-}
-
-.foot {
+/* =========================
+   Event card
+========================= */
+.event .wrap {
   max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap
 }
 
-/* --- Modal (Login) --- */
-.modal {
-  position: fixed;
-  inset: 0;
-  display: none;
+.event-title {
+  margin-bottom: 14px;
 }
-
-.modal.is-open {
-  display: block;
-}
-
-.modal__overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, .5);
-}
-
-.modal__content {
-  position: relative;
-  margin: 8vh auto;
-  max-width: 480px;
-  background: #fff;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, .2);
-}
-
-.modal__close {
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  font-size: 24px;
-  line-height: 1;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-}
-
-@media (max-width: 520px) {
-  .modal__content {
-    margin: 6vh 16px;
-  }
-}
-
-
-/* No-JS fallback: open modal when targeted via URL hash */
-.modal:target {
-  display: block !important;
-}
-
-/* 让普通输入框保持 100% 宽，但排除 checkbox/radio */
-input:not([type="checkbox"]):not([type="radio"]),
-select,
-textarea {
-  width: 100%;
-}
-
-/* 复选框和文字并排、垂直居中 */
-.checkbox {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;       /* 复选框与文字间距 */
-}
-
-/* 避免复选框被通用 input 样式影响 */
-input[type="checkbox"],
-input[type="radio"] {
-  width: auto;
-  padding: 0;
-  border: none;   /* 可选：避免继承边框样式 */
-}
-
-.menu nav a:not(.btn) { margin-right: 32px; }
-.menu nav a:not(.btn):last-child { margin-right: 0; }
-
-
-/* ===== Upcoming Event (card) ===== */
-.event .wrap { max-width: 1100px; }
-.event-title { margin-bottom: 14px; }
-
-/* .event-card {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 28px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.06);
-  padding: 24px;
-  align-items: center;
-} */
-
 
 .event-card {
   display: grid;
-  grid-template-columns: 320px 1fr;  /* 左图片右文字 */
+  grid-template-columns: 320px 1fr;
   align-items: start;
   gap: 30px;
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .06);
   padding: 24px;
-  
 }
 
-@media (max-width: 860px) {
-  .event-card { grid-template-columns: 1fr; }
+@media (max-width:860px) {
+  .event-card {
+    grid-template-columns: 1fr;
+  }
 }
 
 .event-poster {
@@ -429,11 +180,12 @@ input[type="radio"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  
 }
-.event-poster img { width: 100%; border-radius: 12px; }
 
-
+.event-poster img {
+  width: 100%;
+  border-radius: 12px;
+}
 
 .event-headline {
   color: var(--brand);
@@ -464,52 +216,258 @@ input[type="radio"] {
   padding: 6px 0;
   background: #fff;
 }
+
 .event-date-pill .month {
-  display: block; font-size: 12px; color: #888; letter-spacing: .5px;
+  display: block;
+  font-size: 12px;
+  color: #888;
+  letter-spacing: .5px;
 }
+
 .event-date-pill .day {
-  display: block; font-size: 20px; font-weight: 700; color: var(--ink);
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
 }
 
-.event-time .event-weekday { font-weight: 600; }
-.event-time .event-hours { color: var(--muted); font-size: 14px; }
+.event-time .event-weekday {
+  font-weight: 600;
+}
 
-.event-where { color: var(--ink); display: inline-flex; align-items: center; gap: 8px; }
-.event-where .event-city { font-weight: 600; }
-.event-where .event-pin { opacity: .6; }
+.event-time .event-hours {
+  color: var(--muted);
+  font-size: 14px;
+}
 
+.event-where {
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.event-where .event-city {
+  font-weight: 600;
+}
+
+.event-where .event-pin {
+  opacity: .6;
+}
 
 .event-body {
   display: flex;
   flex-direction: column;
   gap: 20px;
   justify-content: space-between;
-  flex: 1;               
+  flex: 1;
   min-height: 0;
-
 }
 
 .event-cta {
-  align-self: flex-end; 
+  align-self: flex-end;
   background: var(--brand);
   border: none;
   border-radius: 12px;
   padding: 12px 18px;
   font-weight: 700;
   width: fit-content;
-  margin-top: auto; 
-  
+  margin-top: auto;
 }
 
-
-
 .btn.event-cta {
-  width: auto !important;   
-  min-width: 150px;        
-  max-width: none;         
-  box-sizing: border-box;
-  white-space: nowrap;    
-  flex: 0 0 auto; 
-  justify-content: center; 
-  text-align: center;           
+  min-width: 150px;
+  white-space: nowrap;
+  justify-content: center;
+  text-align: center;
+}
+
+/* =========================
+   Hero Overlay (desktop)
+   - "step" cards overlay image with cutout notches
+========================= */
+.hero--overlay {
+  background: #fff;
+  padding: 32px 20px 48px;
+}
+
+.hero--overlay .wrap {
+  position: relative;
+}
+
+.hero-visual img {
+  width: 100%;
+  display: block;
+  border-radius: 24px;
+  object-fit: cover;
+}
+
+.hero-steps {
+  position: relative;
+  max-width: 860px;
+  margin-left: 24px;
+  /* align with content */
+  margin-top: -220px;
+  /* overlay on image */
+}
+
+.hero-step--title,
+.hero-step--body {
+  position: relative;
+  background: #fff;
+  border-radius: 24px;
+}
+
+/* Title card */
+.hero-step--title {
+  padding: 22px 28px 18px;
+  left: -50px;
+  /* subtle offset towards image edge */
+  z-index: 1;
+  max-width: 700px;
+}
+
+.hero-step--title h1 {
+  font-size: 24px;
+  line-height: 1.1;
+  margin: 0;
+}
+
+/* Body card under title */
+.hero-step--body {
+  padding: 18px 28px 22px;
+  left: -50px;
+  margin-top: 0;
+  /* glue to title */
+  z-index: 2;
+}
+
+.hero-step--body .lead {
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+/* --- Decorative notches (pure SVG background) --- */
+/* Right-top quarter cutout for title (64×32) */
+.hero-step--title::after {
+  content: "";
+  position: absolute;
+  width: 64px;
+  height: 32px;
+  right: -32px;
+  bottom: 0;
+  z-index: 20;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 32'%3E%3Cpath fill='%23ffffff' fill-rule='evenodd' d='M0 0H64V32H0Z M64 0 L32 0 A32 32 0 0 0 64 32 Z'/%3E%3C/svg%3E");
+}
+
+/* Small right-top quarter cutout for body (32×32) */
+.hero-step--body::after {
+  content: "";
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  right: -32px;
+  bottom: 34px;
+  z-index: 20;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23ffffff' fill-rule='evenodd' d='M0 0H32V32H0Z M32 0 L0 0 A32 32 0 0 0 32 32 Z'/%3E%3C/svg%3E");
+}
+
+/* =========================
+   Footer
+========================= */
+footer {
+  background: var(--dark);
+  color: #fff;
+  padding: 40px 20px;
+}
+
+.foot {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+/* Move image above text on small/medium screens for generic hero grids */
+@media (max-width:1110px) {
+  .hero .grid.cols-2 {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  .hero .grid.cols-2>div {
+    width: 100%;
+  }
+
+  .hero img {
+    max-width: 500px;
+    margin: 0 auto 20px;
+  }
+}
+
+/* Overlay hero: align to wrap, drop absolute offsets, remove notches */
+@media (max-width:1110px) {
+  .hero--overlay .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .hero-visual {
+    margin: 0 0 16px;
+  }
+
+  .hero-visual img {
+    border-radius: 16px;
+  }
+
+  .hero-steps {
+    position: relative;
+    margin: 0;
+    max-width: 100%;
+  }
+
+  .hero-step--title,
+  .hero-step--body {
+    position: relative;
+    left: 0;
+    margin: 0;
+    border-radius: 16px;
+    box-shadow: none;
+    background: #fff;
+  }
+
+  .hero-step--title {
+    margin-bottom: 12px;
+  }
+
+  /* remove decorative notches on small screens */
+  .hero-step--title::after,
+  .hero-step--body::after {
+    content: none !important;
+  }
+}
+
+/* Narrow phones: simple stack */
+@media (max-width:768px) {
+  .hero-steps {
+    margin: 16px 0 0;
+  }
+
+  .hero-step--title h1 {
+    font-size: 24px;
+  }
 }
