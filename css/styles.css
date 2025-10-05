@@ -338,7 +338,6 @@ p.lead {
   padding: 18px 28px 22px;
   left: -50px;
   margin-top: 0;
-  /* glue to title */
   z-index: 2;
 }
 
@@ -369,9 +368,9 @@ p.lead {
   position: absolute;
   width: 32px;
   height: 32px;
-  right: 234px;
+  left: 834px;
   bottom: 34px;
-  z-index: 20;
+  z-index: 910;
   /* background-color: #000; */
   pointer-events: none;
   background-repeat: no-repeat;
