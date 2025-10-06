@@ -45,14 +45,34 @@ python -m http.server 5500
 
 
 ### Local Deployment
-Append the following code into httpd.conf
+Append the following code into C:\xampp\apache\conf\extra\httpd-vhosts.conf
 ```
-# The project is stored in  "F:/volunteer-senior"
-Alias /vs "F:/volunteer-senior"
+# Assume the project is stored in  "F:/volunteer-senior"
 
-<Directory "F:/volunteer-senior">
-    Options Indexes FollowSymLinks
-    AllowOverride All
-    Require all granted
-</Directory>
+<VirtualHost *:80>
+    ServerName localhost
+
+
+    ProxyRequests Off
+    ProxyPreserveHost On
+    ProxyPass        /api  http://127.0.0.1:5000/
+    ProxyPassReverse /api  http://127.0.0.1:5000/
+
+
+    Alias /vs "F:/volunteer-senior"
+    <Directory "F:/volunteer-senior">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+```
+
+Append the following code into C:\xampp\apache\conf\httpd.conf
+
+```
+LoadModule proxy_module modules/mod_proxy.so
+LoadModule proxy_http_module modules/mod_proxy_http.so
+
+Include conf/extra/httpd-vhosts.conf
 ```
