@@ -33,6 +33,7 @@
 
   <main class="container">
     <section id="login" aria-labelledby="login-title" class="card p-6 my-8">
+      <div class="wrap">
       <h1 id="login-title" data-i18n="loginTitle">Login</h1>
       <p class="lead" data-i18n="loginWelcome">Welcome back! Please sign in to continue.</p>
 
@@ -55,11 +56,15 @@
 
         <button type="submit" class="btn primary" aria-label="Login" data-i18n="btnLogin">Login</button>
 
-        <p class="muted" data-i18n="noAccount">
-          Don't have an account?
-          <a href="register.html" data-i18n="goRegister">Register</a>
+        <p class="muted">
+          <span data-i18n="noAccount">Don't have an account?&nbsp;&nbsp;&nbsp;&nbsp;</span>
+          <a href="register.html" data-i18n="goRegister" style="text-decoration: underline; text-underline-offset: 2px;">
+            Register
+          </a>
         </p>
+
       </form>
+      </div>
     </section>
   </main>
 
