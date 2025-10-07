@@ -170,39 +170,128 @@ if (location.hash === '#volunteer') activate('vol');
 if (location.hash === '#senior') activate('senior');
 
 // ---- Login form handler ----
-const API_BASE = "http://localhost:5050";
 
 const loginForm = document.getElementById('loginForm');
 if (loginForm) {
+  const submitBtn = loginForm.querySelector('button[type="submit"]');
+  const errorBox = document.getElementById('loginError');
+
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    
+
     const lang = document.documentElement.lang || 'en';
-    const dict = i18n[lang] || i18n.en;
+    const dict = (window.i18n && i18n[lang]) ? i18n[lang] : (i18n?.en || {});
+    const text = (k, fallback) => dict[k] || fallback || k;
+
+
+    if (!loginForm.reportValidity()) return;
 
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
 
     if (!email || !password) {
-      alert(dict.loginMissing); return;
+      (errorBox ? errorBox.textContent = text('loginMissing','Email and password are required.') : alert(text('loginMissing','Email and password are required.')));
+      return;
     }
 
-    try {
-      const res = await fetch(`${API_BASE}/login`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.message || 'Login failed');
 
-      localStorage.setItem('token', data.data.token);
-      alert(dict.loginSuccess);
+    const prevLabel = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = text('loggingIn', 'Logging in…');
+
+
+    if (errorBox) errorBox.textContent = '';
+
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email, password }),
+        credentials: 'include' 
+      });
+
+
+      let data = null;
+      const textBody = await res.text();
+      try { data = JSON.parse(textBody); } catch {  }
+      console.log("[Login Response]", textBody);
+
+      if (!res.ok || (data && data.success === false)) {
+        const msg = (data && (data.message || data.error)) || text('loginFailed','Login failed');
+        throw new Error(msg);
+      }
+
+
+      const token = data?.data?.token || data?.token;   //token=volunteer or senior
+      if (token) {
+           localStorage.setItem('token', token);
+      }
+
+      // const redirectTo = new URLSearchParams(location.search).get('next') || '/';
+      // location.assign(redirectTo);
+
+const params = new URLSearchParams(location.search);
+const next   = params.get('next');
+const safeNext = (next && /^\/[^\s]*$/.test(next)) ? next : null;
+const target = safeNext || '/vs/index.html';   
+location.assign(target);
+
 
     } catch (err) {
-      alert(err.message);
+      (errorBox ? errorBox.textContent = err.message : alert(err.message));
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = prevLabel;
     }
   });
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// === 刷新顶栏 Login/Logout 状态 ===
+function refreshAuthUI() {
+  const btn = document.getElementById('ctaJoin');
+  if (!btn) return;
+
+  const token = localStorage.getItem('token'); // 登录成功时你保存的键名
+  const isLoggedIn = !!token;
+
+  if (isLoggedIn) {
+    // 已登录 → 显示 Logout
+    btn.href = "#";
+    btn.innerHTML = '<i class="fas fa-sign-out-alt"></i><span>Logout</span>';
+
+    btn.onclick = async (e) => {
+      e.preventDefault();
+      try {
+        await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+      } catch {}
+      localStorage.removeItem('token');
+      refreshAuthUI(); // 更新UI
+      location.assign('/vs/index.html');
+    };
+  } else {
+    // 未登录 → 显示 Login
+    btn.href = "/vs/pages/login.html";
+    btn.innerHTML = '<i class="fas fa-hands-helping"></i><span>Login</span>';
+    btn.onclick = null;
+  }
+}
+
+// 页面加载完成后立即执行
+document.addEventListener('DOMContentLoaded', refreshAuthUI);
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
 
 async function handleSubmitToApi(formId, msgId, endpoint, buildPayload){
   const form = document.getElementById(formId);
@@ -240,7 +329,7 @@ async function handleSubmitToApi(formId, msgId, endpoint, buildPayload){
 }
 
 // Senior register -> /register/senior
-handleSubmitToApi('form-senior','s-msg','/register/senior', (form) => {
+handleSubmitToApi('form-senior','s-msg','/api/register/senior', (form) => {
   const needs = [...form.querySelectorAll('input[name="needs"]:checked')].map(i=>i.value);
   return {
     name: form.querySelector('#s-name').value.trim(),
@@ -258,7 +347,7 @@ handleSubmitToApi('form-senior','s-msg','/register/senior', (form) => {
 });
 
 // Volunteer register -> /register/volunteer
-handleSubmitToApi('form-vol','v-msg','/register/volunteer', (form) => {
+handleSubmitToApi('form-vol','v-msg','/api/register/volunteer', (form) => {
   const skills = [...form.querySelectorAll('input[name="skills"]:checked')].map(i=>i.value);
   const consent = form.querySelector('input[name="consent"]').checked;
   return {
