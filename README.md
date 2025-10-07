@@ -1,18 +1,3 @@
-# Volunteer & Senior Registration (Frontend Split)
-
-This folder is organized for a simple static site workflow in VS Code.
-
-```
-.
-├── index.html        # Main page (links to /css and /js)
-├── css/
-│   └── styles.css    # All styles
-├── js/
-│   └── app.js        # All client-side scripts
-└── assets/
-    └── img/          # Place images here (update paths accordingly)
-```
-
 ## Local preview
 Use the VS Code Live Server extension or run a simple server:
 ```bash
@@ -34,8 +19,13 @@ python -m http.server 5500
 │   └── styles.css
 ├── js/
 │   └── app.js
-└── assets/
-    └── img/
+├── assets/
+│   ├── img/
+│   └── app.js
+│
+└── buddylink.py
+    
+
 ```
 
 
@@ -76,3 +66,9 @@ LoadModule proxy_http_module modules/mod_proxy_http.so
 
 Include conf/extra/httpd-vhosts.conf
 ```
+### Flask Service
+Excute the following command to launch the backend service:
+```
+python buddylink.py
+```
+
