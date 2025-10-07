@@ -1,11 +1,3 @@
-## Local preview
-Use the VS Code Live Server extension or run a simple server:
-```bash
-# Python 3
-python -m http.server 5500
-# then open http://localhost:5500
-```
-
 ## Structure
 ```
 .
