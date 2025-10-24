@@ -15,7 +15,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
     <link rel="stylesheet" href="css/styles.css" />
-    <script src="js/app.js" defer></script>
+    <script src="./js/app.js" defer></script>
   </head>
   <body>
 
@@ -86,26 +86,38 @@
 </section>
 
 
-
-
 <div id="event-container"></div>
 <script>
 (function () {
-  const mount = document.getElementById('event-container');
-  fetch('./pages/event-001.html', { cache: 'no-store' })
-    .then(r => {
-      if (!r.ok) throw new Error(r.status + ' ' + r.statusText);
-      return r.text();
-    })
-    .then(html => {
+  async function loadEventSection(eventFile) {
+    containerId='event-container'
+    const mount = document.getElementById(containerId);
+    if (!mount) return console.error('container not found:', containerId);
 
-      mount.outerHTML = html;
-    })
-    .catch(err => {
-      console.error('Event section load failed:', err);
+    const url = new URL('pages/'+eventFile, document.baseURI).toString();
+    console.log('[loadEventSection] fetch', url);
+
+    try {
+      const r = await fetch(url, { cache: 'no-store' });
+      if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+      mount.innerHTML = await r.text();
+    } catch (e) {
+      console.error('load failed:', e);
       mount.innerHTML = '<p style="color:#c00">Failed to load event.</p>';
-    });
+    }
+  }
+  window.loadEventSection = loadEventSection; 
+
+  document.addEventListener('DOMContentLoaded', () => {
+
+    // Add event html file here:
+      loadEventSection('event-001.html');
+
+  });
 })();
+
+
+
 </script>
 
 
@@ -147,5 +159,6 @@
         </div>
       </div>
     </footer>
+
   </body>
 </html>

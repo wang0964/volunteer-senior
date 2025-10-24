@@ -98,6 +98,7 @@ const i18n = {
   }
 };
 
+
 // ---- i18n apply ----
 const langSelect = document.getElementById('langSelect');
 
@@ -362,3 +363,5 @@ handleSubmitToApi('form-vol','v-msg','/api/register/volunteer', (form) => {
     __invalid: !(consent && form.querySelector('#v-name').value && form.querySelector('#v-email').value && form.querySelector('#v-phone').value && form.querySelector('#v-availability').value)
   };
 });
+
+
