@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="../css/styles.css" />
 </head>
 <body>
-
+<div class="register0">
   <header>
     <nav class="nav" aria-label="Primary">
       <div class="logo">
@@ -34,159 +34,16 @@
   </header>
 
 
-  <main>
-    <section id="register" aria-labelledby="register-title">
-    <div class="wrap">
-      <h2 id="register-title" data-i18n="registerTitle">Registration</h2>
-      <p class="section-sub" data-i18n="registerSub">Choose your role to sign up. Fields are demo only (client‑side validation). Hook up your backend at <code>/api/register-senior</code> and <code>/api/register-volunteer</code>.</p>
-
-      <div class="tab" role="tablist" aria-label="Registration types">
-        <div class="tab-head">
-          <button id="tab-senior" class="tab-btn" role="tab" aria-controls="panel-senior" aria-selected="true" data-i18n="tabSenior">Senior Sign‑up</button>
-          <button id="tab-vol" class="tab-btn" role="tab" aria-controls="panel-vol" data-i18n="tabVolunteer">Volunteer Sign‑up</button>
+        <div class="register-choose">
+          <a class="btn" href="register-s.html"> Senior Sign-up </a>
+          <a class="btn outline" href="register-v.html"> Volunteer Sign-up </a>
         </div>
-
-        <!-- Senior -->
-        <div id="panel-senior" class="tab-panel active" role="tabpanel" aria-labelledby="tab-senior">
-          <form id="form-senior" novalidate>
-            <div class="row cols-2">
-              <div>
-                <label for="s-name" data-i18n="name">Name</label>
-                <input id="s-name" name="name" required data-i18n-placeholder="namePh" placeholder="Enter full name" />
-              </div>
-              <div>
-                <label for="s-age" data-i18n="age">Age</label>
-                <input id="s-age" name="age" type="number" min="50" data-i18n-placeholder="agePh" placeholder="e.g., 70" />
-                <div class="help" data-i18n="ageHelp">Optional; helps us prioritize age‑appropriate services.</div>
-              </div>
-              <div>
-                <label for="s-phone" data-i18n="phone">Phone</label>
-                <input id="s-phone" name="phone" required inputmode="tel" data-i18n-placeholder="phonePh" placeholder="e.g., 647-123-4567" />
-              </div>
-              <div>
-                <label for="s-email" data-i18n="email">Email</label>
-                <input id="s-email" name="email" type="email" data-i18n-placeholder="emailPh" placeholder="example@email.com" />
-              </div>
-              <div>
-                <label for="s-city" data-i18n="city">City / Area</label>
-                <input id="s-city" name="city" required data-i18n-placeholder="cityPh" placeholder="e.g., Toronto / Scarborough" />
-              </div>
-              <div>
-                <label for="s-contact" data-i18n="contactPref">Preferred contact</label>
-                <select id="s-contact" name="contactPref">
-                  <option value="phone" data-i18n="optPhone">Phone</option>
-                  <option value="email" data-i18n="optEmail">Email</option>
-                  <option value="video" data-i18n="optVideo">Video</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label data-i18n="needs">Needed services (multi‑select)</label>
-              <div class="checks" aria-label="service needs">
-                <label class="chip"><input type="checkbox" name="needs" value="chat"> <span data-i18n="needChat">Friendly chat</span></label>
-                <label class="chip"><input type="checkbox" name="needs" value="video"> <span data-i18n="needVideo">Video companionship</span></label>
-                <label class="chip"><input type="checkbox" name="needs" value="read"> <span data-i18n="needRead">Read letters/news</span></label>
-                <label class="chip"><input type="checkbox" name="needs" value="walk"> <span data-i18n="needWalk">Short walk</span></label>
-                <label class="chip"><input type="checkbox" name="needs" value="grocery"> <span data-i18n="needGrocery">Groceries/meds</span></label>
-                <label class="chip"><input type="checkbox" name="needs" value="tech"> <span data-i18n="needTech">Tech help</span></label>
-              </div>
-            </div>
-
-            <div class="row cols-2">
-              <div>
-                <label for="s-availability" data-i18n="availability">Availability</label>
-                <input id="s-availability" name="availability" data-i18n-placeholder="availabilityPh" placeholder="e.g., Mon/Wed/Fri 2–5 pm" />
-              </div>
-              <div>
-                <label for="s-language" data-i18n="prefLang">Preferred language</label>
-                <select id="s-language" name="language">
-                  <option value="en">English</option>
-                  <option value="fr">Français</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label for="s-notes" data-i18n="notes">Notes (health/accessibility)</label>
-              <textarea id="s-notes" name="notes" rows="3" data-i18n-placeholder="notesPh" placeholder="Wheelchair access, allergies, etc."></textarea>
-            </div>
-
-            <div class="form-actions">
-              <button class="btn" type="submit"><i class="fas fa-paper-plane"></i> <span data-i18n="submitSenior">Submit senior sign‑up</span></button>
-              <span class="help" data-i18n="privacyAgree">By submitting, you agree to our privacy terms.</span>
-            </div>
-            <p id="s-msg" class="notice" hidden data-i18n="sMsg">Thanks! (demo) We will contact you soon for matching.</p>
-          </form>
-        </div>
-
-        <!-- Volunteer -->
-        <div id="panel-vol" class="tab-panel" role="tabpanel" aria-labelledby="tab-vol">
-          <form id="form-vol" novalidate>
-            <div class="row cols-2">
-              <div>
-                <label for="v-name" data-i18n="name">Name</label>
-                <input id="v-name" name="name" required data-i18n-placeholder="namePh" placeholder="Enter full name" />
-              </div>
-              <div>
-                <label for="v-email" data-i18n="email">Email</label>
-                <input id="v-email" name="email" type="email" required data-i18n-placeholder="emailPh" placeholder="example@email.com" />
-              </div>
-              <div>
-                <label for="v-phone" data-i18n="phone">Phone</label>
-                <input id="v-phone" name="phone" required inputmode="tel" data-i18n-placeholder="phonePh" placeholder="e.g., 647-123-4567" />
-              </div>
-              <div>
-                <label for="v-city" data-i18n="city">City / Area</label>
-                <input id="v-city" name="city" required data-i18n-placeholder="cityPh" placeholder="e.g., Toronto / North York" />
-              </div>
-            </div>
-
-            <div>
-              <label data-i18n="skills">Services you can provide (multi‑select)</label>
-              <div class="checks" aria-label="skills">
-                <label class="chip"><input type="checkbox" name="skills" value="chat"> <span data-i18n="needChat">Friendly chat</span></label>
-                <label class="chip"><input type="checkbox" name="skills" value="video"> <span data-i18n="needVideo">Video companionship</span></label>
-                <label class="chip"><input type="checkbox" name="skills" value="read"> <span data-i18n="needRead">Read letters/news</span></label>
-                <label class="chip"><input type="checkbox" name="skills" value="walk"> <span data-i18n="needWalk">Short walk</span></label>
-                <label class="chip"><input type="checkbox" name="skills" value="grocery"> <span data-i18n="needGrocery">Groceries/meds</span></label>
-                <label class="chip"><input type="checkbox" name="skills" value="tech"> <span data-i18n="needTech">Tech help</span></label>
-              </div>
-            </div>
-
-            <div class="row cols-2">
-              <div>
-                <label for="v-availability" data-i18n="availability">Availability</label>
-                <input id="v-availability" name="availability" required data-i18n-placeholder="availabilityPh" placeholder="e.g., Weekend mornings; weekday evenings" />
-              </div>
-              <div>
-                <label for="v-id" data-i18n="background">Background check</label>
-                <select id="v-id" name="background">
-                  <option value="no" data-i18n="bgNo">Not yet</option>
-                  <option value="inprogress" data-i18n="bgProgress">In progress</option>
-                  <option value="yes" data-i18n="bgYes">Completed</option>
-                </select>
-              </div>
-            </div>
-
-            <label class="chip"><input type="checkbox" required name="consent"> <span data-i18n="consent">I agree to the volunteer code of conduct and privacy.</span></label>
-
-            <div class="form-actions">
-              <button class="btn" type="submit"><i class="fas fa-paper-plane"></i> <span data-i18n="submitVolunteer">Submit volunteer sign‑up</span></button>
-              <button class="btn outline" type="button" id="prefill" data-i18n="prefill">Prefill demo</button>
-            </div>
-            <p id="v-msg" class="notice" hidden data-i18n="vMsg">Thanks for signing up! (demo) We'll match you based on your time and skills.</p>
-          </form>
-        </div>
-      </div>
-    </div>
-  </section>
-  </main>
 
   <footer>
     <p>&copy; 2025</p>
   </footer>
-
+</div>
   <script src="../js/app.js"></script>
+    <script src="../js/weekly-picker.js"></script>
 </body>
 </html>

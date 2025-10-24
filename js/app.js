@@ -155,15 +155,15 @@ handleSubmit('form-senior','s-msg');
 handleSubmit('form-vol','v-msg');
 
 // prefill demo on register page
-document.getElementById('prefill')?.addEventListener('click',()=>{
-  const n = document.getElementById('v-name'); if (n) n.value='Alex Kate';
-  const e = document.getElementById('v-email'); if (e) e.value='alex@example.com';
-  const p = document.getElementById('v-phone'); if (p) p.value='647-555-1212';
-  const c = document.getElementById('v-city'); if (c) c.value='Ottawa';
-  const a = document.getElementById('v-availability'); if (a) a.value='Weekend mornings; weekday evenings';
-  document.querySelector('input[name="skills"][value="chat"]')?.setAttribute('checked','checked');
-  document.querySelector('input[name="skills"][value="walk"]')?.setAttribute('checked','checked');
-});
+// document.getElementById('prefill')?.addEventListener('click',()=>{
+//   const n = document.getElementById('v-name'); if (n) n.value='Alex Kate';
+//   const e = document.getElementById('v-email'); if (e) e.value='alex@example.com';
+//   const p = document.getElementById('v-phone'); if (p) p.value='647-555-1212';
+//   const c = document.getElementById('v-city'); if (c) c.value='Ottawa';
+//   const a = document.getElementById('v-availability'); if (a) a.value='Weekend mornings; weekday evenings';
+//   document.querySelector('input[name="skills"][value="chat"]')?.setAttribute('checked','checked');
+//   document.querySelector('input[name="skills"][value="walk"]')?.setAttribute('checked','checked');
+// });
 
 // deep link to a specific tab
 if (location.hash === '#volunteer') activate('vol');
