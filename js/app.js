@@ -335,4 +335,9 @@ handleSubmitToApi('form-senior','s-msg','/api/register/senior', (form) => {
 });
 
 
+// Volunteer register -> /api/register/volunteer
+// handleSubmitToApi('form-vol', 'v-msg', '/api/register/volunteer', (form) => {
+//    return {
+//   };
+// });
 
