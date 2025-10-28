@@ -91,15 +91,15 @@ def api_me():
 def api_health():
     return jsonify(ok=True)
 
-@app.route('/register/senior', methods=['POST','GET'])
+@app.route('/register/senior', methods=['POST'])
 def api_register_senior():
     print('enter')
     data = request.get_json(silent=True) 
     print(data)
 
     # # ---- Extract & normalize fields
-    firstname    = (data.get("ftname") or "").strip()
-    lastname     = (data.get("lame") or "").strip()
+    firstname    = (data.get("firstname") or "").strip()
+    lastname     = (data.get("lastname") or "").strip()
     age_raw      = (data.get("age") or "").strip() if data.get("age") is not None else ""
     phone        = (data.get("phone") or "").strip()
     email        = normalize_email(data.get("email"))
