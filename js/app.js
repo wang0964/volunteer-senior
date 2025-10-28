@@ -1,3 +1,7 @@
+const API_BASE = 'https://localhost:5000';
+const endpoint = '/api/register/senior';
+
+
 // ---- Tabs (guarded so pages without tabs won't throw) ----
 const tabSenior = document.getElementById('tab-senior');
 const tabVol = document.getElementById('tab-vol');
@@ -23,21 +27,21 @@ const i18n = {
   en: {
     navRegister:'Register', navAbout:'About', joinNow:'Join now',
     heroTitle:'Connect volunteers with seniors for warm companionship and daily help',
-    heroLead:'BuddyLink supports <strong>senior sign‑up</strong> and <strong>volunteer sign‑up</strong>. We match by interests and availability. Services include friendly chats, video companionship, reading mail, short walks, groceries/meds pickup, and basic tech help.',
+    heroLead:'BuddyLink supports <strong>senior sign-up</strong> and <strong>volunteer sign-up</strong>. We match by interests and availability. Services include friendly chats, video companionship, reading mail, short walks, groceries/meds pickup, and basic tech help.',
     ctaSenior:"I'm a senior, need help", ctaVolunteer:"I'm a volunteer, want to help",
     registerTitle:'Registration',
-    registerSub:'Choose your role to sign up. Fields are demo only (client‑side validation). Hook up your backend at <code>/register/senior</code> and <code>/register/volunteer</code>.',
-    tabSenior:'Senior Sign‑up', tabVolunteer:'Volunteer Sign‑up',
-    name:'Name', namePh:'Enter full name', age:'Age', agePh:'e.g., 70', ageHelp:'Optional; helps us prioritize age‑appropriate services.',
+    registerSub:'Choose your role to sign up. Fields are demo only (client-side validation). Hook up your backend at <code>/register/senior</code> and <code>/register/volunteer</code>.',
+    tabSenior:'Senior Sign-up', tabVolunteer:'Volunteer Sign-up',
+    name:'Name', namePh:'Enter full name', age:'Age', agePh:'e.g., 70', ageHelp:'Optional; helps us prioritize age-appropriate services.',
     phone:'Phone', phonePh:'e.g., 647-123-4567', email:'Email', emailPh:'example@email.com',
     city:'City / Area', cityPh:'e.g., Toronto / Scarborough', contactPref:'Preferred contact', optPhone:'Phone', optEmail:'Email', optVideo:'Video',
-    needs:'Needed services (multi‑select)', needChat:'Friendly chat', needVideo:'Video companionship', needRead:'Read letters/news', needWalk:'Short walk', needGrocery:'Groceries/meds', needTech:'Tech help',
+    needs:'Needed services (multi-select)', needChat:'Friendly chat', needVideo:'Video companionship', needRead:'Read letters/news', needWalk:'Short walk', needGrocery:'Groceries/meds', needTech:'Tech help',
     availability:'Availability', availabilityPh:'e.g., Mon/Wed/Fri 2–5 pm', prefLang:'Preferred language',
     notes:'Notes (health/accessibility)', notesPh:'Wheelchair access, allergies, etc.',
-    submitSenior:'Submit senior sign‑up', privacyAgree:'By submitting, you agree to our privacy terms.',
+    submitSenior:'Submit senior sign-up', privacyAgree:'By submitting, you agree to our privacy terms.',
     sMsg:'Thanks! (demo) We will contact you soon for matching.',
-    skills:'Services you can provide (multi‑select)', background:'Background check', bgNo:'Not yet', bgProgress:'In progress', bgYes:'Completed',
-    consent:'I agree to the volunteer code of conduct and privacy.', submitVolunteer:'Submit volunteer sign‑up', prefill:'Prefill demo', vMsg:"Thanks for signing up! (demo) We'll match you based on your time and skills.",
+    skills:'Services you can provide (multi-select)', background:'Background check', bgNo:'Not yet', bgProgress:'In progress', bgYes:'Completed',
+    consent:'I agree to the volunteer code of conduct and privacy.', submitVolunteer:'Submit volunteer sign-up', prefill:'Prefill demo', vMsg:"Thanks for signing up! (demo) We'll match you based on your time and skills.",
     aboutTitle:'About BuddyLink', aboutLead:'This is a demo page in a modern nonprofit style. Integrate it into your project and connect both forms to your backend (Node/Flask/Spring, etc.).',
     about1:'Fully responsive layout', about2:'Accessibility: labels & ARIA', about3:'Basic client validation & messages', about4:'Extensible to auth/database',
     demoNote:'Demo only: submissions show a local success message',
@@ -69,14 +73,14 @@ const i18n = {
     name:'Nom', namePh:'Nom complet', age:'Âge', agePh:'ex. 70', ageHelp:"Optionnel ; nous aide à prioriser des services adaptés à l'âge.",
     phone:'Téléphone', phonePh:'ex. 647-123-4567', email:'Courriel', emailPh:'exemple@courriel.com',
     city:'Ville / Quartier', cityPh:'ex. Toronto / Scarborough', contactPref:'Contact préféré', optPhone:'Téléphone', optEmail:'Courriel', optVideo:'Vidéo',
-    needs:'Services nécessaires (multi‑sélection)', needChat:'Conversation amicale', needVideo:'Accompagnement vidéo', needRead:'Lire lettres/journaux', needWalk:'Petite marche', needGrocery:'Épicerie/médicaments', needTech:'Aide techno',
+    needs:'Services nécessaires (multi-sélection)', needChat:'Conversation amicale', needVideo:'Accompagnement vidéo', needRead:'Lire lettres/journaux', needWalk:'Petite marche', needGrocery:'Épicerie/médicaments', needTech:'Aide techno',
     availability:'Disponibilités', availabilityPh:'ex. Lun/Me/Ven 14 h–17 h', prefLang:'Langue préférée',
     notes:'Notes (santé/accessibilité)', notesPh:"Accès fauteuil roulant, allergies, etc.",
     submitSenior:"Envoyer l'inscription aîné", privacyAgree:'En envoyant, vous acceptez nos conditions de confidentialité.',
     sMsg:"Merci ! (démo) Nous vous contacterons bientôt pour l'appariement.",
-    skills:'Services que vous pouvez offrir (multi‑sélection)', background:'Vérification d’antécédents', bgNo:'Pas encore', bgProgress:'En cours', bgYes:'Terminée',
+    skills:'Services que vous pouvez offrir (multi-sélection)', background:'Vérification d’antécédents', bgNo:'Pas encore', bgProgress:'En cours', bgYes:'Terminée',
     consent:"J'accepte le code de conduite des bénévoles et la confidentialité.", submitVolunteer:"Envoyer l'inscription bénévole", prefill:'Préremplir (démo)', vMsg:"Merci pour votre inscription ! (démo) Nous vous apparierons selon votre temps et vos compétences.",
-    aboutTitle:'À propos de BuddyLink', aboutLead:"Page de démonstration au style organisme à but non lucratif moderne. Intégrez‑la à votre projet et reliez les formulaires à votre serveur (Node/Flask/Spring, etc.).",
+    aboutTitle:'À propos de BuddyLink', aboutLead:"Page de démonstration au style organisme à but non lucratif moderne. Intégrez-la à votre projet et reliez les formulaires à votre serveur (Node/Flask/Spring, etc.).",
     about1:'Mise en page entièrement responsive', about2:'Accessibilité : libellés et ARIA', about3:'Validation et messages côté client', about4:"Extensible à l'authentification/base de données",
     demoNote:"Démonstration : l’envoi affiche un message local de réussite",
     requiredAlert:'Veuillez remplir les champs requis / consentement.',
@@ -152,19 +156,9 @@ function handleSubmit(formId, msgId){
     form.querySelector('input,select,textarea')?.focus();
   });
 }
-handleSubmit('form-senior','s-msg');
-handleSubmit('form-vol','v-msg');
+// handleSubmit('form-senior','s-msg');
+// handleSubmit('form-vol','v-msg');
 
-// prefill demo on register page
-// document.getElementById('prefill')?.addEventListener('click',()=>{
-//   const n = document.getElementById('v-name'); if (n) n.value='Alex Kate';
-//   const e = document.getElementById('v-email'); if (e) e.value='alex@example.com';
-//   const p = document.getElementById('v-phone'); if (p) p.value='647-555-1212';
-//   const c = document.getElementById('v-city'); if (c) c.value='Ottawa';
-//   const a = document.getElementById('v-availability'); if (a) a.value='Weekend mornings; weekday evenings';
-//   document.querySelector('input[name="skills"][value="chat"]')?.setAttribute('checked','checked');
-//   document.querySelector('input[name="skills"][value="walk"]')?.setAttribute('checked','checked');
-// });
 
 // deep link to a specific tab
 if (location.hash === '#volunteer') activate('vol');
@@ -287,13 +281,6 @@ document.addEventListener('DOMContentLoaded', refreshAuthUI);
 
 
 
-
-
-
-
-
-
-
 async function handleSubmitToApi(formId, msgId, endpoint, buildPayload){
   const form = document.getElementById(formId);
   const msg = document.getElementById(msgId);
@@ -306,17 +293,18 @@ async function handleSubmitToApi(formId, msgId, endpoint, buildPayload){
 
     const payload = buildPayload(form);
 
-    if (payload.__invalid) {
-      alert(dict.requiredAlert);
-      return;
-    }
-
+    // if (payload.__invalid) {
+    //   alert(dict.requiredAlert);
+    //   return;
+    // }
+    // console.log(payload);
     try {
-      const res = await fetch(`${API_BASE}${endpoint}`, {
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(payload)
       });
+      
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || 'Submit failed');
 
@@ -329,39 +317,22 @@ async function handleSubmitToApi(formId, msgId, endpoint, buildPayload){
   });
 }
 
-// Senior register -> /register/senior
+// Senior register -> /api/register/senior
 handleSubmitToApi('form-senior','s-msg','/api/register/senior', (form) => {
-  const needs = [...form.querySelectorAll('input[name="needs"]:checked')].map(i=>i.value);
   return {
-    name: form.querySelector('#s-name').value.trim(),
+    firstname: form.querySelector('#s-fname').value.trim(),
+    lastname: form.querySelector('#s-lname').value.trim(),
     age: form.querySelector('#s-age').value || null,
     phone: form.querySelector('#s-phone').value.trim(),
     email: form.querySelector('#s-email').value.trim(),
     city: form.querySelector('#s-city').value.trim(),
+    address: form.querySelector('#s-address').value.trim(),
     contactPref: form.querySelector('#s-contact').value,
-    needs,
-    availability: form.querySelector('#s-availability').value.trim(),
     language: form.querySelector('#s-language').value,
     notes: form.querySelector('#s-notes').value.trim(),
-    __invalid: !(form.querySelector('#s-name').value && form.querySelector('#s-phone').value)
+    // __invalid: !(form.querySelector('#s-fname').value && form.querySelector('#s-lname').value && form.querySelector('#s-phone').value)
   };
 });
 
-// Volunteer register -> /register/volunteer
-handleSubmitToApi('form-vol','v-msg','/api/register/volunteer', (form) => {
-  const skills = [...form.querySelectorAll('input[name="skills"]:checked')].map(i=>i.value);
-  const consent = form.querySelector('input[name="consent"]').checked;
-  return {
-    name: form.querySelector('#v-name').value.trim(),
-    email: form.querySelector('#v-email').value.trim(),
-    phone: form.querySelector('#v-phone').value.trim(),
-    city: form.querySelector('#v-city').value.trim(),
-    skills,
-    availability: form.querySelector('#v-availability').value.trim(),
-    background: form.querySelector('#v-id').value,
-    consent,
-    __invalid: !(consent && form.querySelector('#v-name').value && form.querySelector('#v-email').value && form.querySelector('#v-phone').value && form.querySelector('#v-availability').value)
-  };
-});
 
 

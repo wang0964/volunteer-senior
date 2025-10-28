@@ -1,6 +1,8 @@
+import datetime
 from flask import Flask, request, jsonify, session
 from pymongo import MongoClient, ASCENDING
 from werkzeug.security import generate_password_hash, check_password_hash
+from pymongo.errors import DuplicateKeyError
 import os
 
 # --- 基础配置 ---
@@ -25,7 +27,7 @@ BIND_PORT = 5000
 mongo = MongoClient(MONGO_URI)
 db = mongo.get_default_database()  
 users = db["users"]
-
+seniors = db["seniors"]
 
 users.create_index([("email", ASCENDING)], unique=True)
 
@@ -89,6 +91,78 @@ def api_me():
 def api_health():
     return jsonify(ok=True)
 
+@app.route('/register/senior', methods=['POST','GET'])
+def api_register_senior():
+    print('enter')
+    data = request.get_json(silent=True) 
+    print(data)
+
+    # # ---- Extract & normalize fields
+    firstname    = (data.get("ftname") or "").strip()
+    lastname     = (data.get("lame") or "").strip()
+    age_raw      = (data.get("age") or "").strip() if data.get("age") is not None else ""
+    phone        = (data.get("phone") or "").strip()
+    email        = normalize_email(data.get("email"))
+    city         = (data.get("city") or "").strip()
+    address      = (data.get("address") or "").strip()
+    contact_pref = (data.get("contactPref") or "").strip()
+    language     = (data.get("language") or "").strip()
+    notes        = (data.get("notes") or "").strip()
+    password     = data.get("password") or ""
+    re_password  = data.get("re-password") or ""  
+
+    # # ---- Basic validation
+    # if not email or not password:
+    #     return jsonify(success=False, message="Email and password are required"), 400
+    if password != re_password:
+        return jsonify(success=False, message="Passwords do not match"), 400
+
+
+    try:
+        age = int(age_raw)
+    except ValueError:
+        return jsonify(success=False, message="Age must be a number"), 400
+
+
+    # # ---- Build document to insert
+    senior_doc = {
+        "firstname": firstname,
+        "lastname": lastname,
+        "age": age,
+        "phone": phone,
+        "city": city,
+        "address": address,
+        "contactPref": contact_pref,
+        "language": language,
+        "notes": notes,
+        "updated_at": datetime.datetime.now(datetime.timezone.utc)
+    }
+
+    try:
+        senior_res = seniors.insert_one(senior_doc)
+        senior_id = senior_res.inserted_id
+    except Exception as e:
+        return jsonify(success=False, message=f"Failed to create senior: {e}"), 500
+
+    user_doc = {
+        "email": email,
+        "password_hash": generate_password_hash(password),
+        "created_at": datetime.datetime.now(datetime.timezone.utc),
+        "senior_id": senior_id,
+        "type":"senior"
+    }
+
+    try:
+        users.insert_one(user_doc)
+    except DuplicateKeyError:
+        seniors.delete_one({"_id": senior_id})
+        return jsonify(success=False, message="Email already registered"), 409
+    except Exception as e:
+        seniors.delete_one({"_id": senior_id})
+        return jsonify(success=False, message=f"Failed to create user: {e}"), 500
+    
+
+    return jsonify(success=True, data={"type":"senior", "seniorId": str(senior_id)})
 
 if __name__ == "__main__":
     app.run(host=BIND_HOST, port=BIND_PORT, debug=True)

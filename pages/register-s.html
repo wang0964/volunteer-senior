@@ -47,26 +47,45 @@
           <form id="form-senior" novalidate>
             <div class="row cols-2">
               <div>
-                <label for="s-name" data-i18n="name">Name</label>
-                <input id="s-name" name="name" required data-i18n-placeholder="namePh" placeholder="Enter full name" />
+                <label for="s-fname" data-i18n="fname">First Name</label>
+                <input id="s-fname" name="fname" required data-i18n-placeholder="fnamePh" placeholder="Enter first name" />
               </div>
               <div>
-                <label for="s-age" data-i18n="age">Age</label>
-                <input id="s-age" name="age" type="number" min="50" data-i18n-placeholder="agePh" placeholder="e.g., 70" />
-                <div class="help" data-i18n="ageHelp">Optional; helps us prioritize age‑appropriate services.</div>
+                <label for="s-lname" data-i18n="lname">Last Name</label>
+                <input id="s-lname" name="lname" required data-i18n-placeholder="lnamePh" placeholder="Enter last name" />
+              </div>              
+              <div>
+                <label for="s-email" data-i18n="email">Email</label>
+                <input id="s-email" name="email" type="email" data-i18n-placeholder="emailPh" placeholder="example@email.com" />
               </div>
               <div>
                 <label for="s-phone" data-i18n="phone">Phone</label>
                 <input id="s-phone" name="phone" required inputmode="tel" data-i18n-placeholder="phonePh" placeholder="e.g., 647-123-4567" />
               </div>
               <div>
-                <label for="s-email" data-i18n="email">Email</label>
-                <input id="s-email" name="email" type="email" data-i18n-placeholder="emailPh" placeholder="example@email.com" />
+                <label for="s-password" data-i18n="password">Password</label>
+                <input id="s-password" name="password" required inputmode="password" data-i18n-placeholder="passwordPh"  />
               </div>
+              <div>
+                <label for="s-re-password" data-i18n="re-password">Re-enter Password</label>
+                <input id="s-re-password" name="re-password" required inputmode="password" data-i18n-placeholder="re-passwordPh"  />
+              </div>
+
+              <div>
+                <label for="s-age" data-i18n="age">Age</label>
+                <input id="s-age" name="age" type="number" min="50" data-i18n-placeholder="agePh" placeholder="e.g., 70" />
+                <div class="help" data-i18n="ageHelp">Optional; helps us prioritize age‑appropriate services.</div>
+              </div>
+
+
               <div>
                 <label for="s-city" data-i18n="city">City / Area</label>
                 <input id="s-city" name="city" required data-i18n-placeholder="cityPh" placeholder="e.g., Toronto / Scarborough" />
               </div>
+              <div>
+                <label for="s-address" data-i18n="address">Address</label>
+                <input id="s-address" name="address" required data-i18n-placeholder="addressPh" />
+              </div>              
               <div>
                 <label for="s-contact" data-i18n="contactPref">Preferred contact</label>
                 <select id="s-contact" name="contactPref">
@@ -77,7 +96,7 @@
               </div>
             </div>
 
-            <div>
+            <!-- <div>
               <label data-i18n="needs">Needed services (multi‑select)</label>
               <div class="checks" aria-label="service needs">
                 <label class="chip"><input type="checkbox" name="needs" value="chat"> <span data-i18n="needChat">Friendly chat</span></label>
@@ -87,7 +106,7 @@
                 <label class="chip"><input type="checkbox" name="needs" value="grocery"> <span data-i18n="needGrocery">Groceries/meds</span></label>
                 <label class="chip"><input type="checkbox" name="needs" value="tech"> <span data-i18n="needTech">Tech help</span></label>
               </div>
-            </div>
+            </div> -->
 
             <div class="row cols-2">
               <div>

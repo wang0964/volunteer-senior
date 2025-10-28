@@ -3,9 +3,14 @@
 .
 ├── index.html
 ├── pages/
+│   ├── events/
+│   │   ├── event-001.html
+│   │   └── ......
+│   │
 │   ├── register.html
 │   ├── login.html
-│   └── event-xxx.html
+│   ├── event-xxx.html
+|   └── ......
 |
 ├── css/
 │   └── styles.css
