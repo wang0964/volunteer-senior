@@ -217,7 +217,7 @@ def api_register_volunteer():
     except Exception as e:
         return jsonify(success=False, message=f"Failed to create senior: {e}"), 500
 
-    volunteer_id='',
+
     user_doc = {
         "email": email,
         "password_hash": generate_password_hash(password),
