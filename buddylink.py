@@ -26,8 +26,9 @@ BIND_PORT = 5000
 # --- Mongo ---
 mongo = MongoClient(MONGO_URI)
 db = mongo.get_default_database()  
-users = db["users"]
-seniors = db["seniors"]
+users = db['users']
+seniors = db['seniors']
+volunteers=db['volunteers']
 
 users.create_index([("email", ASCENDING)], unique=True)
 
@@ -109,7 +110,7 @@ def api_register_senior():
     language     = (data.get("language") or "").strip()
     notes        = (data.get("notes") or "").strip()
     password     = data.get("password") or ""
-    re_password  = data.get("re-password") or ""  
+    re_password  = data.get("re_password") or ""  
 
     # # ---- Basic validation
     # if not email or not password:
@@ -163,6 +164,84 @@ def api_register_senior():
     
 
     return jsonify(success=True, data={"type":"senior", "seniorId": str(senior_id)})
+
+
+@app.route('/register/volunteer', methods=['POST'])
+def api_register_volunteer():
+    print('enter')
+    data = request.get_json(silent=True) 
+    print(data)
+
+    # # ---- Extract & normalize fields
+    firstname    = (data.get("firstname") or "").strip()
+    lastname     = (data.get("lastname") or "").strip()
+    gender       = (data.get("gender") or "").strip()
+    phone        = (data.get("phone") or "").strip()
+    email        = normalize_email(data.get("email"))
+    city         = (data.get("city") or "").strip()
+    address      = (data.get("address") or "").strip()
+    background   = (data.get("background") or "").strip()
+    language     = data.get("language") or []
+    availabilities = data.get("availability") or []
+    skills       = data.get("skills") or []
+    password     = data.get("password") or ""
+    re_password  = data.get("re_password") or ""  
+
+    # # ---- Basic validation
+    # if not email or not password:
+    #     return jsonify(success=False, message="Email and password are required"), 400
+    if password != re_password:
+        return jsonify(success=False, message="Passwords do not match"), 400
+
+
+
+    # # ---- Build document to insert
+    volunteer_doc = {
+        "firstname": firstname,
+        "lastname": lastname,
+        "gender": gender,
+        "phone": phone,
+        "city": city,
+        "address": address,
+        "background": background,
+        "language": language,
+        "availabilities": availabilities,
+        "skills": skills,
+        "updated_at": datetime.datetime.now(datetime.timezone.utc)
+    }
+
+    # print(volunteer_doc)
+    try:
+        volunteer_res = volunteers.insert_one(volunteer_doc)
+        volunteer_id = volunteer_res.inserted_id
+    except Exception as e:
+        return jsonify(success=False, message=f"Failed to create senior: {e}"), 500
+
+    volunteer_id='',
+    user_doc = {
+        "email": email,
+        "password_hash": generate_password_hash(password),
+        "created_at": datetime.datetime.now(datetime.timezone.utc),
+        "volunteer_id": volunteer_id,
+        "type":"volunteer",
+    }
+    # print(user_doc)
+
+
+
+    try:
+        users.insert_one(user_doc)
+    except DuplicateKeyError:
+        volunteers.delete_one({"_id": volunteer_id})
+        return jsonify(success=False, message="Email already registered"), 409
+    except Exception as e:
+        volunteers.delete_one({"_id": volunteer_id})
+        return jsonify(success=False, message=f"Failed to create user: {e}"), 500
+    
+
+    return jsonify(success=True, data={"type":"volunteer", "volunteerId": str(volunteer_id)})
+
+
 
 if __name__ == "__main__":
     app.run(host=BIND_HOST, port=BIND_PORT, debug=True)

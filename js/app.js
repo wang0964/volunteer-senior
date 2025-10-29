@@ -35,7 +35,7 @@ const i18n = {
     name:'Name', namePh:'Enter full name', age:'Age', agePh:'e.g., 70', ageHelp:'Optional; helps us prioritize age-appropriate services.',
     phone:'Phone', phonePh:'e.g., 647-123-4567', email:'Email', emailPh:'example@email.com',
     city:'City / Area', cityPh:'e.g., Toronto / Scarborough', contactPref:'Preferred contact', optPhone:'Phone', optEmail:'Email', optVideo:'Video',
-    needs:'Needed services (multi-select)', needChat:'Friendly chat', needVideo:'Video companionship', needRead:'Read letters/news', needWalk:'Short walk', needGrocery:'Groceries/meds', needTech:'Tech help',
+    needs:'Needed services (multi-select)', needChat:'Friendly chat', needVideo:'Video companionship', needRead:'Read letters/news', needWalk:'Short walk', needGrocery:'Groceries',needHealth:'Health' ,needTech:'Tech help',
     availability:'Availability', availabilityPh:'e.g., Mon/Wed/Fri 2–5 pm', prefLang:'Preferred language',
     notes:'Notes (health/accessibility)', notesPh:'Wheelchair access, allergies, etc.',
     submitSenior:'Submit senior sign-up', privacyAgree:'By submitting, you agree to our privacy terms.',
@@ -60,7 +60,13 @@ const i18n = {
     goRegister: 'Register',
     navHome: 'Home',
     loginMissing: 'Please enter email and password.',
-    loginSuccess: 'Login submitted (demo).'
+    loginSuccess: 'Login submitted (demo).',
+    male: 'Male',
+    female: 'Female',
+    other: 'Other',
+    english: 'English',
+    french: 'French',
+    language: 'Language'
   },
   fr: {
     navRegister:'Inscription', navAbout:'À propos', joinNow:"S'inscrire maintenant",
@@ -73,7 +79,7 @@ const i18n = {
     name:'Nom', namePh:'Nom complet', age:'Âge', agePh:'ex. 70', ageHelp:"Optionnel ; nous aide à prioriser des services adaptés à l'âge.",
     phone:'Téléphone', phonePh:'ex. 647-123-4567', email:'Courriel', emailPh:'exemple@courriel.com',
     city:'Ville / Quartier', cityPh:'ex. Toronto / Scarborough', contactPref:'Contact préféré', optPhone:'Téléphone', optEmail:'Courriel', optVideo:'Vidéo',
-    needs:'Services nécessaires (multi-sélection)', needChat:'Conversation amicale', needVideo:'Accompagnement vidéo', needRead:'Lire lettres/journaux', needWalk:'Petite marche', needGrocery:'Épicerie/médicaments', needTech:'Aide techno',
+    needs:'Services nécessaires (multi-sélection)', needChat:'Conversation amicale', needVideo:'Accompagnement vidéo', needRead:'Lire lettres/journaux', needWalk:'Petite marche', needGrocery:'Épicerie',needHealth:'Santé', needTech:'Aide techno',
     availability:'Disponibilités', availabilityPh:'ex. Lun/Me/Ven 14 h–17 h', prefLang:'Langue préférée',
     notes:'Notes (santé/accessibilité)', notesPh:"Accès fauteuil roulant, allergies, etc.",
     submitSenior:"Envoyer l'inscription aîné", privacyAgree:'En envoyant, vous acceptez nos conditions de confidentialité.',
@@ -98,7 +104,13 @@ const i18n = {
     goRegister: "S’inscrire",
     navHome: "Accueil",
     loginMissing: "Veuillez saisir l’e-mail et le mot de passe.",
-    loginSuccess: "Connexion envoyée (démo)."
+    loginSuccess: "Connexion envoyée (démo).",
+    male: 'Homme',
+    female: 'Femme',
+    other: 'Autre',
+    english: 'Anglais',
+    french: 'Français',
+    language: 'Langage'    
   }
 };
 
@@ -297,7 +309,7 @@ async function handleSubmitToApi(formId, msgId, endpoint, buildPayload){
     //   alert(dict.requiredAlert);
     //   return;
     // }
-    // console.log(payload);
+    console.log(payload);
     try {
       const res = await fetch(endpoint, {
         method: "POST",
@@ -330,6 +342,8 @@ handleSubmitToApi('form-senior','s-msg','/api/register/senior', (form) => {
     contactPref: form.querySelector('#s-contact').value,
     language: form.querySelector('#s-language').value,
     notes: form.querySelector('#s-notes').value.trim(),
+    password: form.querySelector('#s-password').value.trim(),
+    re_password: form.querySelector('#s-re-password').value.trim(),
     // __invalid: !(form.querySelector('#s-fname').value && form.querySelector('#s-lname').value && form.querySelector('#s-phone').value)
   };
 });
@@ -341,3 +355,34 @@ handleSubmitToApi('form-senior','s-msg','/api/register/senior', (form) => {
 //   };
 // });
 
+handleSubmitToApi('form-vol', 'v-msg', '/api/register/volunteer', (form) => {
+  const availability = Array.from(
+    form.querySelectorAll('#scheduleTable input[type="checkbox"]:checked')
+  ).map(cb => cb.name); // e.g., ["mon-morning","tue-evening"]
+
+  const skills = Array.from(
+    form.querySelectorAll('.checks input[type="checkbox"][name^="skill-"]:checked')
+  ).map(cb => cb.value);
+
+  const language = Array.from(
+    form.querySelectorAll('.checks input[type="checkbox"][name^="lang-"]:checked')
+  ).map(cb => cb.value);
+
+  return {
+    firstname: form.querySelector('#v-fname').value.trim(),
+    lastname:  form.querySelector('#v-lname').value.trim(),
+    email:     form.querySelector('#v-email').value.trim(),
+    phone:     form.querySelector('#v-phone').value.trim(),
+    city:      form.querySelector('#v-city').value.trim(),
+    address:   form.querySelector('#v-address').value.trim(),
+    gender:    form.querySelector('#v-gender').value.trim(),
+    background: form.querySelector('#v-id').value, // 'no' | 'inprogress' | 'yes'
+    skills, // ['chat','walk',...]
+    availability,            // Array of names
+    password: form.querySelector('#v-password').value.trim(),
+    re_password: form.querySelector('#v-re-password').value.trim(),
+    gender: form.querySelector('#v-gender').value.trim(),
+    language
+    // consent: !!form.querySelector('input[name="consent"]')?.checked,
+  };
+});

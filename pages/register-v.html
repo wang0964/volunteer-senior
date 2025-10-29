@@ -37,7 +37,7 @@
         <div class="wrap">
             <h2 id="register-title" data-i18n="registerTitle">Registration</h2>
             <p class="section-sub" data-i18n="registerSub">Choose your role to sign up. Fields are demo only
-                (client‑side validation). Hook up your backend at <code>/api/register-senior</code> and
+                (client-side validation). Hook up your backend at <code>/api/register-senior</code> and
                 <code>/api/register-volunteer</code>.
             </p>
 
@@ -64,10 +64,31 @@
                             placeholder="e.g., 647-123-4567" />
                     </div>
                     <div>
+                        <label for="v-password" data-i18n="password">Password</label>
+                        <input id="v-password" name="password" required inputmode="password" data-i18n-placeholder="passwordPh"  />
+                    </div>
+                    <div>
+                        <label for="v-re-password" data-i18n="re-password">Re-enter Password</label>
+                        <input id="v-re-password" name="re-password" required inputmode="password" data-i18n-placeholder="re-passwordPh"  />
+                    </div>
+
+                    <div>
+                        <label for="v-gender" data-i18n="gender">gender</label>
+                        <select id="v-gender" name="gender">
+                            <option value="male" data-i18n="male">Male</option>
+                            <option value="female" data-i18n="female">Female</option>
+                            <option value="other" data-i18n="other">Completed</option>
+                        </select>
+                    </div>                    
+                    <div>
                         <label for="v-city" data-i18n="city">City / Area</label>
                         <input id="v-city" name="city" required data-i18n-placeholder="cityPh"
                             placeholder="e.g., Toronto / North York" />
                     </div>
+                    <div>
+                        <label for="v-address" data-i18n="address">Address</label>
+                        <input id="v-address" name="address" required data-i18n-placeholder="addressPh" />
+                    </div> 
                 </div>
 
                 <div>
@@ -82,7 +103,9 @@
                         <label class="chip"><input type="checkbox" name="skill-walk" value="walk"> <span
                                 data-i18n="needWalk">Short walk</span></label>
                         <label class="chip"><input type="checkbox" name="skill-grocery" value="grocery"> <span
-                                data-i18n="needGrocery">Groceries/meds</span></label>
+                                data-i18n="needGrocery">Groceries</span></label>
+                        <label class="chip"><input type="checkbox" name="skill-health" value="health"> <span
+                                data-i18n="needHealth">Health</span></label>                                
                         <label class="chip"><input type="checkbox" name="skill-tech" value="tech"> <span
                                 data-i18n="needTech">Tech help</span></label>
                     </div>
@@ -99,7 +122,15 @@
                         </select>
                     </div>
                 </div>
-
+                <div>
+                    <label for="s-language" data-i18n="language">Language</label>
+                    <div class="checks" aria-label="language">
+                        <label class="chip"><input type="checkbox" name="lang-english" value="en"> <span
+                                data-i18n="english">English</span></label>
+                        <label class="chip"><input type="checkbox" name="lang-french" value="fr"> <span
+                                data-i18n="french">French</span></label>
+                    </div>
+                </div>
                 <div class="availability-picker-block">
                     <section class="picker-card" role="group" aria-label="Weekly Time Picker">
                         <div class="picker-card-head one-line">
@@ -126,12 +157,12 @@
                     </section>
                 </div>
 
-                <label class="chip"><input type="checkbox" required name="consent"> <span data-i18n="consent">I agree to
-                        the volunteer code of conduct and privacy.</span></label>
+                <!-- <label class="chip"><input type="checkbox" required name="consent"> <span data-i18n="consent">I agree to
+                        the volunteer code of conduct and privacy.</span></label> -->
 
                 <div class="form-actions">
                     <button class="btn" type="submit"><i class="fas fa-paper-plane"></i> <span
-                            data-i18n="submitVolunteer">Submit volunteer sign‑up</span></button>
+                            data-i18n="submitVolunteer">Submit volunteer sign-up</span></button>
 
                 </div>
                 <p id="v-msg" class="notice" hidden data-i18n="vMsg">Thanks for signing up! (demo) We'll match you based
