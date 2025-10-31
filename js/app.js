@@ -68,7 +68,15 @@ const i18n = {
     french: 'French',
     language: 'Language',
     navProfile: 'Profile',
-    navRegister: 'Register'
+    navRegister: 'Register',
+    btnrole_senior: "I’m a senior, need help",
+    btnvolunteer_senior: "I’m a volunteer, want to help",
+    signup_senior: "Senior Sign-up",
+    signup_volunteer: "Volunteer Sign-up",
+    backtohome: "← Back to Home",
+    introdution: "BuddyLink supports <strong>senior sign-up</strong> and <strong>volunteer sign-up</strong>We match by interests and availability. Services include friendly chats, video companionship, reading mail, groceries pickup and health consulation, and basic tech help.",
+    introdution_title: "Connect volunteers with seniors for warm companionship and daily help",
+    upcoming_event: "Upcoming Event",
   },
   fr: {
     navRegister:'Inscription', navAbout:'À propos', joinNow:"S'inscrire maintenant",
@@ -114,7 +122,15 @@ const i18n = {
     french: 'Français',
     language: 'Langage',
     navProfile: 'Profil',
-    navRegister: "S'inscrire"
+    navRegister: "S'inscrire",
+    btnrole_senior: "Aîné·e, besoin d’aide",
+    btnvolunteer_senior: "Bénévole, je veux aider",
+    signup_senior: "Inscription des aînés",
+    signup_volunteer: "Inscription des bénévoles",
+    backtohome: "← Retour à l’accueil",
+    introdution: "BuddyLink propose l’<strong>inscription des aînés</strong> et l’<strong>inscription des bénévoles</strong>. Nous jumelons selon les intérêts et les disponibilités. Les services comprennent des conversations amicales, de l’accompagnement vidéo, l’aide à la lecture du courrier, la cueillette d’épicerie, des conseils santé et un soutien technique de base.",
+    introdution_title: "Relier des bénévoles et des aînés pour une compagnie chaleureuse et une aide quotidienne",
+    upcoming_event: "Événement à venir",
   }
 };
 
@@ -320,9 +336,6 @@ function refreshAuthUI() {
 }
 
 
-
-
-// 页面加载完成后立即执行
 document.addEventListener('DOMContentLoaded', refreshAuthUI);
 
 
@@ -380,92 +393,6 @@ async function handleSubmitToApi(formId, msgId, endpoint, buildPayload){
     }
   });
 }
-
-
-// async function handleSubmitToApi(formId, msgId, endpoint, buildPayload) {
-//   const form = document.getElementById(formId);
-//   const msg  = document.getElementById(msgId);
-//   if (!form) return;
-
-
-//   form.addEventListener('submit', async (e) => {
-//     e.preventDefault();
-
-//     if (msg) msg.hidden = true;
-
-
-//     form.addEventListener('submit', async (e)=>{
-//     e.preventDefault();
-//     const lang = document.documentElement.lang || 'en';
-//     const dict = i18n[lang] || i18n.en;
-
-//     const payload = buildPayload(form);
-
-//     // 客户端必填校验（如需要再打开）
-//     // if (payload.__invalid) {
-//     //   (window.showMsg ? showMsg({ title: dict.failTitle, text: dict.requiredAlert, icon: 'warning' }) : alert(dict.requiredAlert));
-//     //   return;
-//     // }
-
-//     // 提交时禁用按钮，防止连点
-//     const submitBtn = form.querySelector('[type="submit"]');
-//     const prevDisabled = submitBtn?.disabled;
-//     if (submitBtn) submitBtn.disabled = true;
-
-//     try {
-//       const res = await fetch(endpoint, {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify(payload)
-//       });
-
-//       // 尝试解析 JSON；非 JSON 时给空对象
-//       const data = await res.json().catch(() => ({}));
-
-//       if (res.ok && data && data.success) {
-//         // 弹窗成功提示
-//         if (window.showMsg) {
-//           await showMsg({
-//             title: 'Registration',
-//             text:  'Thank you! We will contact you soon.',
-//             icon:  'success',
-//             confirmText: 'OK'
-//           });
-//         } else {
-//           alert(`${'Registration'}\n\n${'Thank you! We will contact you soon.'}`);
-//         }
-
-//         form.reset();
-//         if (msg) msg.hidden = false;
-//         form.querySelector('input,select,textarea')?.focus();
-//       } else {
-//         // 根据 HTTP 状态定制标题（如 409 冲突）
-//         const title = res.status === 409 ? 'Registration' :  'Registration failed';
-//         const text  = (data && data.message) || `HTTP ${res.status}`;
-
-//         if (window.showMsg) {
-//           await showMsg({ title, text, icon: 'warning' });
-//         } else {
-//           alert(`${title}\n\n${text}`);
-//         }
-//       }
-//     } catch (err) {
-//       if (window.showMsg) {
-//         await showMsg({
-//           title: 'Network error',
-//           text:  err?.message || 'Failed to send request',
-//           icon:  'error'
-//         });
-//       } else {
-//         alert(`${'Network error'}\n\n${err?.message || 'Failed to send request'}`);
-//       }
-//     } finally {
-//       if (submitBtn) submitBtn.disabled = prevDisabled ?? false;
-//     }
-//   });
-// });
-// }
-
 
 // Senior register -> /api/register/senior
 handleSubmitToApi('form-senior','s-msg','/api/register/senior', (form) => {
