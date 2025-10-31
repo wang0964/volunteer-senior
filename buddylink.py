@@ -62,16 +62,23 @@ def api_login():
     print(f'[email]: {email} , [password]: {password}')
 
 
-    user = users.find_one({"email": email})
+    user = users.find_one({"email": email},
+                            {
+                                "_id": 1,
+                                "email": 1,
+                                "password_hash": 1,
+                                "type": 1
+                            }
+                          )
     if not user or not check_password_hash(user.get("password_hash", ""), password):
-        # 不泄露具体哪个错
         return jsonify(success=False, message="Invalid email or password"), 401
 
 
     session["uid"] = str(user["_id"])
     session["email"] = user["email"]
 
-    return jsonify(success=True, data={"token": "volunteer or senior", "email": user["email"]})
+    # return jsonify(success=True, data={"email": user["email"]})
+    return jsonify(success=True, data={"role": user.get("type"), "email": user["email"]})
 
 
 @app.post("/logout")
@@ -113,16 +120,23 @@ def api_register_senior():
     re_password  = data.get("re_password") or ""  
 
     # # ---- Basic validation
-    # if not email or not password:
-    #     return jsonify(success=False, message="Email and password are required"), 400
+    if not email or not password:
+        return jsonify(success=False, message="Email and password are required"), 400
+    
     if password != re_password:
         return jsonify(success=False, message="Passwords do not match"), 400
 
+    if len(password)<8:
+        return jsonify(success=False, message="Password must have 8 letters at least"), 400
 
     try:
         age = int(age_raw)
     except ValueError:
         return jsonify(success=False, message="Age must be a number"), 400
+    
+    existing = users.find_one({"email": email}, {"_id": 1})
+    if existing:
+        return jsonify(success=False, message="Email already registered"), 409
 
 
     # # ---- Build document to insert
@@ -139,29 +153,32 @@ def api_register_senior():
         "updated_at": datetime.datetime.now(datetime.timezone.utc)
     }
 
-    try:
-        senior_res = seniors.insert_one(senior_doc)
-        senior_id = senior_res.inserted_id
-    except Exception as e:
-        return jsonify(success=False, message=f"Failed to create senior: {e}"), 500
-
     user_doc = {
         "email": email,
         "password_hash": generate_password_hash(password),
         "created_at": datetime.datetime.now(datetime.timezone.utc),
-        "senior_id": senior_id,
-        "type":"senior"
+        "type": "senior"
     }
 
+    senior_id=None
     try:
+        senior_id = seniors.insert_one(senior_doc).inserted_id
+        user_doc["senior_id"] = senior_id
         users.insert_one(user_doc)
     except DuplicateKeyError:
-        seniors.delete_one({"_id": senior_id})
+        if senior_id is not None:
+            try:
+                seniors.delete_one({"_id": senior_id})
+            except Exception:
+                pass 
         return jsonify(success=False, message="Email already registered"), 409
     except Exception as e:
-        seniors.delete_one({"_id": senior_id})
-        return jsonify(success=False, message=f"Failed to create user: {e}"), 500
-    
+        if senior_id is not None:
+            try:
+                seniors.delete_one({"_id": senior_id})
+            except Exception:
+                pass
+        return jsonify(success=False, message=f"Failed to register: {e}"), 500
 
     return jsonify(success=True, data={"type":"senior", "seniorId": str(senior_id)})
 
@@ -188,11 +205,18 @@ def api_register_volunteer():
     re_password  = data.get("re_password") or ""  
 
     # # ---- Basic validation
-    # if not email or not password:
-    #     return jsonify(success=False, message="Email and password are required"), 400
+    if not email or not password:
+        return jsonify(success=False, message="Email and password are required"), 400
+    
     if password != re_password:
         return jsonify(success=False, message="Passwords do not match"), 400
 
+    if len(password)<8:
+        return jsonify(success=False, message="Password must have 8 letters at least"), 400
+
+    existing = users.find_one({"email": email}, {"_id": 1})
+    if existing:
+        return jsonify(success=False, message="Email already registered"), 409
 
 
     # # ---- Build document to insert
@@ -210,34 +234,33 @@ def api_register_volunteer():
         "updated_at": datetime.datetime.now(datetime.timezone.utc)
     }
 
-    # print(volunteer_doc)
-    try:
-        volunteer_res = volunteers.insert_one(volunteer_doc)
-        volunteer_id = volunteer_res.inserted_id
-    except Exception as e:
-        return jsonify(success=False, message=f"Failed to create senior: {e}"), 500
-
-
     user_doc = {
         "email": email,
         "password_hash": generate_password_hash(password),
         "created_at": datetime.datetime.now(datetime.timezone.utc),
-        "volunteer_id": volunteer_id,
         "type":"volunteer",
     }
-    # print(user_doc)
 
-
+    volunteer_id=None
 
     try:
+        volunteer_id = volunteers.insert_one(volunteer_doc).inserted_id
+        user_doc["volunteer_id"] = volunteer_id
         users.insert_one(user_doc)
     except DuplicateKeyError:
-        volunteers.delete_one({"_id": volunteer_id})
+        if volunteer_id is not None:
+            try:
+                volunteers.delete_one({"_id": volunteer_id})
+            except Exception:
+                pass 
         return jsonify(success=False, message="Email already registered"), 409
     except Exception as e:
-        volunteers.delete_one({"_id": volunteer_id})
-        return jsonify(success=False, message=f"Failed to create user: {e}"), 500
-    
+        if volunteer_id is not None:
+            try:
+                volunteers.delete_one({"_id": volunteer_id})
+            except Exception:
+                pass
+        return jsonify(success=False, message=f"Failed to register: {e}"), 500
 
     return jsonify(success=True, data={"type":"volunteer", "volunteerId": str(volunteer_id)})
 

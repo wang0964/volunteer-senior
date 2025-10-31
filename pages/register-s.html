@@ -64,11 +64,11 @@
               </div>
               <div>
                 <label for="s-password" data-i18n="password">Password</label>
-                <input id="s-password" name="password" required inputmode="password" data-i18n-placeholder="passwordPh"  />
+                <input id="s-password" name="password" required type="password" data-i18n-placeholder="passwordPh"  />
               </div>
               <div>
                 <label for="s-re-password" data-i18n="re-password">Re-enter Password</label>
-                <input id="s-re-password" name="re-password" required inputmode="password" data-i18n-placeholder="re-passwordPh"  />
+                <input id="s-re-password" name="re-password" required type="password" data-i18n-placeholder="re-passwordPh"  />
               </div>
 
               <div>
@@ -115,7 +115,7 @@
               <button class="btn" type="submit"><i class="fas fa-paper-plane"></i> <span data-i18n="submitSenior">Submit senior sign‑up</span></button>
               <span class="help" data-i18n="privacyAgree">By submitting, you agree to our privacy terms.</span>
             </div>
-            <p id="s-msg" class="notice" hidden data-i18n="sMsg">Thanks! (demo) We will contact you soon for matching.</p>
+            <!-- <p id="s-msg" class="notice" hidden data-i18n="sMsg">Thanks! (demo) We will contact you soon for matching.</p> -->
           </form>
 
         </div>
@@ -132,6 +132,7 @@
     <p>&copy; 2025</p>
 </footer>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../js/app.js"></script>
 <script src="../js/weekly-picker.js"></script>
 </body>

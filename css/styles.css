@@ -74,6 +74,12 @@ header {
   align-items: center;
 }
 
+.spacer {
+  width: 10px;       
+  height: 1px;     
+}
+
+
 /* Buttons */
 .btn {
   display: inline-flex;
@@ -99,6 +105,19 @@ header {
   width: 100%;
   text-align: center;
 }
+
+
+.hero-actions {
+
+  gap: 16px;
+}
+
+.hero-actions .btn {
+  width: 298px;  
+  margin-bottom: 10px;
+  margin-right: 10px;
+}
+
 
 /* Language picker */
 .lang {
@@ -426,6 +445,30 @@ footer {
 /* =========================
    Responsive
 ========================= */
+
+@media (max-width: 650px) {
+  .nav {
+    flex-direction: column;  
+    align-items: stretch;    
+    gap: 12px;                
+  }
+
+  .logo {
+    justify-content: left; 
+  }
+
+  .menu {
+    width: 100%;
+    flex-wrap: wrap;          
+    justify-content: center;  
+    gap: 12px;
+  }
+
+  .menu a, .menu label.lang {
+    line-height: 1;
+  }
+
+}
 
 /* Move image above text on small/medium screens for generic hero grids */
 @media (max-width:1110px) {
@@ -779,3 +822,8 @@ pre{background:#0b1021; color:#e5e7eb; border-radius:12px; padding:12px; overflo
 .picker-card-head.one-line .btn{ margin-left:auto; }
 /* Remove leftover toolbar spacing if any */
 .picker-toolbar{ display:none !important; }
+
+
+.swal2-title-lg { font-size: 1.6rem; }
+.swal2-text-lg  { font-size: 1.2rem; }
+.swal2-btn-lg   { font-size: 1.1rem; padding: 0.6rem 1.2rem; }

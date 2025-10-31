@@ -66,7 +66,9 @@ const i18n = {
     other: 'Other',
     english: 'English',
     french: 'French',
-    language: 'Language'
+    language: 'Language',
+    navProfile: 'Profile',
+    navRegister: 'Register'
   },
   fr: {
     navRegister:'Inscription', navAbout:'À propos', joinNow:"S'inscrire maintenant",
@@ -110,7 +112,9 @@ const i18n = {
     other: 'Autre',
     english: 'Anglais',
     french: 'Français',
-    language: 'Langage'    
+    language: 'Langage',
+    navProfile: 'Profil',
+    navRegister: "S'inscrire"
   }
 };
 
@@ -225,28 +229,33 @@ if (loginForm) {
       console.log("[Login Response]", textBody);
 
       if (!res.ok || (data && data.success === false)) {
-        const msg = (data && (data.message || data.error)) || text('loginFailed','Login failed');
-        throw new Error(msg);
+        // console.log("message", data.message);
+        throw new Error(data.message || 'Submit failed');
+        
       }
 
 
-      const token = data?.data?.token || data?.token;   //token=volunteer or senior
-      if (token) {
-           localStorage.setItem('token', token);
+      if (data.data) {
+           localStorage.setItem('email', data.data.email);
+           localStorage.setItem('role', data.data.role);
       }
 
       // const redirectTo = new URLSearchParams(location.search).get('next') || '/';
       // location.assign(redirectTo);
 
-const params = new URLSearchParams(location.search);
-const next   = params.get('next');
-const safeNext = (next && /^\/[^\s]*$/.test(next)) ? next : null;
-const target = safeNext || '/vs/index.html';   
-location.assign(target);
+      await showMsg({ title: 'Login', text: 'Success to login', icon: 'success' });
+
+      const params = new URLSearchParams(location.search);
+      const next   = params.get('next');
+      const safeNext = (next && /^\/[^\s]*$/.test(next)) ? next : null;
+      const target = safeNext || '/vs/index.html';   
+      location.assign(target);
 
 
     } catch (err) {
-      (errorBox ? errorBox.textContent = err.message : alert(err.message));
+      // (errorBox ? errorBox.textContent = err.message : alert(err.message));
+      
+      await showMsg({ title: 'Login', text: err.message, icon: 'error' });
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = prevLabel;
@@ -255,35 +264,63 @@ location.assign(target);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// === 刷新顶栏 Login/Logout 状态 ===
 function refreshAuthUI() {
   const btn = document.getElementById('ctaJoin');
+  const regLink = document.getElementById('register-nav');
+  const email = localStorage.getItem('email');         
+  const role  = localStorage.getItem('role');
+  const isLoggedIn = !!email;
+
+  if (regLink) {
+    if (isLoggedIn) {
+      regLink.textContent = 'Profile';
+      regLink.setAttribute('data-i18n', 'navProfile'); 
+      const profileHref =
+        role === 'volunteer' ? '/vs/volunteer-profile.html' :
+        role === 'senior'    ? '/vs/senior-profile.html' :
+                               '#';
+      regLink.href = profileHref;
+      console.log(role)
+    } else {
+
+      regLink.textContent = 'Register';
+      regLink.setAttribute('data-i18n', 'navRegister');
+      regLink.href = '/vs/pages/register.html'; 
+    }
+  }
+
   if (!btn) return;
 
-  const token = localStorage.getItem('token'); // 登录成功时你保存的键名
-  const isLoggedIn = !!token;
-
   if (isLoggedIn) {
-    // 已登录 → 显示 Logout
-    btn.href = "#";
+    btn.href = '#';
     btn.innerHTML = '<i class="fas fa-sign-out-alt"></i><span>Logout</span>';
 
-    btn.onclick = async (e) => {
+    btn.replaceWith(btn.cloneNode(true));
+    const freshBtn = document.getElementById('ctaJoin');
+    freshBtn.addEventListener('click', async (e) => {
       e.preventDefault();
       try {
-        await fetch('/api/logout', { method: 'POST', credentials: 'include' });
-      } catch {}
-      localStorage.removeItem('token');
-      refreshAuthUI(); // 更新UI
-      location.assign('/vs/index.html');
-    };
+
+        await fetch('/api/logout', { method: 'POST', credentials: 'include' }).catch(()=>{});
+      } finally {
+        localStorage.removeItem('email');
+        localStorage.removeItem('role');
+        refreshAuthUI();
+
+        location.assign('/vs/index.html');
+      }
+    });
   } else {
-    // 未登录 → 显示 Login
-    btn.href = "/vs/pages/login.html";
+
+    btn.href = '/vs/pages/login.html';
     btn.innerHTML = '<i class="fas fa-hands-helping"></i><span>Login</span>';
-    btn.onclick = null;
+
+    btn.replaceWith(btn.cloneNode(true));
   }
 }
+
+
+
 
 // 页面加载完成后立即执行
 document.addEventListener('DOMContentLoaded', refreshAuthUI);
@@ -292,11 +329,24 @@ document.addEventListener('DOMContentLoaded', refreshAuthUI);
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+function showMsg({ title = 'Notice', text = '', icon = 'info', confirmText = 'OK' } = {}) {
+  if (window.Swal && typeof Swal.fire === 'function') {
+    return Swal.fire({
+      title, text, icon, confirmButtonText: confirmText,
+      customClass: { title: 'swal2-title-lg', htmlContainer: 'swal2-text-lg', confirmButton: 'swal2-btn-lg' }
+    });
+  }
+  alert(title + (text ? '\n\n' + text : ''));
+}
+
+
 
 async function handleSubmitToApi(formId, msgId, endpoint, buildPayload){
   const form = document.getElementById(formId);
   const msg = document.getElementById(msgId);
   if (!form) return;
+
+  // if (msg) msg.hidden = true;
 
   form.addEventListener('submit', async (e)=>{
     e.preventDefault();
@@ -320,14 +370,102 @@ async function handleSubmitToApi(formId, msgId, endpoint, buildPayload){
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || 'Submit failed');
 
-      msg.hidden = false;
+      // msg.hidden = false;
       form.reset();
       form.querySelector('input,select,textarea')?.focus();
+      await showMsg({title: 'Registration',text:  'Thank you! We will contact you soon.',icon:  'success', confirmText: 'OK' });
     } catch (err) {
-      alert(err.message);
+      await showMsg({ title: 'Registration', text: err?.message || 'Failed to register', icon: 'error' });
+      // alert(err.message);
     }
   });
 }
+
+
+// async function handleSubmitToApi(formId, msgId, endpoint, buildPayload) {
+//   const form = document.getElementById(formId);
+//   const msg  = document.getElementById(msgId);
+//   if (!form) return;
+
+
+//   form.addEventListener('submit', async (e) => {
+//     e.preventDefault();
+
+//     if (msg) msg.hidden = true;
+
+
+//     form.addEventListener('submit', async (e)=>{
+//     e.preventDefault();
+//     const lang = document.documentElement.lang || 'en';
+//     const dict = i18n[lang] || i18n.en;
+
+//     const payload = buildPayload(form);
+
+//     // 客户端必填校验（如需要再打开）
+//     // if (payload.__invalid) {
+//     //   (window.showMsg ? showMsg({ title: dict.failTitle, text: dict.requiredAlert, icon: 'warning' }) : alert(dict.requiredAlert));
+//     //   return;
+//     // }
+
+//     // 提交时禁用按钮，防止连点
+//     const submitBtn = form.querySelector('[type="submit"]');
+//     const prevDisabled = submitBtn?.disabled;
+//     if (submitBtn) submitBtn.disabled = true;
+
+//     try {
+//       const res = await fetch(endpoint, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify(payload)
+//       });
+
+//       // 尝试解析 JSON；非 JSON 时给空对象
+//       const data = await res.json().catch(() => ({}));
+
+//       if (res.ok && data && data.success) {
+//         // 弹窗成功提示
+//         if (window.showMsg) {
+//           await showMsg({
+//             title: 'Registration',
+//             text:  'Thank you! We will contact you soon.',
+//             icon:  'success',
+//             confirmText: 'OK'
+//           });
+//         } else {
+//           alert(`${'Registration'}\n\n${'Thank you! We will contact you soon.'}`);
+//         }
+
+//         form.reset();
+//         if (msg) msg.hidden = false;
+//         form.querySelector('input,select,textarea')?.focus();
+//       } else {
+//         // 根据 HTTP 状态定制标题（如 409 冲突）
+//         const title = res.status === 409 ? 'Registration' :  'Registration failed';
+//         const text  = (data && data.message) || `HTTP ${res.status}`;
+
+//         if (window.showMsg) {
+//           await showMsg({ title, text, icon: 'warning' });
+//         } else {
+//           alert(`${title}\n\n${text}`);
+//         }
+//       }
+//     } catch (err) {
+//       if (window.showMsg) {
+//         await showMsg({
+//           title: 'Network error',
+//           text:  err?.message || 'Failed to send request',
+//           icon:  'error'
+//         });
+//       } else {
+//         alert(`${'Network error'}\n\n${err?.message || 'Failed to send request'}`);
+//       }
+//     } finally {
+//       if (submitBtn) submitBtn.disabled = prevDisabled ?? false;
+//     }
+//   });
+// });
+// }
+
 
 // Senior register -> /api/register/senior
 handleSubmitToApi('form-senior','s-msg','/api/register/senior', (form) => {
