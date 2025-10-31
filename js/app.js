@@ -242,7 +242,7 @@ if (loginForm) {
       let data = null;
       const textBody = await res.text();
       try { data = JSON.parse(textBody); } catch {  }
-      console.log("[Login Response]", textBody);
+      // console.log("[Login Response]", textBody);
 
       if (!res.ok || (data && data.success === false)) {
         // console.log("message", data.message);
@@ -259,7 +259,12 @@ if (loginForm) {
       // const redirectTo = new URLSearchParams(location.search).get('next') || '/';
       // location.assign(redirectTo);
 
-      await showMsg({ title: 'Login', text: 'Success to login', icon: 'success' });
+      let lan = localStorage.getItem('lang') || 'en';
+      if (lang=='en'){
+        await showMsg({ title: 'Login', text: 'Success to login', icon: 'success' });
+      } else {
+        await showMsg({ title: 'Connexion', text: 'Connexion réussie', icon: 'success' });
+      }
 
       const params = new URLSearchParams(location.search);
       const next   = params.get('next');
@@ -269,9 +274,20 @@ if (loginForm) {
 
 
     } catch (err) {
-      // (errorBox ? errorBox.textContent = err.message : alert(err.message));
-      
-      await showMsg({ title: 'Login', text: err.message, icon: 'error' });
+      let lan2 = localStorage.getItem('lang') || 'en';
+      // console.log(lan2);
+      if (lang=='en') {
+        await showMsg({ title: 'Login', text: err?.message || 'Fail to login', icon: 'error' });
+      } else {
+        if (err?.message=='Email and password are required'){
+          e_msg='L’adresse courriel et le mot de passe sont requis';
+        } else if (err?.message=='Invalid email or password') {
+          e_msg='Adresse courriel ou mot de passe incorrect';
+        } else {
+          e_msg='Échec de l’ouverture de session';
+        }
+        await showMsg({ title: 'Connexion', text: e_msg, icon: 'error' });
+      }
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = prevLabel;
@@ -296,7 +312,7 @@ function refreshAuthUI() {
         role === 'senior'    ? '/vs/senior-profile.html' :
                                '#';
       regLink.href = profileHref;
-      console.log(role)
+      // console.log(role)
     } else {
 
       regLink.textContent = 'Register';
@@ -372,7 +388,7 @@ async function handleSubmitToApi(formId, msgId, endpoint, buildPayload){
     //   alert(dict.requiredAlert);
     //   return;
     // }
-    console.log(payload);
+    // console.log(payload);
     try {
       const res = await fetch(endpoint, {
         method: "POST",
@@ -386,9 +402,33 @@ async function handleSubmitToApi(formId, msgId, endpoint, buildPayload){
       // msg.hidden = false;
       form.reset();
       form.querySelector('input,select,textarea')?.focus();
-      await showMsg({title: 'Registration',text:  'Thank you! We will contact you soon.',icon:  'success', confirmText: 'OK' });
+      let lan3 = localStorage.getItem('lang') || 'en';
+      if (lang=='en'){
+        await showMsg({title: 'Registration',text:  'Thank you! We will contact you soon.',icon:  'success', confirmText: 'OK' });
+      } else {
+        await showMsg({title: 'Inscription',text:  'Merci ! Nous vous contacterons sous peu.',icon:  'success', confirmText: 'OK' });
+      }
     } catch (err) {
-      await showMsg({ title: 'Registration', text: err?.message || 'Failed to register', icon: 'error' });
+      let lan4 = localStorage.getItem('lang') || 'en';
+      if (lang=='en'){
+        await showMsg({ title: 'Registration', text: err?.message || 'Failed to register', icon: 'error' });
+      } else {
+        err_msg=err?.message;
+        if (err_msg=='Email and password are required'){
+          err_msg='L’adresse courriel et le mot de passe sont requis';
+        } else if (err_msg=='Passwords do not match'){
+          err_msg='Les mots de passe ne concordent pas';
+        } else if (err_msg=='Password must have 8 letters at least'){
+          err_msg='Le mot de passe doit contenir au moins 8 caractères';
+        } else if (err_msg=='Age must be a number'){
+          err_msg='L’âge doit être un nombre';
+        } else if (err_msg=='Email already registered'){
+          err_msg='Cette adresse courriel est déjà utilisée';
+        } else {
+          err_msg='L’inscription a échoué';
+        }
+        await showMsg({ title: 'Inscription', text: err_msg, icon: 'error' });
+      }
       // alert(err.message);
     }
   });

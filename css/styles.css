@@ -118,6 +118,9 @@ header {
   margin-right: 10px;
 }
 
+#event-title {
+  margin-left: 0px;
+}
 
 /* Language picker */
 .lang {
@@ -472,6 +475,9 @@ footer {
 
 /* Move image above text on small/medium screens for generic hero grids */
 @media (max-width:1110px) {
+  #event-title {
+    margin-left: 20px;
+  }
   .hero .grid.cols-2 {
     display: flex;
     flex-direction: column-reverse;
