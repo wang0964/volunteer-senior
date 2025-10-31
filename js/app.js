@@ -515,7 +515,7 @@ handleSubmitToApi('form-vol', 'v-msg', '/api/register/volunteer', (form) => {
     address:   form.querySelector('#v-address').value.trim(),
     gender:    form.querySelector('#v-gender').value.trim(),
     background: form.querySelector('#v-id').value, // 'no' | 'inprogress' | 'yes'
-    skills, // ['chat','walk',...]
+    skills, // ['chat','read',...]
     availability,            // Array of names
     password: form.querySelector('#v-password').value.trim(),
     re_password: form.querySelector('#v-re-password').value.trim(),
