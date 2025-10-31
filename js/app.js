@@ -259,7 +259,7 @@ if (loginForm) {
       // const redirectTo = new URLSearchParams(location.search).get('next') || '/';
       // location.assign(redirectTo);
 
-      let lan = localStorage.getItem('lang') || 'en';
+      // let lan = localStorage.getItem('lang') || 'en';
       if (lang=='en'){
         await showMsg({ title: 'Login', text: 'Success to login', icon: 'success' });
       } else {
@@ -274,7 +274,7 @@ if (loginForm) {
 
 
     } catch (err) {
-      let lan2 = localStorage.getItem('lang') || 'en';
+      // let lan2 = localStorage.getItem('lang') || 'en';
       // console.log(lan2);
       if (lang=='en') {
         await showMsg({ title: 'Login', text: err?.message || 'Fail to login', icon: 'error' });
@@ -402,14 +402,14 @@ async function handleSubmitToApi(formId, msgId, endpoint, buildPayload){
       // msg.hidden = false;
       form.reset();
       form.querySelector('input,select,textarea')?.focus();
-      let lan3 = localStorage.getItem('lang') || 'en';
+      // let lan3 = localStorage.getItem('lang') || 'en';
       if (lang=='en'){
         await showMsg({title: 'Registration',text:  'Thank you! We will contact you soon.',icon:  'success', confirmText: 'OK' });
       } else {
         await showMsg({title: 'Inscription',text:  'Merci ! Nous vous contacterons sous peu.',icon:  'success', confirmText: 'OK' });
       }
     } catch (err) {
-      let lan4 = localStorage.getItem('lang') || 'en';
+      // let lan4 = localStorage.getItem('lang') || 'en';
       if (lang=='en'){
         await showMsg({ title: 'Registration', text: err?.message || 'Failed to register', icon: 'error' });
       } else {
