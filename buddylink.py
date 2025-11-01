@@ -121,18 +121,18 @@ def api_register_senior():
 
     # # ---- Basic validation
     if not email or not password:
-        return jsonify(success=False, message="Email and password are required"), 400
+        return jsonify(success=False, message="Email and password are required"), 401
     
     if password != re_password:
-        return jsonify(success=False, message="Passwords do not match"), 400
+        return jsonify(success=False, message="Passwords do not match"), 402
 
     if len(password)<8:
-        return jsonify(success=False, message="Password must have 8 letters at least"), 400
+        return jsonify(success=False, message="Password must have 8 letters at least"), 403
 
     try:
         age = int(age_raw)
     except ValueError:
-        return jsonify(success=False, message="Age must be a number"), 400
+        return jsonify(success=False, message="Age must be a number"), 404
     
     existing = users.find_one({"email": email}, {"_id": 1})
     if existing:
@@ -203,16 +203,17 @@ def api_register_volunteer():
     skills       = data.get("skills") or []
     password     = data.get("password") or ""
     re_password  = data.get("re_password") or ""  
+    self_description = (data.get("self_description") or "").strip()
 
     # # ---- Basic validation
     if not email or not password:
-        return jsonify(success=False, message="Email and password are required"), 400
+        return jsonify(success=False, message="Email and password are required"), 401
     
     if password != re_password:
-        return jsonify(success=False, message="Passwords do not match"), 400
+        return jsonify(success=False, message="Passwords do not match"), 402
 
     if len(password)<8:
-        return jsonify(success=False, message="Password must have 8 letters at least"), 400
+        return jsonify(success=False, message="Password must have 8 letters at least"), 403
 
     existing = users.find_one({"email": email}, {"_id": 1})
     if existing:
@@ -231,6 +232,7 @@ def api_register_volunteer():
         "language": language,
         "availabilities": availabilities,
         "skills": skills,
+        "self_description":self_description,
         "updated_at": datetime.datetime.now(datetime.timezone.utc)
     }
 

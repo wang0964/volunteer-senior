@@ -1,6 +1,7 @@
-const API_BASE = 'https://localhost:5000';
-const endpoint = '/api/register/senior';
-
+// const API_BASE = 'https://localhost:5000';
+// const endpoint = '/api/register/senior';
+import { i18n } from './language-string.js';
+console.log('i18n loaded:', i18n); 
 
 // ---- Tabs (guarded so pages without tabs won't throw) ----
 const tabSenior = document.getElementById('tab-senior');
@@ -22,117 +23,7 @@ if (tabSenior && tabVol && panelSenior && panelVol) {
   tabVol.addEventListener('click', () => activate('vol'));
 }
 
-// ---- i18n dictionaries ----
-const i18n = {
-  en: {
-    navRegister:'Register', navAbout:'About', joinNow:'Join now',
-    heroTitle:'Connect volunteers with seniors for warm companionship and daily help',
-    heroLead:'BuddyLink supports <strong>senior sign-up</strong> and <strong>volunteer sign-up</strong>. We match by interests and availability. Services include friendly chats, video companionship, reading mail, short walks, groceries/meds pickup, and basic tech help.',
-    ctaSenior:"I'm a senior, need help", ctaVolunteer:"I'm a volunteer, want to help",
-    registerTitle:'Registration',
-    registerSub:'Choose your role to sign up. Fields are demo only (client-side validation). Hook up your backend at <code>/register/senior</code> and <code>/register/volunteer</code>.',
-    tabSenior:'Senior Sign-up', tabVolunteer:'Volunteer Sign-up',
-    name:'Name', namePh:'Enter full name', age:'Age', agePh:'e.g., 70', ageHelp:'Optional; helps us prioritize age-appropriate services.',
-    phone:'Phone', phonePh:'e.g., 647-123-4567', email:'Email', emailPh:'example@email.com',
-    city:'City / Area', cityPh:'e.g., Toronto / Scarborough', contactPref:'Preferred contact', optPhone:'Phone', optEmail:'Email', optVideo:'Video',
-    needs:'Needed services (multi-select)', needChat:'Friendly chat', needVideo:'Video companionship', needRead:'Read letters/news', needWalk:'Short walk', needGrocery:'Groceries',needHealth:'Health' ,needTech:'Tech help',
-    availability:'Availability', availabilityPh:'e.g., Mon/Wed/Fri 2–5 pm', prefLang:'Preferred language',
-    notes:'Notes (health/accessibility)', notesPh:'Wheelchair access, allergies, etc.',
-    submitSenior:'Submit senior sign-up', privacyAgree:'By submitting, you agree to our privacy terms.',
-    sMsg:'Thanks! (demo) We will contact you soon for matching.',
-    skills:'Services you can provide (multi-select)', background:'Background check', bgNo:'Not yet', bgProgress:'In progress', bgYes:'Completed',
-    consent:'I agree to the volunteer code of conduct and privacy.', submitVolunteer:'Submit volunteer sign-up', prefill:'Prefill demo', vMsg:"Thanks for signing up! (demo) We'll match you based on your time and skills.",
-    aboutTitle:'About BuddyLink', aboutLead:'This is a demo page in a modern nonprofit style. Integrate it into your project and connect both forms to your backend (Node/Flask/Spring, etc.).',
-    about1:'Fully responsive layout', about2:'Accessibility: labels & ARIA', about3:'Basic client validation & messages', about4:'Extensible to auth/database',
-    demoNote:'Demo only: submissions show a local success message',
-    requiredAlert:'Please complete required fields / consent.',
-    // Login page
-    loginTitle: 'Login',
-    loginWelcome: 'Welcome back! Please sign in to continue.',
-    labelEmail: 'Email',
-    phEmail: 'you@example.com',
-    emailHint: 'Use the email you registered with.',
-    labelPassword: 'Password',
-    phPassword: 'Your password',
-    rememberMe: 'Remember me',
-    btnLogin: 'Login',
-    noAccount: "Don't have an account?",
-    goRegister: 'Register',
-    navHome: 'Home',
-    loginMissing: 'Please enter email and password.',
-    loginSuccess: 'Login submitted (demo).',
-    male: 'Male',
-    female: 'Female',
-    other: 'Other',
-    english: 'English',
-    french: 'French',
-    language: 'Language',
-    navProfile: 'Profile',
-    navRegister: 'Register',
-    btnrole_senior: "I’m a senior, need help",
-    btnvolunteer_senior: "I’m a volunteer, want to help",
-    signup_senior: "Senior Sign-up",
-    signup_volunteer: "Volunteer Sign-up",
-    backtohome: "← Back to Home",
-    introdution: "BuddyLink supports <strong>senior sign-up</strong> and <strong>volunteer sign-up</strong>We match by interests and availability. Services include friendly chats, video companionship, reading mail, groceries pickup and health consulation, and basic tech help.",
-    introdution_title: "Connect volunteers with seniors for warm companionship and daily help",
-    upcoming_event: "Upcoming Event",
-  },
-  fr: {
-    navRegister:'Inscription', navAbout:'À propos', joinNow:"S'inscrire maintenant",
-    heroTitle:"Relier des bénévoles aux aînés pour une compagnie chaleureuse et une aide au quotidien",
-    heroLead:"BuddyLink prend en charge <strong>l'inscription des aînés</strong> et <strong>l'inscription des bénévoles</strong>. Nous faisons l'appariement selon les intérêts et les disponibilités. Services : conversation amicale, accompagnement vidéo, lecture du courrier, petites promenades, achats d'épicerie/médicaments, et aide technologique de base.",
-    ctaSenior:"Je suis un aîné, j'ai besoin d'aide", ctaVolunteer:"Je suis bénévole, je veux aider",
-    registerTitle:'Inscription',
-    registerSub:"Choisissez votre rôle pour vous inscrire. Les champs sont en démonstration (validation côté client). Reliez votre serveur à <code>/register/senior</code> et <code>/register/volunteer</code>.",
-    tabSenior:'Inscription aîné', tabVolunteer:'Inscription bénévole',
-    name:'Nom', namePh:'Nom complet', age:'Âge', agePh:'ex. 70', ageHelp:"Optionnel ; nous aide à prioriser des services adaptés à l'âge.",
-    phone:'Téléphone', phonePh:'ex. 647-123-4567', email:'Courriel', emailPh:'exemple@courriel.com',
-    city:'Ville / Quartier', cityPh:'ex. Toronto / Scarborough', contactPref:'Contact préféré', optPhone:'Téléphone', optEmail:'Courriel', optVideo:'Vidéo',
-    needs:'Services nécessaires (multi-sélection)', needChat:'Conversation amicale', needVideo:'Accompagnement vidéo', needRead:'Lire lettres/journaux', needWalk:'Petite marche', needGrocery:'Épicerie',needHealth:'Santé', needTech:'Aide techno',
-    availability:'Disponibilités', availabilityPh:'ex. Lun/Me/Ven 14 h–17 h', prefLang:'Langue préférée',
-    notes:'Notes (santé/accessibilité)', notesPh:"Accès fauteuil roulant, allergies, etc.",
-    submitSenior:"Envoyer l'inscription aîné", privacyAgree:'En envoyant, vous acceptez nos conditions de confidentialité.',
-    sMsg:"Merci ! (démo) Nous vous contacterons bientôt pour l'appariement.",
-    skills:'Services que vous pouvez offrir (multi-sélection)', background:'Vérification d’antécédents', bgNo:'Pas encore', bgProgress:'En cours', bgYes:'Terminée',
-    consent:"J'accepte le code de conduite des bénévoles et la confidentialité.", submitVolunteer:"Envoyer l'inscription bénévole", prefill:'Préremplir (démo)', vMsg:"Merci pour votre inscription ! (démo) Nous vous apparierons selon votre temps et vos compétences.",
-    aboutTitle:'À propos de BuddyLink', aboutLead:"Page de démonstration au style organisme à but non lucratif moderne. Intégrez-la à votre projet et reliez les formulaires à votre serveur (Node/Flask/Spring, etc.).",
-    about1:'Mise en page entièrement responsive', about2:'Accessibilité : libellés et ARIA', about3:'Validation et messages côté client', about4:"Extensible à l'authentification/base de données",
-    demoNote:"Démonstration : l’envoi affiche un message local de réussite",
-    requiredAlert:'Veuillez remplir les champs requis / consentement.',
-    // Login page
-    loginTitle: "Connexion",
-    loginWelcome: "Heureux de vous revoir ! Veuillez vous connecter pour continuer.",
-    labelEmail: "E-mail",
-    phEmail: "vous@exemple.com",
-    emailHint: "Utilisez l’e-mail avec lequel vous vous êtes inscrit.",
-    labelPassword: "Mot de passe",
-    phPassword: "Votre mot de passe",
-    rememberMe: "Se souvenir de moi",
-    btnLogin: "Connexion",
-    noAccount: "Vous n’avez pas de compte ?",
-    goRegister: "S’inscrire",
-    navHome: "Accueil",
-    loginMissing: "Veuillez saisir l’e-mail et le mot de passe.",
-    loginSuccess: "Connexion envoyée (démo).",
-    male: 'Homme',
-    female: 'Femme',
-    other: 'Autre',
-    english: 'Anglais',
-    french: 'Français',
-    language: 'Langage',
-    navProfile: 'Profil',
-    navRegister: "S'inscrire",
-    btnrole_senior: "Aîné·e, besoin d’aide",
-    btnvolunteer_senior: "Bénévole, je veux aider",
-    signup_senior: "Inscription des aînés",
-    signup_volunteer: "Inscription des bénévoles",
-    backtohome: "← Retour à l’accueil",
-    introdution: "BuddyLink propose l’<strong>inscription des aînés</strong> et l’<strong>inscription des bénévoles</strong>. Nous jumelons selon les intérêts et les disponibilités. Les services comprennent des conversations amicales, de l’accompagnement vidéo, l’aide à la lecture du courrier, la cueillette d’épicerie, des conseils santé et un soutien technique de base.",
-    introdution_title: "Relier des bénévoles et des aînés pour une compagnie chaleureuse et une aide quotidienne",
-    upcoming_event: "Événement à venir",
-  }
-};
+
 
 
 // ---- i18n apply ----
@@ -388,7 +279,8 @@ async function handleSubmitToApi(formId, msgId, endpoint, buildPayload){
     //   alert(dict.requiredAlert);
     //   return;
     // }
-    // console.log(payload);
+    console.log(payload);
+
     try {
       const res = await fetch(endpoint, {
         method: "POST",
@@ -487,7 +379,8 @@ handleSubmitToApi('form-vol', 'v-msg', '/api/register/volunteer', (form) => {
     password: form.querySelector('#v-password').value.trim(),
     re_password: form.querySelector('#v-re-password').value.trim(),
     gender: form.querySelector('#v-gender').value.trim(),
-    language
+    language,
+    self_description: form.querySelector('#v-self-description').value.trim(),
     // consent: !!form.querySelector('input[name="consent"]')?.checked,
   };
 });
