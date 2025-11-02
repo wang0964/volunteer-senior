@@ -72,7 +72,7 @@ export const i18n = {
 
     clear: "Clear",    
 
-    notes2: "Notes (requirements)",
+    notes2: "Additional Requirements",
     notes2Ph: "Cooking help needed",
     nextweek: "Schedule for next week",
 
@@ -151,7 +151,7 @@ export const i18n = {
 
     clear: "Effacer",
 
-    notes2: "Notes (exigences)",
+    notes2: "Exigences supplémentaires",
     notes2Ph: "Besoin d’aide pour cuisiner",
     nextweek: "Réserver pour la semaine prochaine",
 

@@ -81,7 +81,7 @@ function handleSubmit(formId, msgId){
 }
 // handleSubmit('form-senior','s-msg');
 // handleSubmit('form-vol','v-msg');
-
+// handleSubmit('form-ask','a-msg');
 
 // deep link to a specific tab
 if (location.hash === '#volunteer') activate('vol');
@@ -417,6 +417,24 @@ handleSubmitToApi('form-vol', 'v-msg', '/api/register/volunteer', (form) => {
     gender: form.querySelector('#v-gender').value.trim(),
     language,
     self_description: form.querySelector('#v-self-description').value.trim(),
+    // consent: !!form.querySelector('input[name="consent"]')?.checked,
+  };
+});
+
+
+handleSubmitToApi('form-ask', 'a-msg', '/api/askfor', (form) => {
+  const appointment = Array.from(
+    form.querySelectorAll('#scheduleTable input[type="checkbox"]:checked')
+  ).map(cb => cb.name); // e.g., ["mon-morning","tue-evening"]
+
+  const askfor = Array.from(
+    form.querySelectorAll('.checks input[type="checkbox"][name^="need-"]:checked')
+  ).map(cb => cb.value);
+
+  return {
+    appointment,
+    askfor,
+    additional_requirement: form.querySelector('#ask-notes').value.trim(),
     // consent: !!form.querySelector('input[name="consent"]')?.checked,
   };
 });
