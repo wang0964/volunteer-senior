@@ -29,6 +29,7 @@
       th.scope = 'row';
       th.className = 'picker-head-day';
       th.textContent = day.label;
+      th.dataset.i18n = day.label;
       tr.appendChild(th);
 
       slots.forEach(function(slot){

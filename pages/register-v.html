@@ -12,10 +12,18 @@
 <div class="register0">
 <header>
     <nav class="nav" aria-label="Primary">
-        <div class="logo">
-            <img src="../assets/img/logo.png" alt="BuddyLink logo" />
-            <span>BuddyLink</span>
+      <div class="logo">
+        <div class="logo2">
+          <img src="../assets/img/logo.png" alt="logo" />
+          <span>BuddyLink</span>
         </div>
+
+        <div id="forservice" style="display:none">
+          <nav class="flex items-center justify-between">
+          <a href="askforservice.html" aria-label="ask for services">Ask for<br>Services</a>
+          </nav>
+        </div>
+      </div>
         <div class="menu">
 
             <nav class="flex items-center justify-between">
@@ -36,9 +44,8 @@
     <section id="register" aria-labelledby="register-title">
         <div class="wrap">
             <h2 id="register-title" data-i18n="registerTitle">Registration</h2>
-            <p class="section-sub" data-i18n="registerSub">Choose your role to sign up. Fields are demo only
-                (client-side validation). Hook up your backend at <code>/api/register-senior</code> and
-                <code>/api/register-volunteer</code>.
+            <p class="section-sub" data-i18n="registerSub">
+                
             </p>
 
             <form id="form-vol">
@@ -135,7 +142,7 @@
                     <section class="picker-card" role="group" aria-label="Weekly Time Picker">
                         <div class="picker-card-head one-line">
                             <label for="v-availability" data-i18n="availability">Availability</label>
-                            <button type="button" class="btn outline" id="wp-clear">Clear</button>
+                            <button type="button" class="btn outline" id="wp-clear" data-i18n="clear">Clear</button>
                         </div>
 
                         <div class="picker-scroller">
@@ -143,10 +150,10 @@
                                 
                                 <thead>
                                     <tr>
-                                        <th class="picker-head-day">Day</th>
-                                        <th class="picker-head-col" data-col="morning">Morning</th>
-                                        <th class="picker-head-col" data-col="afternoon">Afternoon</th>
-                                        <th class="picker-head-col" data-col="evening">Evening</th>
+                                        <th class="picker-head-day"><span data-i18n="day">Day</span></th>
+                                        <th class="picker-head-col" data-col="morning"><span data-i18n="morning">Morning</span></th>
+                                        <th class="picker-head-col" data-col="afternoon"><span data-i18n="afternoon">Afternoon</span></th>
+                                        <th class="picker-head-col" data-col="evening"><span data-i18n="evening">Evening</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>

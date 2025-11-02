@@ -11,7 +11,7 @@
     <section class="card" role="group" aria-label="Weekly Time Picker">
       <div class="card-head one-line">
         <h2>Availability</h2>
-        <button type="button" class="btn outline" id="wp-clear">Clear</button>
+        <button type="button" class="btn outline" id="wp-clear" data-i18n="clear">Clear</button>
       </div>
 
       <div class="scroller">
@@ -19,10 +19,10 @@
           <caption id="desc" class="sr-only">Select your weekly availability: days as rows and time blocks as columns.</caption>
           <thead>
             <tr>
-              <th class="head-day">Day</th>
-              <th class="head-col" data-col="morning">Morning</th>
-              <th class="head-col" data-col="afternoon">Afternoon</th>
-              <th class="head-col" data-col="evening">Evening</th>
+              <th class="head-day"><span data-i18n="day">Day</span></th>
+              <th class="head-col" data-col="morning"><span data-i18n="morning">Morning</span></th>
+              <th class="head-col" data-col="afternoon"><span data-i18n="afternoon">Afternoon</span></th>
+              <th class="head-col" data-col="evening"><span data-i18n="evening">Evening</span></th>
             </tr>
           </thead>
           <tbody>

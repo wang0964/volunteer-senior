@@ -18,15 +18,22 @@
 </head>
 
 <body>
-
-
-
   <header>
     <nav class="nav" aria-label="Primary">
       <div class="logo">
-        <img src="assets/img/logo.png" alt="logo" />
-        <span>BuddyLink</span>
+        <div class="logo2">
+          <img src="assets/img/logo.png" alt="logo" />
+          <span>BuddyLink</span>
+        </div>
+
+        <div id="forservice" style="display:none">
+          <nav class="flex items-center justify-between">
+          <a href="./pages/askforservice.html" aria-label="ask for services" data-i18n="askforservice2lines">Ask for<br>Services</a>
+          </nav>
+        </div>
       </div>
+
+
 
       <div class="menu">
         <a id="register-nav" href="pages/register.html" data-i18n="navRegister">Register</a>
@@ -72,8 +79,8 @@
             help.</span>
           </p>
           <div class="hero-actions">
-            <a class="btn" href="pages/login.html"><i class="fas fa-user-plus"></i> <span data-i18n="btnrole_senior">I’m a senior, need help</span></a>
-            <a class="btn outline" href="pages/login.html"><i class="fas fa-user-friends"></i>
+            <a class="btn" id="senior_btn" href="pages/login.html"><i class="fas fa-user-plus"></i> <span data-i18n="btnrole_senior">I’m a senior, need help</span></a>
+            <a class="btn outline" id="volunteer_btn" href="pages/login.html"><i class="fas fa-user-friends"></i>
               <span data-i18n="btnvolunteer_senior"> I’m a volunteer, want to help</span>
             </a>
           </div>

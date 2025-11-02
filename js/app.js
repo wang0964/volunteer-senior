@@ -1,7 +1,7 @@
 // const API_BASE = 'https://localhost:5000';
 // const endpoint = '/api/register/senior';
 import { i18n } from './language-string.js';
-console.log('i18n loaded:', i18n); 
+// console.log('i18n loaded:', i18n); 
 
 // ---- Tabs (guarded so pages without tabs won't throw) ----
 const tabSenior = document.getElementById('tab-senior');
@@ -161,9 +161,15 @@ if (loginForm) {
       const next   = params.get('next');
       const safeNext = (next && /^\/[^\s]*$/.test(next)) ? next : null;
       const target = safeNext || '/vs/index.html';   
-      location.assign(target);
-
-
+      if (data.data.role=='senior'){
+        // document.getElementById('forservice').style.removeProperty('display');
+        location.assign('/vs/pages/askforservice.html');
+        
+      } else {
+        // document.getElementById('forservice').style.display = 'none';
+        location.assign(target);
+        
+      }
     } catch (err) {
       // let lan2 = localStorage.getItem('lang') || 'en';
       // console.log(lan2);
@@ -218,6 +224,24 @@ function refreshAuthUI() {
     btn.href = '#';
     btn.innerHTML = '<i class="fas fa-sign-out-alt"></i><span>Logout</span>';
 
+
+    if (role=='senior'){
+      document.getElementById('forservice').style.removeProperty('display');
+      document.getElementById('senior_btn').setAttribute('href', 'pages/askforservice.html');
+      document.getElementById('volunteer_btn').setAttribute('href', 'pages/login.html');
+
+      document.getElementById('senior_btn').style.removeProperty('display');
+      document.getElementById('volunteer_btn').style.display = 'none';
+
+    } else {
+      document.getElementById('forservice').style.display = 'none';
+      document.getElementById('senior_btn').setAttribute('href', 'pages/login.html');
+      document.getElementById('volunteer_btn').setAttribute('href', 'pages/login.html');
+
+      document.getElementById('volunteer_btn').style.removeProperty('display');
+      document.getElementById('senior_btn').style.display = 'none';
+    }    
+
     btn.replaceWith(btn.cloneNode(true));
     const freshBtn = document.getElementById('ctaJoin');
     freshBtn.addEventListener('click', async (e) => {
@@ -228,12 +252,24 @@ function refreshAuthUI() {
       } finally {
         localStorage.removeItem('email');
         localStorage.removeItem('role');
+
         refreshAuthUI();
 
         location.assign('/vs/index.html');
+        
       }
     });
   } else {
+
+      document.getElementById('forservice').style.display = 'none';
+
+      document.getElementById('senior_btn').setAttribute('href', 'pages/login.html');
+      document.getElementById('volunteer_btn').setAttribute('href', 'pages/login.html');
+
+      document.getElementById('volunteer_btn').style.removeProperty('display');
+      document.getElementById('senior_btn').style.removeProperty('display');
+
+
 
     btn.href = '/vs/pages/login.html';
     btn.innerHTML = '<i class="fas fa-hands-helping"></i><span>Login</span>';

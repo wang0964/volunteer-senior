@@ -6,7 +6,7 @@ export const i18n = {
     heroLead:'BuddyLink supports <strong>senior sign-up</strong> and <strong>volunteer sign-up</strong>. We match by interests and availability. Services include friendly chats, video companionship, reading mail, short walks, groceries/meds pickup, and basic tech help.',
     ctaSenior:"I'm a senior, need help", ctaVolunteer:"I'm a volunteer, want to help",
     registerTitle:'Registration',
-    registerSub:'Choose your role to sign up. Fields are demo only (client-side validation). Hook up your backend at <code>/register/senior</code> and <code>/register/volunteer</code>.',
+    // registerSub:'Choose your role to sign up. Fields are demo only (client-side validation). Hook up your backend at <code>/register/senior</code> and <code>/register/volunteer</code>.',
     tabSenior:'Senior Sign-up', tabVolunteer:'Volunteer Sign-up',
     name:'Name', namePh:'Enter full name', age:'Age', agePh:'e.g., 70', ageHelp:'Optional; helps us prioritize age-appropriate services.',
     phone:'Phone', phonePh:'e.g., 647-123-4567', email:'Email', emailPh:'example@email.com',
@@ -51,10 +51,33 @@ export const i18n = {
     signup_senior: "Senior Sign-up",
     signup_volunteer: "Volunteer Sign-up",
     backtohome: "← Back to Home",
-    introdution: "BuddyLink supports <strong>senior sign-up</strong> and <strong>volunteer sign-up</strong>We match by interests and availability. Services include friendly chats, video companionship, reading mail, groceries pickup and health consulation, and basic tech help.",
+    introdution: "BuddyLink supports <strong>senior sign-up</strong> and <strong>volunteer sign-up</strong>. We match by interests and availability. Services include friendly chats, video companionship, reading mail, groceries pickup and health consulation, and basic tech help.",
     introdution_title: "Connect volunteers with seniors for warm companionship and daily help",
     upcoming_event: "Upcoming Event",
     description: 'Self-description',
+
+    // weekly picker
+    Monday: "Monday",
+    Tuesday: "Tuesday" ,
+    Wednesday: "Wednesday",
+    Thursday: "Thursday",
+    Friday: "Friday",
+    Saturday: "Saturday" ,
+    Sunday : "Sunday",
+
+    day: "Day",    
+    morning: "Morning",
+    afternoon: "Afternoon",
+    evening: "Evening",
+
+    clear: "Clear",    
+
+    notes2: "Notes (requirements)",
+    notes2Ph: "Cooking help needed",
+    nextweek: "Schedule for next week",
+
+    askforservice:"Ask for Services",
+    askforservice2lines: "Ask for<br>Services",
   },
   fr: {
     navRegister:'Inscription', navAbout:'À propos', joinNow:"S'inscrire maintenant",
@@ -62,7 +85,7 @@ export const i18n = {
     heroLead:"BuddyLink prend en charge <strong>l'inscription des aînés</strong> et <strong>l'inscription des bénévoles</strong>. Nous faisons l'appariement selon les intérêts et les disponibilités. Services : conversation amicale, accompagnement vidéo, lecture du courrier, petites promenades, achats d'épicerie/médicaments, et aide technologique de base.",
     ctaSenior:"Je suis un aîné, j'ai besoin d'aide", ctaVolunteer:"Je suis bénévole, je veux aider",
     registerTitle:'Inscription',
-    registerSub:"Choisissez votre rôle pour vous inscrire. Les champs sont en démonstration (validation côté client). Reliez votre serveur à <code>/register/senior</code> et <code>/register/volunteer</code>.",
+//    registerSub:"Choisissez votre rôle pour vous inscrire. Les champs sont en démonstration (validation côté client). Reliez votre serveur à <code>/register/senior</code> et <code>/register/volunteer</code>.",
     tabSenior:'Inscription aîné', tabVolunteer:'Inscription bénévole',
     name:'Nom', namePh:'Nom complet', age:'Âge', agePh:'ex. 70', ageHelp:"Optionnel ; nous aide à prioriser des services adaptés à l'âge.",
     phone:'Téléphone', phonePh:'ex. 647-123-4567', email:'Courriel', emailPh:'exemple@courriel.com',
@@ -111,5 +134,28 @@ export const i18n = {
     upcoming_event: "Événement à venir",
     descriptionPh: 'Je me consacre à la compagnie et à l’accessibilité de l’information pour les personnes aînées, en proposant des appels vidéo de suivi, la lecture de courriers et de formulaires, de petites courses, ainsi qu’un accompagnement numérique de base. Je respecte la vie privée et communique avec patience ; je suis disponible aux horaires indiqués et peux également offrir un soutien en ligne au besoin.',
     description: 'Présentation personnelle',
+
+    // weekly picker
+    Monday: "Lundi",
+    Tuesday: "Mardi",
+    Wednesday: "Mercredi",
+    Thursday: "Jeudi",
+    Friday: "Vendredi",
+    Saturday: "Samedi",
+    Sunday: "Dimanche",
+
+    day: "Jour",
+    morning: "Matin",
+    afternoon: "Après-midi",
+    evening: "Soir",
+
+    clear: "Effacer",
+
+    notes2: "Notes (exigences)",
+    notes2Ph: "Besoin d’aide pour cuisiner",
+    nextweek: "Réserver pour la semaine prochaine",
+
+    askforservice: "Demander des services",
+    askforservice2lines: "Demander<br>des services",
   }
 };

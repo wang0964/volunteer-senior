@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ask for Service — BuddyLink</title>
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+
+  <!-- Site styles -->
+<link rel="stylesheet" href="../css/weekly-picker.css">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+
+<body>
+<div class="register0">
+  <header>
+    <nav class="nav" aria-label="Primary">
+      <div class="logo">
+        <div class="logo2">
+          <img src="../assets/img/logo.png" alt="logo" />
+          <span>BuddyLink</span>
+        </div>
+
+
+      </div>
+      <div class="menu">
+        <nav class="flex items-center justify-between">
+          <a href="../index.html" aria-label="Back to Home" data-i18n="backtohome">← Back to Home</a>
+        </nav>
+        <label class="lang" aria-label="Language switcher">
+          <i class="fas fa-globe"></i>
+          <select id="langSelect" aria-label="Language">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+          </select>
+        </label>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section aria-labelledby="ask-title">
+      <div class="wrap">
+        <h2 id="ask-title" >Ask for Services</h2>
+        <p class="section-sub" data-i18n="askforservice"></p>
+
+        <form id="form-ask" novalidate>
+
+          <div>
+            <label data-i18n="servicesneed">Services you need (multi-select)</label>
+            <div class="checks" aria-label="services">
+              <label class="chip"><input type="checkbox" name="need-chat" value="chat"> <span data-i18n="needChat">Friendly chat</span></label>
+              <label class="chip"><input type="checkbox" name="need-video" value="video"> <span data-i18n="needVideo">Video companionship</span></label>
+              <label class="chip"><input type="checkbox" name="need-read" value="read"> <span data-i18n="needRead">Read letters/news</span></label>
+              <label class="chip"><input type="checkbox" name="need-grocery" value="grocery"> <span data-i18n="needGrocery">Groceries</span></label>
+              <label class="chip"><input type="checkbox" name="need-health" value="health"> <span data-i18n="needHealth">Health</span></label>
+              <label class="chip"><input type="checkbox" name="need-tech" value="tech"> <span data-i18n="needTech">Tech help</span></label>
+            </div>
+          </div>
+
+          <!-- weekly picker -->
+          <div class="availability-picker-block">
+            <section class="picker-card" role="group" aria-label="Weekly Time Picker">
+              <div class="picker-card-head one-line">
+                <label for="ask-nextweek" data-i18n="nextweek">Schedule for next week</label>
+                <button type="button" class="btn outline" id="wp-clear" data-i18n="clear">Clear</button>
+              </div>
+
+              <div class="picker-scroller">
+                <table class="picker-grid" id="scheduleTable" aria-describedby="desc">
+                  <thead>
+                    <tr>
+                      <th class="picker-head-day"><span data-i18n="day">Day</span></th>
+                      <th class="picker-head-col" data-col="morning"><span data-i18n="morning">Morning</span></th>
+                      <th class="picker-head-col" data-col="afternoon"><span data-i18n="afternoon">Afternoon</span></th>
+                      <th class="picker-head-col" data-col="evening"><span data-i18n="evening">Evening</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+
+
+          <div>
+            <label for="ask-notes" data-i18n="notes2">Notes (requirements)</label>
+            <textarea id="ask-notes" rows="6" name="notes" data-i18n-placeholder="notes2Ph" placeholder="Cooking help needed"></textarea>
+          </div>
+
+
+          <div class="form-actions">
+            <button class="btn" type="submit">
+              <i class="fas fa-paper-plane"></i>
+              <span data-i18n="submit">Submit</span>
+            </button>
+            <span class="help" data-i18n="privacyAgree">By submitting, you agree to our privacy terms.</span>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025</p>
+  </footer>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="module" src="../js/app.js"></script>
+<script type="module" src="../js/weekly-picker.js"></script>
+</body>
+</html>
