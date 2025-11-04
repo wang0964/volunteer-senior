@@ -65,7 +65,10 @@
           <div class="availability-picker-block">
             <section class="picker-card" role="group" aria-label="Weekly Time Picker">
               <div class="picker-card-head one-line">
-                <label for="ask-nextweek" data-i18n="nextweek">Schedule for next week</label>
+                <label for="ask-nextweek" data-i18n="nextweek">Schedule for next week</label> 
+                <div id="data-range">
+                  <p>(</p><p id="s-date"></p> <p>&nbsp;~&nbsp;</p> <p id="e-date"></p><p>)</p>
+                </div>
                 <button type="button" class="btn outline" id="wp-clear" data-i18n="clear">Clear</button>
               </div>
 
@@ -89,7 +92,7 @@
 
 
           <div>
-            <label for="ask-notes" data-i18n="notes2">Notes (requirements)</label>
+            <label for="ask-notes" data-i18n="notes2">Additional Requirements</label>
             <textarea id="ask-notes" rows="6" name="notes" data-i18n-placeholder="notes2Ph" placeholder="Cooking help needed"></textarea>
           </div>
 

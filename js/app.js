@@ -24,6 +24,31 @@ if (tabSenior && tabVol && panelSenior && panelVol) {
 }
 
 
+function toYMD(date = new Date()) {
+  const d = date instanceof Date ? date : new Date(date);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}/${m}/${day}`;
+}
+
+function getNextWeekRange(baseDate = new Date()) {
+  const today = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate());
+
+  const dow = today.getDay();
+  const daysUntilNextMonday = ((8 - dow) % 7) || 7; 
+
+  const start_d = new Date(today);
+  start_d.setDate(today.getDate() + daysUntilNextMonday);
+  start_d.setHours(0, 0, 0, 0); 
+
+  const end_d = new Date(start_d);
+  end_d.setDate(start_d.getDate() + 6);
+  end_d.setHours(23, 59, 59, 999); 
+
+  return {start_d, end_d};
+}
+
 
 
 // ---- i18n apply ----
@@ -199,6 +224,12 @@ function refreshAuthUI() {
   const email = localStorage.getItem('email');         
   const role  = localStorage.getItem('role');
   const isLoggedIn = !!email;
+
+
+
+  const {start_d: s, end_d: e}=getNextWeekRange();
+  document.getElementById('s-date').textContent = toYMD(s);
+  document.getElementById('e-date').textContent = toYMD(e);
 
   if (regLink) {
     if (isLoggedIn) {
@@ -438,3 +469,4 @@ handleSubmitToApi('form-ask', 'a-msg', '/api/askfor', (form) => {
     // consent: !!form.querySelector('input[name="consent"]')?.checked,
   };
 });
+

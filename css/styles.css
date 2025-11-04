@@ -831,30 +831,35 @@ input[type="radio"] {
 .picker-output{padding:0 16px 16px;}
 pre{background:#0b1021; color:#e5e7eb; border-radius:12px; padding:12px; overflow:auto; font-size:12px; margin:0;}
 
-/* 无障碍隐藏类 */
+
 .picker-sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0;}
 
 
-/* --- Patch: remove custom blue dot next to checkbox --- */
 .picker-cell .dot{ display:none !important; }
 .picker-cell label{ display:inline-flex; align-items:center; gap:0; }
 .picker-cell input[type="checkbox"]{ margin-right: 0; }
 
-
-/* 移除全选相关样式，不再需要 .all */
 .picker-head-day .picker-all, .picker-head-col .picker-all { display:none !important; }
 
-/* Trim spacing after removing header/footer/output */
 .picker-site-header, .picker-site-footer, .output { display: none !important; }
 .picker-card { margin-top: 4px; }
 
-/* Put title and button on one line */
 .picker-card-head.one-line{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .picker-card-head.one-line .btn{ margin-left:auto; }
-/* Remove leftover toolbar spacing if any */
 .picker-toolbar{ display:none !important; }
 
 
 .swal2-title-lg { font-size: 1.6rem; }
 .swal2-text-lg  { font-size: 1.2rem; }
 .swal2-btn-lg   { font-size: 1.1rem; padding: 0.6rem 1.2rem; }
+
+#data-range{
+  display:flex;
+  align-items:center;      
+  justify-content:center;  
+  gap: 0px;                
+}
+#data-range p{
+  margin:0;             
+  font-size:16px;     
+}
