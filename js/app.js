@@ -362,33 +362,44 @@ async function handleSubmitToApi(formId, msgId, endpoint, buildPayload){
       form.reset();
       form.querySelector('input,select,textarea')?.focus();
       // let lan3 = localStorage.getItem('lang') || 'en';
-      if (lang=='en'){
-        await showMsg({title: 'Registration',text:  'Thank you! We will contact you soon.',icon:  'success', confirmText: 'OK' });
-      } else {
-        await showMsg({title: 'Inscription',text:  'Merci ! Nous vous contacterons sous peu.',icon:  'success', confirmText: 'OK' });
+
+      if (formId=='form-senior' || formId=='form-vol'){
+        if (lang=='en'){
+          await showMsg({title: 'Registration',text:  'Thank you! We will contact you soon.',icon:  'success', confirmText: 'OK' });
+        } else {
+          await showMsg({title: 'Inscription',text:  'Merci ! Nous vous contacterons sous peu.',icon:  'success', confirmText: 'OK' });
+        }
+      } else if (formId=='form-ask'){
+        if (lang=='en'){
+          await showMsg({title: 'Application',text:  'Thank you! We will contact you soon.',icon:  'success', confirmText: 'OK' });
+        } else {
+          await showMsg({title: 'Candidature',text:  'Merci ! Nous vous contacterons sous peu.',icon:  'success', confirmText: 'OK' });
+        }
       }
     } catch (err) {
       // let lan4 = localStorage.getItem('lang') || 'en';
-      if (lang=='en'){
-        await showMsg({ title: 'Registration', text: err?.message || 'Failed to register', icon: 'error' });
-      } else {
-        err_msg=err?.message;
-        if (err_msg=='Email and password are required'){
-          err_msg='L’adresse courriel et le mot de passe sont requis';
-        } else if (err_msg=='Passwords do not match'){
-          err_msg='Les mots de passe ne concordent pas';
-        } else if (err_msg=='Password must have 8 letters at least'){
-          err_msg='Le mot de passe doit contenir au moins 8 caractères';
-        } else if (err_msg=='Age must be a number'){
-          err_msg='L’âge doit être un nombre';
-        } else if (err_msg=='Email already registered'){
-          err_msg='Cette adresse courriel est déjà utilisée';
+      if (formId=='form-senior' || formId=='form-vol'){
+        if (lang=='en'){
+          await showMsg({ title: 'Registration', text: err?.message || 'Failed to register', icon: 'error' });
         } else {
-          err_msg='L’inscription a échoué';
+          err_msg=err?.message;
+          if (err_msg=='Email and password are required'){
+            err_msg='L’adresse courriel et le mot de passe sont requis';
+          } else if (err_msg=='Passwords do not match'){
+            err_msg='Les mots de passe ne concordent pas';
+          } else if (err_msg=='Password must have 8 letters at least'){
+            err_msg='Le mot de passe doit contenir au moins 8 caractères';
+          } else if (err_msg=='Age must be a number'){
+            err_msg='L’âge doit être un nombre';
+          } else if (err_msg=='Email already registered'){
+            err_msg='Cette adresse courriel est déjà utilisée';
+          } else {
+            err_msg='L’inscription a échoué';
+          }
+          await showMsg({ title: 'Inscription', text: err_msg, icon: 'error' });
         }
-        await showMsg({ title: 'Inscription', text: err_msg, icon: 'error' });
+        // alert(err.message);
       }
-      // alert(err.message);
     }
   });
 }
@@ -462,7 +473,10 @@ handleSubmitToApi('form-ask', 'a-msg', '/api/askfor', (form) => {
     form.querySelectorAll('.checks input[type="checkbox"][name^="need-"]:checked')
   ).map(cb => cb.value);
 
+  const email = localStorage.getItem('email'); 
+
   return {
+    email,
     appointment,
     askfor,
     additional_requirement: form.querySelector('#ask-notes').value.trim(),

@@ -3,7 +3,27 @@ from flask import Flask, request, jsonify, session
 from pymongo import MongoClient, ASCENDING
 from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo.errors import DuplicateKeyError
+import time
+import threading
 import os
+
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+
+from icecream import ic
+
+from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
+from transformers.utils import logging
+
+from  src.match import matching
+
+logging.set_verbosity_error()
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+
+
+MODEL_PATH = "facebook/bart-large-mnli"
+TOKENIZER = AutoTokenizer.from_pretrained(MODEL_PATH)
+MODEL = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
 
 # --- 基础配置 ---
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/buddylink")
@@ -265,6 +285,118 @@ def api_register_volunteer():
         return jsonify(success=False, message=f"Failed to register: {e}"), 500
 
     return jsonify(success=True, data={"type":"volunteer", "volunteerId": str(volunteer_id)})
+
+def parse_weekday(str):
+    dt={
+        'mon': 'Monday',
+        'tue': 'Tuesday' ,
+        'wed': 'Wednesday' ,
+        'thu': 'Thursday' ,
+        'fri': 'Friday' ,
+        'sat': 'Saturday',
+        'sun': 'Sunday' 
+    }
+    return f'{dt[str[:3]]} {str[4:]}'
+
+@app.route('/askfor', methods=['POST','GET'])
+def ask_for_service():
+    data = request.get_json(silent=True) 
+
+    email       = normalize_email(data.get("email"))
+    appointment = data.get("appointment") or []
+    askfor      = data.get("askfor") or []
+    addition    = data.get("additional_requirement") or ""
+
+    senior_id = users.find_one({"email": email},
+                            {
+                                "senior_id": 1
+                            }
+                        ).get("senior_id","")
+    
+    senior_info = seniors.find_one({"_id": senior_id},
+                            {
+                                "firstname": 1,
+                                "lastname": 1,
+                                "age": 1,
+                                "phone": 1,
+                                "city": 1,
+                                "address": 1,
+                                "contactPref": 1,
+                                "language": 1,
+                                "notes": 1,
+                            }
+                        )
+    # ic(email, appointment, askfor, addition, senior_info)
+
+
+    threading.Thread(target=get_matching,
+                        args=(appointment, askfor, addition, senior_info),
+                        daemon=True
+                    ).start()
+
+    # get_matching()
+    # ic(requirement)
+    return jsonify(success=True)
+
+def parse_skill(str):
+    dt={
+        'chat':'chatting',
+        'video':'video chatting',
+        'read':'reading',
+        'grocery':'groceries-taking',
+        'health':'health consulting',
+        'tech':'technique supporting',
+    }
+    return dt[str]
+
+def get_matching(appointment, askfor, addition, senior_info):
+    print('Start ... ...')
+    start=time.time()
+
+    requirement = f'I live in {senior_info['city']}, I speak in {'English' if (senior_info['language']=='en') else 'French'}, ' 
+    requirement +=  f'I need {','.join([parse_skill(item) for item in askfor])} service'
+    requirement +=  f' on {', '.join([parse_weekday(item)  for item in appointment])}.' if len(appointment)>0 else ''
+    requirement +=  f' My addition requirement is {addition}' if len(addition)>0 else ''
+
+    condition=[]
+    all_volunteers= volunteers.find()
+    lookup_dict={}
+    for i, vol in enumerate(all_volunteers):
+        # ic(vol)
+
+        s = f'I live in {vol['city']}, I am a {vol['gender']}, I can provide service on {', '.join([parse_weekday(item)  for item in vol['availabilities']])}. ' 
+
+        if len(vol['language'])>=1:
+            s += f'I speak in {'English' if (vol['language'])[0]=='en' else 'French'}. '        
+        if len(vol['language'])==2:
+            s += f'I speak in {'English' if (vol['language'])[1]=='en' else 'French'}. '
+        s += f'I can provide {', '.join([parse_skill(item) for item in vol['skills']])} service. ' 
+        s += f'My description is: '+ vol['self_description']
+        
+        condition.append(s)
+        lookup_dict[i]=vol['_id']
+
+    results=matching(requirement,condition,TOKENIZER,MODEL)
+
+    for rank, (final_score, scores, nli_core, nli_extra, idx, vol) in enumerate(results, start=1):
+        print(f"Rank {rank}  (candidate #{idx})")
+        print(f"  final_score     = {final_score:.4f}")
+        print(f"  entail_core     = {scores['entail_core']:.4f}")
+        print(f"  service_match   = {scores['service_match']:.4f}")
+        print(f"  time_overlap    = {scores['time_overlap']:.4f}")
+        print(f"  location_match  = {scores['location_match']:.4f}")
+        print(f"  addition_req    = {scores['addition_req']:.4f}")
+        print(f"  disqualified    = {scores.get('disqualified', False)}")
+        print(f"  NLI core probs  = {nli_core}")
+        if nli_extra is not None:
+            print(f"  NLI extra probs = {nli_extra}")
+        else:
+            print("  NLI extra probs = (no extra requirement)")
+        print(f"  volunteer snippet: {vol[:120]}...")
+        print("-" * 80)
+
+        print('End')
+        print("Elapsed time:", time.time() - start, "seconds")
 
 
 
