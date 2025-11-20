@@ -405,6 +405,17 @@ async function handleSubmitToApi(formId, msgId, endpoint, buildPayload){
           await showMsg({ title: 'Inscription', text: err_msg, icon: 'error' });
         }
         // alert(err.message);
+      } else if (formId=='form-ask') {
+            let errmsg=err?.message;
+            let errtitle='Error';
+          if (lang=='en'){
+            errmsg=err?.message;
+            errtitle='Error';
+          } else {
+            errmsg=err?.message;
+            errtitle='Error';
+          }
+          await showMsg({ title: errtitle, text: errmsg, icon: 'error' });
       }
     }
   });

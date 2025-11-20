@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo.errors import DuplicateKeyError
 import time
 import threading
-import os
+import os, re
 from bson import ObjectId
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
@@ -81,9 +81,38 @@ def current_user():
     return {"id": uid, "email": email}
 
 
+_EMAIL_RE = re.compile(
+    r"^(?=.{1,254}$)"                       
+    r"(?=.{1,64}@)"                         
+    r"[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+"    
+    r"(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*"  
+    r"@"
+    r"(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+" 
+    r"[A-Za-z]{2,}$"                        # TLD
+)
+
+def is_valid_email(email):
+    if not isinstance(email, str):
+        return False
+
+    email = email.strip()
+    if not email:
+        return False
+
+    if email.count("@") != 1:
+        return False
+
+    local, domain = email.split("@")
+
+    if local.startswith(".") or local.endswith(".") or ".." in local:
+        return False
+    if domain.startswith(".") or domain.endswith(".") or ".." in domain:
+        return False
+
+    return _EMAIL_RE.match(email) is not None
+
+
 # --- Routes ---
-
-
 
 @app.route('/login', methods=['POST'])
 def api_login():
@@ -163,6 +192,9 @@ def api_register_senior():
 
     if len(password)<8:
         return jsonify(success=False, message="Password must have 8 letters at least"), 403
+    
+    if not is_valid_email(email):
+        return jsonify(success=False, message="Email format is unvailable"), 404
 
     try:
         age = int(age_raw)
@@ -249,6 +281,9 @@ def api_register_volunteer():
 
     if len(password)<8:
         return jsonify(success=False, message="Password must have 8 letters at least"), 403
+    
+    if not is_valid_email(email):
+        return jsonify(success=False, message="Email format is unvailable"), 404
 
     existing = users.find_one({"email": email}, {"_id": 1})
     if existing:
