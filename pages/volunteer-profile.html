@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Volunteer Profile — BuddyLink</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+
+<body>
+<div class="register0">
+  <header>
+    <nav class="nav" aria-label="Primary">
+      <div class="logo">
+        <div class="logo2">
+          <img src="../assets/img/logo.png" alt="logo" />
+          <span>BuddyLink</span>
+        </div>
+      </div>
+
+      <div class="menu">
+        <nav class="flex items-center justify-between">
+          <a href="../pages/volunteer-dashboard.html" aria-label="Back to Dashboard" data-i18n="backtodash">← Back to Dashboard</a>
+          <a href="login.html" aria-label="Logout" data-i18n="logout">Logout</a>
+        </nav>
+        <label class="lang" aria-label="Language switcher">
+          <i class="fas fa-globe"></i>
+          <select id="langSelect" aria-label="Language">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+          </select>
+        </label>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section id="profile" aria-labelledby="profile-title">
+      <div class="wrap">
+        <h2 id="profile-title">My Volunteer Profile</h2>
+
+        <!-- 顶部显示姓名 & 邮箱（只读） -->
+        <p class="section-sub">
+          <strong id="profile-name"></strong><br>
+          <span id="profile-email" class="muted"></span>
+        </p>
+
+        <!-- 头像（可选） -->
+        <div>
+          <label data-i18n="photoLabel">Profile photo (optional)</label>
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+            <img id="profile-photo-preview"
+                 src="../assets/img/avatar-placeholder.png"
+                 alt="Profile photo"
+                 style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:1px solid #ddd;">
+            <div>
+              <input type="file" id="photo-file" accept="image/*" />
+              <p class="muted" style="margin-top:4px;">JPEG/PNG, max 2MB.</p>
+            </div>
+          </div>
+        </div>
+
+        <form id="form-vol-profile">
+          <!-- 基本信息（可修改） -->
+          <div class="row cols-2">
+            <div>
+              <label for="v-phone" data-i18n="phone">Phone</label>
+              <input id="v-phone" name="phone" inputmode="tel"
+                     data-i18n-placeholder="phonePh"
+                     placeholder="647-123-4567" />
+            </div>
+
+            <div>
+              <label for="v-gender" data-i18n="gender">Gender</label>
+              <select id="v-gender" name="gender">
+                <option value="male" data-i18n="male">Male</option>
+                <option value="female" data-i18n="female">Female</option>
+                <option value="other" data-i18n="other">Other / Prefer not to say</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="v-city" data-i18n="city">City / Area</label>
+              <input id="v-city" name="city"
+                     data-i18n-placeholder="cityPh"
+                     placeholder="Toronto / North York" />
+            </div>
+
+            <div>
+              <label for="v-address" data-i18n="address">Address</label>
+              <input id="v-address" name="address"
+                     data-i18n-placeholder="addressPh" />
+            </div>
+          </div>
+
+          <!-- background 只读显示 -->
+          <div class="row cols-2">
+            <div>
+              <label data-i18n="background">Background check</label>
+              <p id="bg-status" class="muted"></p>
+            </div>
+          </div>
+
+          <!-- Services / skills -->
+          <div>
+            <label data-i18n="skills">Services you can provide (multi-select)</label>
+            <div class="checks" aria-label="skills">
+              <label class="chip">
+                <input type="checkbox" name="skill-chat" value="chat">
+                <span data-i18n="needChat">Friendly chat</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" name="skill-video" value="video">
+                <span data-i18n="needVideo">Video companionship</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" name="skill-read" value="read">
+                <span data-i18n="needRead">Read letters/news</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" name="skill-grocery" value="grocery">
+                <span data-i18n="needGrocery">Groceries</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" name="skill-health" value="health">
+                <span data-i18n="needHealth">Health</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" name="skill-tech" value="tech">
+                <span data-i18n="needTech">Tech help</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Language -->
+          <div>
+            <label data-i18n="language">Language</label>
+            <div class="checks" aria-label="language">
+              <label class="chip">
+                <input type="checkbox" name="lang-english" value="en">
+                <span data-i18n="english">English</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" name="lang-french" value="fr">
+                <span data-i18n="french">French</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Availability -->
+          <div class="availability-picker-block">
+            <section class="picker-card" role="group" aria-label="Weekly Time Picker">
+              <div class="picker-card-head one-line">
+                <label data-i18n="availability">Availability</label>
+                <button type="button" class="btn outline" id="wp-clear" data-i18n="clear">Clear</button>
+              </div>
+              <div class="picker-scroller">
+                <table class="picker-grid" id="scheduleTable" aria-describedby="desc">
+                  <thead>
+                    <tr>
+                      <th class="picker-head-day"><span data-i18n="day">Day</span></th>
+                      <th class="picker-head-col" data-col="morning"><span data-i18n="morning">Morning</span></th>
+                      <th class="picker-head-col" data-col="afternoon"><span data-i18n="afternoon">Afternoon</span></th>
+                      <th class="picker-head-col" data-col="evening"><span data-i18n="evening">Evening</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- weekly-picker.js 会填充 -->
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+
+          <!-- 自我介绍 -->
+          <div>
+            <label for="v-self-description" data-i18n="description">Self-description</label>
+            <textarea id="v-self-description" rows="6" name="description"
+                      data-i18n-placeholder="descriptionPh"
+                      placeholder="Describe your experience, availability, and what kind of support you like to offer."></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn" type="submit">
+              <i class="fas fa-save"></i>
+              <span data-i18n="saveProfile">Save profile</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025</p>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="module" src="../js/app.js"></script>
+<script type="module" src="../js/weekly-picker.js"></script>
+
+<!-- Profile 专用脚本 -->
+<script type="module">
+  const form = document.getElementById("form-vol-profile");
+  const photoInput = document.getElementById("photo-file");
+
+  // 用来保存后端返回的原始 profile，提交时做“只更新有变化的字段”
+  let originalProfile = null;
+
+  function getChecked(selector) {
+    return Array.from(document.querySelectorAll(selector + ":checked")).map(x => x.value);
+  }
+
+  function setChecked(selector, values) {
+    const S = new Set(values || []);
+    document.querySelectorAll(selector).forEach(cb => {
+      cb.checked = S.has(cb.value);
+    });
+  }
+
+  function setAvailability(values) {
+    const S = new Set(values || []);
+    document.querySelectorAll("#scheduleTable input[type='checkbox']").forEach(cb => {
+      cb.checked = S.has(cb.name);
+    });
+  }
+
+  async function loadProfile() {
+    try {
+      // 注意：这里用相对路径 /api/volunteer/profile，走 Apache 代理，带上 session cookie
+      const res = await fetch("/api/volunteer/profile", {
+        credentials: "include"
+      });
+
+      if (res.status === 401 || res.status === 403) {
+        console.warn("Not logged in or not volunteer");
+        return;
+      }
+
+      if (!res.ok) {
+        console.error("Profile request failed", res.status);
+        return;
+      }
+
+      const json = await res.json();
+      if (!json.success) {
+        console.warn("Profile success=false", json);
+        return;
+      }
+
+      const v = json.data || {};
+      originalProfile = { ...v };
+
+      // 姓名 & 邮箱
+      const fullName = `${v.firstname || ""} ${v.lastname || ""}`.trim();
+      document.getElementById("profile-name").textContent = fullName || "Volunteer";
+      document.getElementById("profile-email").textContent = v.email || "";
+
+      // 头像
+      if (v.photo_url) {
+        document.getElementById("profile-photo-preview").src = v.photo_url;
+      }
+
+      // 可修改字段
+      document.getElementById("v-phone").value = v.phone || "";
+      document.getElementById("v-gender").value = v.gender || "other";
+      document.getElementById("v-city").value = v.city || "";
+      document.getElementById("v-address").value = v.address || "";
+      document.getElementById("v-self-description").value = v.self_description || "";
+
+      // background 只读显示
+      const bg = v.background || "no";
+      let bgText = "Not yet";
+      if (bg === "inprogress") bgText = "In progress";
+      if (bg === "yes")        bgText = "Completed";
+      document.getElementById("bg-status").textContent = bgText;
+
+      // skills / language / availability
+      setChecked('.checks input[name^="skill-"]', v.skills || []);
+      setChecked('.checks input[name^="lang-"]',  v.language || []);
+      setAvailability(v.availabilities || []);
+
+    } catch (err) {
+      console.error("Failed to load profile", err);
+    }
+  }
+
+  // 头像本地预览
+  if (photoInput) {
+    photoInput.addEventListener("change", () => {
+      const file = photoInput.files && photoInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = document.getElementById("profile-photo-preview");
+        if (img && e.target.result) img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // 当前表单值
+    const current = {
+      phone: document.getElementById("v-phone").value.trim(),
+      gender: document.getElementById("v-gender").value,
+      city: document.getElementById("v-city").value.trim(),
+      address: document.getElementById("v-address").value.trim(),
+      language: getChecked('.checks input[name^="lang-"]'),
+      availability: Array.from(
+        document.querySelectorAll("#scheduleTable input[type='checkbox']:checked")
+      ).map(cb => cb.name),
+      skills: getChecked('.checks input[name^="skill-"]'),
+      self_description: document.getElementById("v-self-description").value.trim()
+    };
+
+    // 构造“只包含变化字段”的 payload
+    const payload = {};
+    for (const [key, value] of Object.entries(current)) {
+      let old;
+      if (originalProfile) {
+        old = (key === "availability")
+          ? originalProfile.availabilities
+          : originalProfile[key];
+      }
+
+      const isArray = Array.isArray(value) || Array.isArray(old);
+      const changed = isArray
+        ? JSON.stringify(value || []) !== JSON.stringify(old || [])
+        : (value ?? "") !== (old ?? "");
+
+      if (!changed) continue;
+      if (value === "" && (old === undefined || old === null || old === "")) continue;
+
+      payload[key] = value;
+    }
+
+    const hasPhoto = photoInput && photoInput.files && photoInput.files[0];
+
+    if (Object.keys(payload).length === 0 && !hasPhoto) {
+      await Swal.fire({
+        icon: "info",
+        title: "Profile",
+        text: "No changes to save."
+      });
+      return;
+    }
+
+    try {
+      // 1) 更新文字类 profile
+      if (Object.keys(payload).length > 0) {
+        const res = await fetch("/api/volunteer/profile", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.message || "Save failed");
+      }
+
+      // 2) 如果有头像，单独上传
+      if (hasPhoto) {
+        const fd = new FormData();
+        fd.append("photo", photoInput.files[0]);
+        const up = await fetch("/api/volunteer/photo", {
+          method: "POST",
+          credentials: "include",
+          body: fd
+        });
+        const pjson = await up.json().catch(() => ({}));
+        if (!up.ok || !pjson.success) {
+          throw new Error(pjson.message || "Photo upload failed");
+        }
+        if (pjson.url) {
+          document.getElementById("profile-photo-preview").src = pjson.url;
+        }
+      }
+
+      await Swal.fire({
+        icon: "success",
+        title: "Profile",
+        text: "Your profile has been updated."
+      });
+
+      // 重新拉一次最新数据，更新 originalProfile
+      loadProfile();
+
+    } catch (err) {
+      console.error(err);
+      await Swal.fire({
+        icon: "error",
+        title: "Profile",
+        text: err?.message || "Failed to update profile."
+      });
+    }
+  });
+
+  // DOM 加载完就去取 profile（weekly-picker.js 一般也在这时初始化）
+  document.addEventListener("DOMContentLoaded", () => {
+    // 稍微等一下 weekly-picker 把表格画好
+    setTimeout(loadProfile, 200);
+  });
+</script>
+
+</body>
+</html>
+
+

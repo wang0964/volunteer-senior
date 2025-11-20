@@ -190,7 +190,13 @@ if (loginForm) {
         // document.getElementById('forservice').style.removeProperty('display');
         location.assign('/vs/pages/askforservice.html');
         
-      } else {
+      } 
+      else if (data.data.role=='volunteer'){
+
+        location.assign('/vs/pages/volunteer-dashboard.html');
+        
+      } 
+      else {
         // document.getElementById('forservice').style.display = 'none';
         location.assign(target);
         

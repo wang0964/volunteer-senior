@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Volunteer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body>
+<header>
+  <nav class="nav" aria-label="Primary">
+    <div class="logo">
+      <div class="logo2">
+        <img src="../assets/img/logo.png" alt="logo" />
+        <span>BuddyLink</span>
+      </div>
+    </div>
+
+    <div class="menu">
+      <nav class="flex items-center justify-between">
+        <a href="../index.html" aria-label="Back to Home" data-i18n="backtohome">← Back to Home</a>
+        <a href="volunteer-profile.html" aria-label="My profile" data-i18n="navProfile">My profile</a>
+        <a href="login.html" aria-label="Logout" data-i18n="logout">Logout</a>
+      </nav>
+      <label class="lang" aria-label="Language switcher">
+        <i class="fas fa-globe"></i>
+        <select id="langSelect" aria-label="Language">
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+        </select>
+      </label>
+    </div>
+  </nav>
+</header>
+
+<main class="container">
+  <section class="card p-6 my-8" aria-labelledby="dash-title">
+    <div class="wrap dash-hero">
+      <!-- photo -->
+      <div class="dash-avatar-block">
+        <img
+          id="dash-avatar"
+          src="../assets/img/avatar-placeholder.png"
+          alt="Volunteer avatar"
+          style="width:110px;height:110px;border-radius:50%;object-fit:cover;border:2px solid #ddd;"
+        />
+      </div>
+
+      <!-- welcome+basic info -->
+      <div class="dash-info-block">
+        <h1 id="dash-title">
+          <span data-i18n="dashWelcome">Welcome back,</span>
+          <span id="dash-name">Volunteer</span> 👋
+        </h1>
+        <p class="lead">
+          <span id="dash-email" class="muted"></span>
+        </p>
+        <p class="muted" data-i18n="dashSub">
+          Thank you for supporting seniors in your community.
+        </p>
+      </div>
+    </div>
+
+    <!-- quick action -->
+    <div class="wrap" style="margin-top:2rem;">
+      <h2 class="section-sub" data-i18n="dashQuickActions">Quick actions</h2>
+      <div class="row cols-2">
+        <a class="card p-4 hover" href="volunteer-profile.html">
+          <h3 data-i18n="dashEditProfile">Edit my profile</h3>
+          <p data-i18n="dashEditProfileSub">
+            Update your contact info, services you can provide, and availability.
+          </p>
+        </a>
+        <a class="card p-4 hover" href="askforservice.html">
+          <h3 data-i18n="dashViewRequests">View senior requests</h3>
+          <p data-i18n="dashViewRequestsSub">
+            In the full app, this will show seniors in your area needing support.
+          </p>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="container py-8">
+  <p>&copy; 2025 BuddyLink</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="module" src="../js/app.js"></script>
+
+<script type="module">
+  // from /api/volunteer/profile get first + last + email + photo
+  async function loadVolunteerDashboard() {
+    try {
+      const res = await fetch("/api/volunteer/profile", {
+        credentials: "include"
+      });
+
+      if (res.status === 401 || res.status === 403) {
+        console.warn("Not logged in or not a volunteer.");
+        return;
+      }
+
+      const json = await res.json();
+      if (!json.success) {
+        console.warn("profile success = false", json);
+        return;
+      }
+
+      const v = json.data || {};
+
+      // first + last
+      const fullName = `${v.firstname || ""} ${v.lastname || ""}`.trim();
+      document.getElementById("dash-name").textContent = fullName || "Volunteer";
+
+      // email
+      if (v.email) {
+        document.getElementById("dash-email").textContent = v.email;
+      }
+
+      // photo
+      if (v.photo_url) {
+        document.getElementById("dash-avatar").src = v.photo_url;
+      }
+    } catch (err) {
+      console.error("Failed to load dashboard info", err);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", loadVolunteerDashboard);
+</script>
+</body>
+</html>
