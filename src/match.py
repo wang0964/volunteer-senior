@@ -1,7 +1,9 @@
 import time
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
-
+import re
+from icecream import ic
+import math
 
 # candidate_labels = [
 #     "I live in Toronto / North York, I am a male, I can provide service on Monday afternoon, Monday evening, Tuesday evening, Wednesday evening, Thursday afternoon, Thursday evening, Saturday morning, Saturday afternoon, Saturday evening, Sunday morning, Sunday afternoon, Sunday evening. I speak in English. I can provide chatting, groceries-taking, technique supporting service. My description is: I enjoy helping seniors with friendly conversation and simple errands; I’m patient and reliable.",
@@ -37,64 +39,39 @@ DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sun
 TIMES = ["morning", "afternoon", "evening"]
 
 
+def extract_info(s,patt):
+    if patt=='@#':
+        pattern=r'@@##(.*?)@@##'
+    elif patt=='@':
+        pattern=r'@@@@(.*?)@@@@'
+    elif patt=='#':
+        pattern=r'####(.*?)####'
 
-def extract_services(text):
-    text_lower = text.lower()
-    return {s for s in SERVICES if s in text_lower}
+    m = re.search(pattern, s, re.S)
+    if m:
+        result = m.group(1)
+        result=result.replace('(','').replace(')','').replace(' ','')
+        # print(result)
+        return result.split(',') if patt!='@' else result.split('/')
+    else:
+        return []
 
 
-def service_match_score(vol_text, senior_text):
-    vol_services = extract_services(vol_text)
-    need_services = extract_services(senior_text)
+def get_match_score(vol_text, senior_text,patt):
+    vol_services = extract_info(vol_text,patt)
+    need_services = extract_info(senior_text,patt)
 
     if not need_services:
         return 1.0
 
-    inter = vol_services & need_services
-    return len(inter) / len(need_services)
+    miss=0
 
+    str_vol_services=''.join(vol_services)
+    for item in need_services:
+        if str_vol_services.find(item)<0:
+            miss += 1
 
-def extract_slots(text):
-    slots = set()
-    for d in DAYS:
-        for t in TIMES:
-            phrase = f"{d} {t}"
-            if phrase in text:
-                slots.add(phrase)
-    return slots
-
-
-def time_overlap_score(vol_text, senior_text):
-    vol_slots = extract_slots(vol_text)
-    need_slots = extract_slots(senior_text)
-
-    if not need_slots:
-        return 1.0
-
-    inter = vol_slots & need_slots
-    return len(inter) / len(need_slots)
-
-
-def extract_city(text):
-    text_lower = text.lower()
-    if "toronto" in text_lower:
-        return "toronto"
-    if "markham" in text_lower:
-        return "markham"
-    if "mississauga" in text_lower:
-        return "mississauga"
-    return "other"
-
-
-def location_match_score(vol_text, senior_text):
-    vol_city = extract_city(vol_text)
-    senior_city = extract_city(senior_text)
-
-    if senior_city == "other":
-        return 1.0
-
-    return 1.0 if vol_city == senior_city else 0.0
-
+    return (len(need_services)-miss) / len(need_services)
 
 
 def split_senior_need(text):
@@ -132,12 +109,11 @@ def nli_label_probs(model, tokenizer, premise, hypothesis):
 
 
 def compute_final_score(vol_text, core_need_text, entail_core, entail_extra):
-    svc_score = service_match_score(vol_text, core_need_text)
-    time_score = time_overlap_score(vol_text, core_need_text)
-    loc_score = location_match_score(vol_text, core_need_text)
+    svc_score = get_match_score(vol_text, core_need_text,'@#')
+    time_score = get_match_score(vol_text, core_need_text,'#')
+    loc_score = get_match_score(vol_text, core_need_text,'@')
 
     threshold = 0.3
-
 
     if entail_extra is not None and entail_extra < threshold:
         return {
@@ -165,10 +141,12 @@ def compute_final_score(vol_text, core_need_text, entail_core, entail_extra):
         "disqualified": False,
     }
 
-def get_score(prob):
-    w_c = -0.5   
-    w_n = 0.1    
-    w_e = 1.0 
+import math
+
+def get_score(prob, ratio_threshold=10.0, eps=1e-6):
+    w_c = -1.0
+    w_n = 0.01
+    w_e = 1.0
 
     p_c = prob["contradiction"]
     p_n = prob["neutral"]
@@ -177,37 +155,40 @@ def get_score(prob):
     max_raw = w_e
     min_raw = w_c
     raw_score = w_e * p_e + w_n * p_n + w_c * p_c
+    base_score = (raw_score - min_raw) / (max_raw - min_raw)
 
-    final_score = (raw_score - min_raw) / (max_raw - min_raw)
-    return final_score
+    eps=0.000001
+    ratio_threshold=7.0
+
+    log_ratio = math.log(p_e + eps) - math.log(p_c + eps)
+    log_ratio_threshold = math.log(ratio_threshold)
+
+    penalty=log_ratio / log_ratio_threshold
+
+    if penalty<-1:
+        result= -base_score / penalty
+    elif penalty>1:
+        result=base_score + (penalty-1)/penalty*(1-base_score)
+    else:
+        result=base_score
+
+    return result
+
 
 
 def matching(senior_text, candidate_labels, tokenizer,model):
-    # model_path = "facebook/bart-large-mnli"
-    # tokenizer = AutoTokenizer.from_pretrained(model_path)
-    # model = AutoModelForSequenceClassification.from_pretrained(model_path)
-
-
     core_need_text, extra_req_text = split_senior_need(senior_text)
-    # print("Core need text   :", core_need_text)
-    # print("Extra req text   :", extra_req_text if extra_req_text else "(none)")
-    # print("-" * 80)
-
     results = []
+    core_need_text_clr=core_need_text.replace('@@@@','').replace('####','').replace('@@##','')
 
     for i, volunteer in enumerate(candidate_labels):
-        nli_core = nli_label_probs(model, tokenizer, volunteer, core_need_text)
-        core_score=get_score(nli_core)
-        # print('core_score:' + str(core_score))
-        # entail_core = nli_core.get("ENTAILMENT", nli_core.get("entailment", 0.0))
-        entail_core=core_score
+        v_clr=volunteer.replace('@@@@','').replace('####','').replace('@@##','')
+        nli_core = nli_label_probs(model, tokenizer, v_clr, core_need_text_clr)
+        entail_core=get_score(nli_core)
 
         if extra_req_text:
-            nli_extra = nli_label_probs(model, tokenizer, volunteer, extra_req_text)
-            extra_score=get_score(nli_extra)
-            # print('extra_score:' + str(extra_score))
-            # entail_extra = nli_extra.get("ENTAILMENT", nli_extra.get("entailment", 0.0))
-            entail_extra=extra_score
+            nli_extra = nli_label_probs(model, tokenizer, v_clr, extra_req_text)
+            entail_extra=get_score(nli_extra)
         else:
             nli_extra = None
             entail_extra = None
@@ -224,26 +205,4 @@ def matching(senior_text, candidate_labels, tokenizer,model):
 
     results.sort(reverse=True, key=lambda x: x[0])
     return results
-
-    # end = time.time()
-    # for rank, (final_score, scores, nli_core, nli_extra, idx, vol) in enumerate(results, start=1):
-    #     print(f"Rank {rank}  (candidate #{idx})")
-    #     print(f"  final_score     = {final_score:.4f}")
-    #     print(f"  entail_core     = {scores['entail_core']:.4f}")
-    #     print(f"  service_match   = {scores['service_match']:.4f}")
-    #     print(f"  time_overlap    = {scores['time_overlap']:.4f}")
-    #     print(f"  location_match  = {scores['location_match']:.4f}")
-    #     print(f"  addition_req    = {scores['addition_req']:.4f}")
-    #     print(f"  disqualified    = {scores.get('disqualified', False)}")
-    #     print(f"  NLI core probs  = {nli_core}")
-    #     if nli_extra is not None:
-    #         print(f"  NLI extra probs = {nli_extra}")
-    #     else:
-    #         print("  NLI extra probs = (no extra requirement)")
-    #     print(f"  volunteer snippet: {vol[:120]}...")
-    #     print("-" * 80)
-
-    # print("Elapsed time:", end - start, "seconds")
-
-
 

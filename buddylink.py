@@ -353,25 +353,31 @@ def get_matching(appointment, askfor, addition, senior_info):
     print('Start ... ...')
     start=time.time()
 
-    requirement = f'I live in {senior_info['city']}, I speak in {'English' if (senior_info['language']=='en') else 'French'}, ' 
-    requirement +=  f'I need {','.join([parse_skill(item) for item in askfor])} service'
-    requirement +=  f' on {', '.join([parse_weekday(item)  for item in appointment])}.' if len(appointment)>0 else ''
-    requirement +=  f' My addition requirement is {addition}' if len(addition)>0 else ''
+    requirement = f"I live in @@@@{senior_info['city']}@@@@, I speak in {'English' if (senior_info['language']=='en') else 'French'}, "
+    # requirement +=  f'I need {','.join([parse_skill(item) for item in askfor])} service'
+    requirement +=  f"I need @@##{','.join(askfor)}@@## service"
+    # requirement +=  f' on {', '.join([parse_weekday(item)  for item in appointment])}.' if len(appointment)>0 else ''
+    requirement +=  f" on ####{', '.join(appointment)}####." if len(appointment)>0 else ''
+    requirement +=  f" My addition requirement is {addition}" if len(addition)>0 else ''
 
     condition=[]
     all_volunteers= volunteers.find()
     lookup_dict={}
     for i, vol in enumerate(all_volunteers):
-        # ic(vol)
+        # ic(askfor,vol['skills'])
 
-        s = f'I live in {vol['city']}, I am a {vol['gender']}, I can provide service on {', '.join([parse_weekday(item)  for item in vol['availabilities']])}. ' 
+        s = f"I live in @@@@{vol['city']}@@@@, I am a {vol['gender']}, "
+        # s += f'I can provide service on {', '.join([parse_weekday(item)  for item in vol['availabilities']])}. ' 
+        s += f"I can provide service on ####{', '.join(vol['availabilities'])}####"
 
         if len(vol['language'])>=1:
-            s += f'I speak in {'English' if (vol['language'])[0]=='en' else 'French'}. '        
+            s += f"I speak in {'English' if (vol['language'])[0]=='en' else 'French'}. "        
         if len(vol['language'])==2:
-            s += f'I speak in {'English' if (vol['language'])[1]=='en' else 'French'}. '
-        s += f'I can provide {', '.join([parse_skill(item) for item in vol['skills']])} service. ' 
-        s += f'My description is: '+ vol['self_description']
+            s += f"I speak in {'English' if (vol['language'])[1]=='en' else 'French'}. "
+
+        # s += f"I can provide {', '.join([parse_skill(item) for item in vol['skills']])} service. " 
+        s += f"I can provide @@##{', '.join(vol['skills'])}@@## service. " 
+        s += f"My description is: "+ vol['self_description']
         
         condition.append(s)
         lookup_dict[i]=vol['_id']
@@ -392,11 +398,11 @@ def get_matching(appointment, askfor, addition, senior_info):
             print(f"  NLI extra probs = {nli_extra}")
         else:
             print("  NLI extra probs = (no extra requirement)")
-        print(f"  volunteer snippet: {vol[:120]}...")
+        # print(f"  volunteer snippet: {vol[:120]}...")
         print("-" * 80)
 
-        print('End')
-        print("Elapsed time:", time.time() - start, "seconds")
+    print('End')
+    print("Elapsed time:", time.time() - start, "seconds")
 
 
 
