@@ -322,6 +322,12 @@ def ask_for_service():
     askfor      = data.get("askfor") or []
     addition    = data.get("additional_requirement") or ""
 
+    if not askfor:
+        return jsonify(success=False, message="Please select at least one service"), 401
+    
+    if not appointment:
+        return jsonify(success=False, message="Please select at least one time slot"), 402
+
     senior_id = users.find_one({"email": email},
                             {
                                 "senior_id": 1
