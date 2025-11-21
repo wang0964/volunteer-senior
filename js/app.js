@@ -358,10 +358,14 @@ function refreshAuthUI() {
   // ---------- profile/register link ----------
   if (regLink) {
     if (isLoggedIn) {
-      regLink.textContent = 'Profile';
+      if (role=='senior') {
+        regLink.textContent = 'Profile' 
+      } else {
+        regLink.textContent = 'Dashboard' 
+      }
       regLink.setAttribute('data-i18n', 'navProfile');
       const profileHref =
-        role === 'volunteer' ? '/vs/pages/volunteer-profile.html' :
+        role === 'volunteer' ? '/vs/pages/volunteer-dashboard.html' :
         role === 'senior'    ? '/vs/pages/senior-profile.html' :
                                '#';
       regLink.href = profileHref;

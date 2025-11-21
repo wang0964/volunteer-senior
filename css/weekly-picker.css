@@ -62,7 +62,7 @@ body{
 .btn.outline{background:#fff; color:var(--brand); border-color:var(--brand)}
 
 .scroller{overflow:auto; padding:8px 12px;}
-.grid{width:100%; border-collapse:collapse; min-width:640px;}
+.grid{width:100%; border-collapse:collapse; min-width:540px;}
 .grid th,.grid td{border-bottom:1px solid var(--border); padding:12px 10px; text-align:center;}
 .grid thead th{background:#fafbff; font-weight:700;}
 .grid tr:last-child td,.grid tr:last-child th{border-bottom:none;}

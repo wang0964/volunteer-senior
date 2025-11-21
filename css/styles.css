@@ -49,12 +49,13 @@ header {
 }
 
 .nav {
-  max-width: 1100px;
+  /* max-width: 2200px; */
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 14px 20px;
+  /* background-color: green; */
 }
 
 /* .logo {
@@ -72,7 +73,7 @@ header {
 
 #forservice{
   display: flex;
-  align-items: center;
+  align-items: left;
   margin-left: 60px;
   margin-right: 40px;
 }
@@ -96,6 +97,9 @@ header {
   display: flex;
   gap: 18px;
   align-items: center;
+  width:700px;
+  min-width: 300px;
+  justify-content: space-between;
 }
 
 .spacer {
@@ -475,10 +479,28 @@ footer {
 
 @media (max-width: 750px) {
   .nav {
+    display: flex;
     flex-direction: column;  
     align-items: stretch;    
-    gap: 12px;                
+    gap: 12px;   
+    width: 100%;             
   }
+
+  .first-line{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-right: 50px;
+  }
+
+  #forservice{
+  display: flex;
+  align-items: center;
+  justify-content:space-between;
+  /* margin-right: 40px; */
+  /* background-color: green; */
+}
 
   .logo {
     display:flex; 
@@ -487,6 +509,7 @@ footer {
 
   .menu {
     width: 100%;
+
     flex-wrap: wrap;          
     justify-content: space-evenly;  
     gap: 12px;
@@ -513,7 +536,7 @@ footer {
   }
 
   .hero img {
-    max-width: 500px;
+    max-width: 300px;
     margin: 0 auto 20px;
   }
 }
@@ -862,4 +885,31 @@ pre{background:#0b1021; color:#e5e7eb; border-radius:12px; padding:12px; overflo
 #data-range p{
   margin:0;             
   font-size:16px;     
+}
+
+.first-line{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-right: 20px;
+}
+
+.sub-menu{
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  gap:10px;
+}
+.menu-login{
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  gap:20px;
+}
+.login-text{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap:20px;
 }

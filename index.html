@@ -20,32 +20,32 @@
 <body>
   <header>
     <nav class="nav" aria-label="Primary">
-      <div class="logo">
-        <div class="logo2">
-          <img src="assets/img/logo.png" alt="logo" />
-          <span>BuddyLink</span>
-        </div>
+      <div class="first-line">
+        <div class="logo">
+          <div class="logo2">
+            <img src="assets/img/logo.png" alt="logo" />
+            <span>BuddyLink</span>
+          </div>
 
-        <div id="forservice" style="display:none">
-          <nav class="flex items-center justify-between">
-          <a href="./pages/askforservice.html" aria-label="ask for services" data-i18n="askforservice2lines">Ask for<br>Services</a>
-          </nav>
+          <div id="forservice" style="display:none">
+            <a href="./pages/askforservice.html" aria-label="ask for services" data-i18n="askforservice2lines">Ask for<br>Services</a>
+          </div>
         </div>
+        <a id="avatar-link" href="pages/volunteer-dashboard.html" aria-label="Volunteer dashboard">
+          <img id="avatar-id"
+              style="width:36px;height:36px;border-radius:50%;object-fit:cover;cursor:pointer;display:none">
+        </a>
       </div>
 
-
-
       <div class="menu">
-        <a id="register-nav" href="pages/register.html" data-i18n="navRegister">Register</a>
-        <a href="index.html#about" data-i18n="navAbout">About</a>
-        <a class="btn" id="ctaJoin" href="pages/login.html" role="button">
-          <i class="fas fa-hands-helping"></i>
-          <span data-i18n="login">Login</span>
-        </a>
-      <a id="avatar-link" href="pages/volunteer-dashboard.html" aria-label="Volunteer dashboard">
-        <img id="avatar-id"
-            style="width:36px;height:36px;border-radius:50%;object-fit:cover;cursor:pointer;display:none">
-      </a>
+        <div class="sub-menu">
+          <a id="register-nav" href="pages/register.html" data-i18n="navRegister">Register</a>
+          <a href="index.html#about" data-i18n="navAbout">About</a>
+          <a class="btn" id="ctaJoin" href="pages/login.html" role="button">
+            <i class="fas fa-hands-helping"></i>
+            <span data-i18n="login">Login</span>
+          </a>
+        </div>
         <label class="lang" aria-label="Language switcher">
           <i class="fas fa-globe"></i>
           <select id="langSelect" aria-label="Language">

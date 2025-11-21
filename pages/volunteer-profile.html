@@ -15,23 +15,27 @@
 <div class="register0">
   <header>
     <nav class="nav" aria-label="Primary">
+      <div class="first-line">
       <div class="logo">
         <div class="logo2">
           <img src="../assets/img/logo.png" alt="logo" />
           <span>BuddyLink</span>
         </div>
       </div>
-
-      <div class="menu">
-        <nav class="flex items-center justify-between">
-          <a href="../pages/volunteer-dashboard.html" aria-label="Back to Dashboard" data-i18n="backtodash">← Back to Dashboard</a>
-          
-          <a href="login.html" aria-label="Logout" data-i18n="logout">Logout</a>
-        </nav>
       <a id="avatar-link" href="volunteer-dashboard.html" aria-label="Volunteer dashboard">
         <img id="avatar-id"
             style="width:36px;height:36px;border-radius:50%;object-fit:cover;cursor:pointer;">
       </a>
+
+      </div>
+      <div class="menu">
+        <nav class="sub-menu">
+          <a href="../pages/volunteer-dashboard.html" aria-label="Dashboard" data-i18n="backtodash">Dashboard</a>
+
+
+          <a href="login.html" aria-label="Logout" data-i18n="logout">Logout</a>
+        </nav>
+
         <label class="lang" aria-label="Language switcher">
           <i class="fas fa-globe"></i>
           <select id="langSelect" aria-label="Language">
