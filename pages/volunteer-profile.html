@@ -16,12 +16,18 @@
   <header>
     <nav class="nav" aria-label="Primary">
       <div class="first-line">
-      <div class="logo">
-        <div class="logo2">
-          <img src="../assets/img/logo.png" alt="logo" />
-          <span>BuddyLink</span>
-        </div>
-      </div>
+        
+          <div class="logo">
+            <div class="logo2">
+              <a href="../index.html">
+              <img src="../assets/img/logo.png" alt="logo" />
+              </a>
+              <a href="../index.html">
+              <span>BuddyLink</span>
+            </a>
+            </div>
+          </div>
+        
       <a id="avatar-link" href="volunteer-dashboard.html" aria-label="Volunteer dashboard">
         <img id="avatar-id"
             style="width:36px;height:36px;border-radius:50%;object-fit:cover;cursor:pointer;">
@@ -32,8 +38,11 @@
         <nav class="sub-menu">
           <a href="../pages/volunteer-dashboard.html" aria-label="Dashboard" data-i18n="backtodash">Dashboard</a>
 
-
-          <a href="login.html" aria-label="Logout" data-i18n="logout">Logout</a>
+          <!-- <a href="../index.html" aria-label="Back to Home" data-i18n="backtohome">Home</a> -->
+          <a class="btn" id="ctaJoin" href="pages/login.html" role="button">
+            <i class="fas fa-hands-helping"></i>
+            <span data-i18n="login">Login</span>
+          </a>
         </nav>
 
         <label class="lang" aria-label="Language switcher">
@@ -61,7 +70,7 @@
           <label data-i18n="photoLabel">Profile photo (optional)</label>
           <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
             <img id="profile-photo-preview"
-                 src="../assets/img/avatar-placeholder.png"
+                 src="../assets/img/unknown.jpg"
                  alt="Profile photo"
                  style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:1px solid #ddd;">
             <div>
@@ -228,7 +237,7 @@
       if (v.photo_url) {
         previewImg.src = v.photo_url + "?t=" + Date.now();
       } else {
-        previewImg.src = "../assets/img/avatar-placeholder.png";
+        previewImg.src = "../assets/img/unknown.jpg";
       }
 
       document.getElementById("v-phone").value = v.phone || "";

@@ -359,14 +359,14 @@ function refreshAuthUI() {
   if (regLink) {
     if (isLoggedIn) {
       if (role=='senior') {
-        regLink.textContent = 'Profile' 
+        regLink.textContent = 'History' 
       } else {
         regLink.textContent = 'Dashboard' 
       }
       regLink.setAttribute('data-i18n', 'navProfile');
       const profileHref =
         role === 'volunteer' ? '/vs/pages/volunteer-dashboard.html' :
-        role === 'senior'    ? '/vs/pages/senior-profile.html' :
+        role === 'senior'    ? '/vs/pages/services.html' :
                                '#';
       regLink.href = profileHref;
     } else {
@@ -390,7 +390,8 @@ function refreshAuthUI() {
     btn.innerHTML = '<i class="fas fa-sign-out-alt"></i><span>Logout</span>';
 
     if (role === 'senior') {
-      vol_avatar.style.display = 'none';
+      if (vol_avatar)
+        vol_avatar.style.display = 'none';
 
       if (forserviceEl) forserviceEl.style.removeProperty('display');
       if (seniorBtnEl) {

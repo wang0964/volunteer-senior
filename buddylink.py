@@ -1,7 +1,8 @@
 import datetime
-from flask import Flask, request, jsonify, session, send_file, abort
 
-from pymongo import MongoClient, ASCENDING
+from flask import Flask, Response, request, jsonify, session, send_file, abort
+
+from pymongo import DESCENDING, MongoClient, ASCENDING
 from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo.errors import DuplicateKeyError
 import time
@@ -405,16 +406,16 @@ def ask_for_service():
     # ic(requirement)
     return jsonify(success=True)
 
-def parse_skill(str):
-    dt={
-        'chat':'chatting',
-        'video':'video chatting',
-        'read':'reading',
-        'grocery':'groceries-taking',
-        'health':'health consulting',
-        'tech':'technique supporting',
-    }
-    return dt[str]
+# def parse_skill(str):
+#     dt={
+#         'chat':'chatting',
+#         'video':'video chatting',
+#         'read':'reading',
+#         'grocery':'groceries-taking',
+#         'health':'health consulting',
+#         'tech':'technique supporting',
+#     }
+#     return dt[str]
 
 def get_matching(appointment, askfor, addition, senior_info, senior_id):
     print('Start ... ...')
@@ -763,6 +764,185 @@ def api_volunteer_profile():
     return jsonify(success=True)
 
 
+@app.route("/senior/services", methods=["GET"])
+def get_services():
+    user = current_user()
+    if not user:
+        return jsonify(success=False, message="Unauthorized"), 401
+
+    user_oid = ObjectId(user["id"])
+    user = users.find_one({"_id": user_oid},
+                        {
+                            "_id": 1,
+                            "senior_id": 1,
+                        })
+    senior_oid = user.get("senior_id")
+    ic(senior_oid)
+    if not senior_oid:
+        return jsonify(success=False, message="Senior id missing"), 400
+
+
+    try:
+        page = int(request.args.get("page", 1))
+        limit = int(request.args.get("limit", 20))
+        if page < 1: page = 1
+        if limit < 1: limit = 20
+    except ValueError:
+        return jsonify(success=False, message="Invalid page/limit"), 400
+
+    skip = (page - 1) * limit
+
+    query = {"senior": senior_oid}
+    total = db.services.count_documents(query)
+
+    cursor = (
+        db.services
+          .find(query)
+          .sort("serve_at", DESCENDING)
+          .skip(skip)
+          .limit(limit)
+    )
+
+    services_out = []
+    for s in cursor:
+        v_id = s.get("volunteer")
+
+        volunteer_info = None
+        if v_id:
+            # 1) 查 volunteer 基础信息
+            v_doc = db.volunteers.find_one(
+                {"_id": v_id},
+                {
+                    "firstname": 1,
+                    "lastname": 1,
+                    "gender": 1,
+                    "city": 1,
+                    "language": 1,
+                    "skills": 1,
+                },
+            )
+
+            photo_doc = db["volunteer_photos.files"].find_one(
+                {"metadata.vol_id": v_id},
+                sort=[("uploadDate", DESCENDING)]  
+            )
+
+            photo_file_id = str(photo_doc["_id"]) if photo_doc else None
+
+
+            if photo_file_id:
+                photo_url = f"/volunteer/photo/{photo_file_id}" 
+                p_url='/api'+ photo_url
+            else :
+                photo_url = None
+                p_url = None
+
+           
+
+            if v_doc:
+                volunteer_info = {
+                    "_id": str(v_doc["_id"]),
+                    "firstname": v_doc.get("firstname"),
+                    "lastname": v_doc.get("lastname"),
+                    "gender": v_doc.get("gender"),
+                    "city": v_doc.get("city"),
+                    "language": v_doc.get("language", []),
+                    "skills": v_doc.get("skills", []),
+                    "photo_file_id": photo_file_id,
+                    "photo_url":p_url,
+                }
+
+        serve_at = s.get("serve_at")
+        if serve_at is not None and hasattr(serve_at, "isoformat"):
+            serve_at = serve_at.isoformat()
+
+        services_out.append({
+            "_id": str(s.get("_id")),
+            "senior": str(s.get("senior")) if s.get("senior") else None,
+            "volunteer": str(v_id) if v_id else None,
+            "serve_at": serve_at,
+            "rating": s.get("rating"),
+            "volunteer_info": volunteer_info,
+        })
+
+    # ic(services_out)
+    return jsonify(
+        success=True,
+        services=services_out,
+        page=page,
+        limit=limit,
+        total=total
+    ), 200
+
+
+@app.route("/volunteer/photo/<file_id>", methods=["GET"])
+def get_volunteer_photo(file_id):
+    try:
+        oid = ObjectId(file_id)
+    except Exception:
+        abort(404)
+
+    try:
+        grid_out = fs.get(oid)
+    except gridfs.errors.NoFile:
+        abort(404)
+
+    content_type = grid_out.content_type or "application/octet-stream"
+    return Response(
+        grid_out.read(),
+        mimetype=content_type,
+        headers={
+            "Cache-Control": "public, max-age=86400"
+        }
+    )
+
+
+
+@app.route("/services/<service_id>/rating", methods=["PATCH"])
+def update_service_rating(service_id):
+    user = current_user()
+    if not user:
+        return jsonify(success=False, message="Unauthorized"), 401
+
+
+    user_oid = ObjectId(user["id"])
+    user = users.find_one({"_id": user_oid},
+                        {
+                            "_id": 1,
+                            "senior_id": 1,
+                        })
+    senior_oid = user.get("senior_id")
+
+    # ic(user_oid,senior_oid)
+    if not senior_oid:
+        return jsonify(success=False, message="Forbidden"), 403
+
+    try:
+        service_oid = ObjectId(service_id)
+
+    except Exception:
+        return jsonify(success=False, message="Invalid id"), 400
+
+    data = request.get_json(silent=True) or {}
+    rating = data.get("rating", 0)
+
+    try:
+        rating = float(rating)
+    except Exception:
+        return jsonify(success=False, message="Invalid rating"), 400
+
+    if rating < 0 or rating > 5:
+        return jsonify(success=False, message="Rating out of range"), 400
+
+    result = db.services.update_one(
+        {"_id": service_oid, "senior": senior_oid},
+        {"$set": {"rating": rating, "rated_at": datetime.datetime.now(datetime.timezone.utc)}}
+    )
+
+    if result.matched_count == 0:
+        return jsonify(success=False, message="Service not found"), 404
+
+    return jsonify(success=True, rating=rating), 200
 
 if __name__ == "__main__":
     app.run(host=BIND_HOST, port=BIND_PORT, debug=True)

@@ -108,11 +108,13 @@ def nli_label_probs(model, tokenizer, premise, hypothesis):
     return label_scores
 
 
+
 def compute_final_score(vol_text, core_need_text, entail_core, entail_extra):
     svc_score = get_match_score(vol_text, core_need_text,'@#')
     time_score = get_match_score(vol_text, core_need_text,'#')
     loc_score = get_match_score(vol_text, core_need_text,'@')
 
+ 
     threshold = 0.3
 
     if entail_extra is not None and entail_extra < threshold:
@@ -129,7 +131,11 @@ def compute_final_score(vol_text, core_need_text, entail_core, entail_extra):
 
     add_score = entail_extra if entail_extra is not None else 1.0
 
-    final = 0.10 * entail_core + 0.25 * svc_score + 0.35 * time_score +  0.20 * loc_score + 0.10 * add_score
+    askfor=extract_info(vol_text,'@#')
+    if 'grocery' in askfor:
+        final = 0.05 * entail_core + 0.30 * svc_score + 0.15 * time_score +  0.45 * loc_score + 0.05 * add_score
+    else:
+        final = 0.10 * entail_core + 0.35 * svc_score + 0.35 * time_score +  0.10 * loc_score + 0.10 * add_score
 
     return {
         "final_score": final,

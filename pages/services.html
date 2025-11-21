@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Service History — Senior</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <link rel="stylesheet" href="../css/styles.css" />
+  
+</head>
+
+<body>
+
+  <header>
+    <nav class="nav" aria-label="Primary">
+      <div class="first-line">
+        <div class="logo">
+            <div class="logo2">
+              <a href="../index.html">
+              <img src="../assets/img/logo.png" alt="logo" />
+              </a>
+              <a href="../index.html">
+              <span>BuddyLink</span>
+            </a>
+            </div>
+
+          <div id="forservice">
+            <a href="askforservice.html" aria-label="ask for services" data-i18n="askforservice2lines">Ask for<br>Services</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu">
+        <nav class="sub-menu">
+
+            <a href="../index.html" aria-label="Back to Home" data-i18n="backtohome">Home</a>
+
+          <a class="btn" id="ctaJoin" href="pages/login.html" role="button">
+            <i class="fas fa-hands-helping"></i>
+            <span data-i18n="login">Login</span>
+          </a>
+        </nav>
+
+        <label class="lang" aria-label="Language switcher">
+          <i class="fas fa-globe"></i>
+          <select id="langSelect" aria-label="Language">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+          </select>
+        </label>
+      </div>
+    </nav>
+  </header>    
+
+
+
+
+
+
+
+
+<main class="container">
+  <section class="card p-6 my-8" aria-labelledby="history-title">
+    <div class="history-header">
+      <div>
+        <h1 id="history-title" style="margin:0;">
+          Service History
+        </h1>
+        <div id="history-sub" class="history-meta">
+          Loading...
+        </div>
+      </div>
+      <button id="btn-refresh" class="btn">
+        Refresh
+      </button>
+    </div>
+
+    <div id="history-state" class="loading">
+      <i class="fas fa-spinner fa-spin"></i>
+      Fetching records... 
+    </div>
+    <div id="history-list" class="history-list" hidden></div>
+  </section>
+</main>
+
+<footer class="container py-8">
+  <p>&copy; 2025 BuddyLink</p>
+</footer>
+
+
+
+<script type="module"  src="../js/app.js"></script>
+
+<script type="module">
+  // -----------------------------
+  // Helpers
+  // -----------------------------
+  const $ = (sel) => document.querySelector(sel);
+
+  function fmtDate(isoStr) {
+    if (!isoStr) return "Unknown date";
+    const d = new Date(isoStr);
+    if (Number.isNaN(d.getTime())) return isoStr;
+    return d.toLocaleString();
+  }
+
+function starsHTML(rating) {
+  // null/undefined/NaN => 0
+  let r = Number(rating);
+  if (!Number.isFinite(r)) r = 0;
+
+  // clamp 0..5, allow halves
+  r = Math.max(0, Math.min(5, r));
+  const full = Math.floor(r);
+  const half = (r - full >= 0.5) ? 1 : 0;
+  const empty = 5 - full - half;
+
+  let html = `<span class="stars" aria-label="rating ${r}">`;
+
+  for (let i = 0; i < full; i++) {
+    html += `<i class="fas fa-star"></i>`;
+  }
+  if (half) {
+    html += `<i class="fas fa-star-half-alt"></i>`;
+  }
+  for (let i = 0; i < empty; i++) {
+    html += `<i class="far fa-star"></i>`;
+  }
+
+  html += `</span>`;
+  return html;
+}
+
+  function arrBadges(arr) {
+    if (!Array.isArray(arr) || arr.length === 0) return "";
+    return arr.map(x => `<span class="badge">${x}</span>`).join("");
+  }
+
+
+  async function fetchServicesForCurrentSenior() {
+
+    const res = await fetch("/api/senior/services", { credentials: "include" });
+    const json = await res.json().catch(()=> ({}));
+
+    if (!res.ok || !json.success) {
+      throw new Error(json.message || "Failed to fetch services");
+    }
+    return json.services || [];
+  }
+
+async function fetchVolunteer(volunteerId, embeddedInfo = null) {
+  if (embeddedInfo && Object.keys(embeddedInfo).length > 0) {
+    return embeddedInfo;
+  }
+
+  if (!volunteerId) return {};
+
+  const key = String(volunteerId);
+  if (volunteerCache.has(key)) return volunteerCache.get(key);
+
+  volunteerCache.set(key, {});
+  return {};
+}
+
+function starsEditor(serviceId, rating) {
+  let r = Number(rating);
+  if (!Number.isFinite(r)) r = 0;
+
+  r = Math.max(0, Math.min(5, r));
+  const full = Math.floor(r);
+  const half = (r - full >= 0.5) ? 1 : 0;
+
+  let html = `<span class="stars editable" data-service-id="${serviceId}" data-current="${r}">`;
+
+  for (let i = 1; i <= 5; i++) {
+    let iconClass = "far fa-star"; // empty by default
+
+    if (i <= full) iconClass = "fas fa-star";
+    else if (i === full + 1 && half) iconClass = "fas fa-star-half-alt";
+
+    html += `
+      <i class="${iconClass} star-btn"
+         data-value="${i}"
+         role="button"
+         tabindex="0"
+         aria-label="rate ${i} stars"></i>
+    `;
+  }
+
+  html += `</span>`;
+  return html;
+}
+
+
+function updateStarsUI(wrapper, rating) {
+  const icons = wrapper.querySelectorAll(".star-btn");
+  icons.forEach(icon => {
+    const val = Number(icon.dataset.value);
+    icon.classList.remove("fas", "far", "fa-star", "fa-star-half-alt");
+
+    if (val <= rating) {
+      icon.classList.add("fas", "fa-star");
+    } else {
+      icon.classList.add("far", "fa-star");
+    }
+  });
+}
+
+
+$("#history-list").addEventListener("click", async (e) => {
+  const star = e.target.closest(".star-btn");
+  if (!star) return;
+
+  const wrapper = star.closest(".stars.editable");
+  if (!wrapper) return;
+
+  const serviceId = wrapper.dataset.serviceId;
+  const newRating = Number(star.dataset.value);
+  if (!serviceId || !Number.isFinite(newRating)) return;
+
+  const oldRating = Number(wrapper.dataset.current || 0);
+  wrapper.dataset.current = newRating;
+
+
+  updateStarsUI(wrapper, newRating);
+
+  try {
+
+    const res = await fetch(`/api/services/${serviceId}/rating`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ rating: newRating })
+    });
+
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || json.success === false) {
+      throw new Error(json.message || "Update failed");
+    }
+
+  } catch (err) {
+    console.error(err);
+
+    wrapper.dataset.current = oldRating;
+    updateStarsUI(wrapper, oldRating);
+    alert("Failed to update rating");
+  }
+});
+
+$("#history-list").addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" && e.key !== " ") return;
+  const star = e.target.closest(".star-btn");
+  if (!star) return;
+  e.preventDefault();
+  star.click();
+});
+
+
+
+  // -----------------------------
+  // Render
+  // -----------------------------
+  function setState(type, msg) {
+    const st = $("#history-state");
+    const list = $("#history-list");
+    list.hidden = true;
+    st.hidden = false;
+    st.className = type;
+    st.innerHTML = msg;
+  }
+
+  function renderList(records) {
+    const list = $("#history-list");
+    const st = $("#history-state");
+    st.hidden = true;
+    list.hidden = false;
+    list.innerHTML = records.map(r => r.__html).join("");
+  }
+
+  async function loadHistory() {
+    try {
+      setState(
+        "loading",
+        `<i class="fas fa-spinner fa-spin"></i> Fetching records... `
+      );
+
+      const services = await fetchServicesForCurrentSenior();
+
+      services.sort((a,b)=>{
+        const ta = new Date(a.serve_at || 0).getTime();
+        const tb = new Date(b.serve_at || 0).getTime();
+        return tb - ta;
+      });
+
+      $("#history-sub").textContent =
+        `Records: ${services.length} /  ${services.length} records`;
+
+      if (services.length === 0) {
+        setState("empty", `No service records yet.`);
+        return;
+      }
+
+      const hydrated = await Promise.all(services.map(async s => {
+        const v = await fetchVolunteer(s.volunteer, s.volunteer_info);
+
+        const name = [v.firstname, v.lastname].filter(Boolean).join(" ")
+          || "Unknown volunteer ";
+        const city = v.city ? `City: ${v.city}` : "";
+        const langs = arrBadges(v.language);
+        const skills = arrBadges(v.skills);
+
+        const avatar = v.photo_url || "../assets/img/unknown.jpg";
+        const when = fmtDate(s.serve_at);
+        const rating = starsEditor(s._id, s.rating);
+
+        const html = `
+          <div class="card p-4 hover history-item">
+            <div class="history-left">
+              <img class="vol-avatar" src="${avatar}" alt=""/>
+              <div class="service-item">
+                <div style="font-weight:600; font-size:1.05rem;">${name}</div>
+                <div class="muted small">${city}</div>
+
+                <div class="small" style="margin-top:6px;">
+                  <strong>Serve time: </strong> ${when}
+                </div>
+
+                <div class="small" style="margin-top:6px;">
+                  <strong>Languages: </strong>
+                  ${langs || `<span class="muted">N/A</span>`}
+                </div>
+
+                <div class="small" style="margin-top:6px;">
+                  <strong>Providing Service: </strong>
+                  ${skills || `<span class="muted">N/A</span>`}
+                </div>
+              </div>
+            </div>
+
+            <div style="text-align:right;">
+              <div class="small muted">Rating</div>
+              <div>${rating}</div>
+            </div>
+          </div>
+        `;
+
+        return { ...s, __html: html };
+      }));
+
+      renderList(hydrated);
+
+    } catch (err) {
+      console.error(err);
+      setState(
+        "error",
+        `<div style="color:#b00020;">
+          Failed to load history: ${err.message}
+          <br/>Error: ${err.message}
+        </div>`
+      );
+      $("#history-sub").textContent = "Error";
+    }
+  }
+
+  $("#btn-refresh").addEventListener("click", loadHistory);
+  document.addEventListener("DOMContentLoaded", loadHistory);
+ 
+</script>
+
+
+</body>
+</html>
