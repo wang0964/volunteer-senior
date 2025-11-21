@@ -55,6 +55,7 @@ export const i18n = {
     introdution_title: "Connect volunteers with seniors for warm companionship and daily help",
     upcoming_event: "Upcoming Event",
     description: 'Self-description',
+ 
 
     // weekly picker
     Monday: "Monday",
@@ -78,6 +79,16 @@ export const i18n = {
 
     askforservice:"Ask for Services",
     askforservice2lines: "Ask for<br>Services",
+
+    fname: 'First Name',
+    lname: 'Last Name',
+    password: 'Enter Password',
+    repassword: 'Re-enter Password',
+    address: 'Address',
+    gender:'Gender',
+
+
+
   },
   fr: {
     navRegister:'Inscription', navAbout:'À propos', joinNow:"S'inscrire maintenant",
@@ -87,6 +98,7 @@ export const i18n = {
     registerTitle:'Inscription',
 //    registerSub:"Choisissez votre rôle pour vous inscrire. Les champs sont en démonstration (validation côté client). Reliez votre serveur à <code>/register/senior</code> et <code>/register/volunteer</code>.",
     tabSenior:'Inscription aîné', tabVolunteer:'Inscription bénévole',
+
     name:'Nom', namePh:'Nom complet', age:'Âge', agePh:'ex. 70', ageHelp:"Optionnel ; nous aide à prioriser des services adaptés à l'âge.",
     phone:'Téléphone', phonePh:'ex. 647-123-4567', email:'Courriel', emailPh:'exemple@courriel.com',
     city:'Ville / Quartier', cityPh:'ex. Toronto / Scarborough', contactPref:'Contact préféré', optPhone:'Téléphone', optEmail:'Courriel', optVideo:'Vidéo',
@@ -157,5 +169,14 @@ export const i18n = {
 
     askforservice: "Demander des services",
     askforservice2lines: "Demander<br>des services",
+
+    fname: 'Prénom',
+    lname: 'Nom de famille',
+    password: 'Entrez le mot de passe',
+    repassword: 'Entrez de nouveau le mot de passe',
+    address: 'Adresse',
+    gender: 'Genre',
+
+
   }
 };

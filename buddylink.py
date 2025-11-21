@@ -1,12 +1,14 @@
 import datetime
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, send_file, abort
+
 from pymongo import MongoClient, ASCENDING
 from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo.errors import DuplicateKeyError
 import time
 import threading
-import os, re
+import os, re, io
 from bson import ObjectId
+import gridfs
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
@@ -49,7 +51,7 @@ BIND_HOST = "127.0.0.1"
 BIND_PORT = 5000
 
 
-
+RANK_LIMIT = 4
 
 
 UPLOAD_FOLDER = "assets/img/uploads"
@@ -64,6 +66,9 @@ db = mongo.get_default_database()
 users = db['users']
 seniors = db['seniors']
 volunteers=db['volunteers']
+match=db['match']
+
+fs = gridfs.GridFS(db, collection="volunteer_photos")
 
 users.create_index([("email", ASCENDING)], unique=True)
 
@@ -362,6 +367,12 @@ def ask_for_service():
     
     if not appointment:
         return jsonify(success=False, message="Please select at least one time slot"), 402
+    
+    if '@@' in addition:
+        return jsonify(success=False, message="'@@' is not an available word"), 410
+
+    if '##' in addition:
+        return jsonify(success=False, message="'##' is not an available word"), 410
 
     senior_id = users.find_one({"email": email},
                             {
@@ -386,7 +397,7 @@ def ask_for_service():
 
 
     threading.Thread(target=get_matching,
-                        args=(appointment, askfor, addition, senior_info),
+                        args=(appointment, askfor, addition, senior_info, senior_id),
                         daemon=True
                     ).start()
 
@@ -405,8 +416,9 @@ def parse_skill(str):
     }
     return dt[str]
 
-def get_matching(appointment, askfor, addition, senior_info):
+def get_matching(appointment, askfor, addition, senior_info, senior_id):
     print('Start ... ...')
+    addition=re.sub(r'[^0-9A-Za-z,\.!\(\)]', '', addition)
     start=time.time()
 
     requirement = f"I live in @@@@{senior_info['city']}@@@@, I speak in {'English' if (senior_info['language']=='en') else 'French'}, "
@@ -419,6 +431,7 @@ def get_matching(appointment, askfor, addition, senior_info):
     condition=[]
     all_volunteers= volunteers.find()
     lookup_dict={}
+    candidates=[]
     for i, vol in enumerate(all_volunteers):
         # ic(askfor,vol['skills'])
 
@@ -441,7 +454,13 @@ def get_matching(appointment, askfor, addition, senior_info):
     results=matching(requirement,condition,TOKENIZER,MODEL)
 
     for rank, (final_score, scores, nli_core, nli_extra, idx, vol) in enumerate(results, start=1):
+        if rank>RANK_LIMIT:
+            break
+        candidates.append(lookup_dict[idx])
+
+    for rank, (final_score, scores, nli_core, nli_extra, idx, vol) in enumerate(results, start=1):
         print(f"Rank {rank}  (candidate #{idx})")
+        print(f"  _id     = {lookup_dict[idx]}")
         print(f"  final_score     = {final_score:.4f}")
         print(f"  entail_core     = {scores['entail_core']:.4f}")
         print(f"  service_match   = {scores['service_match']:.4f}")
@@ -460,75 +479,131 @@ def get_matching(appointment, askfor, addition, senior_info):
     print('End')
     print("Elapsed time:", time.time() - start, "seconds")
 
+    match_doc={
+        'senior_id': senior_id,
+        'candidates': candidates,
+        'requirements':{'askfor':askfor, 'appointment':appointment, 'addition': addition},
+        'status': 'pending',
+        'booking_at': datetime.datetime.now(datetime.timezone.utc)
+    }
+
+    match.insert_one(match_doc)
 
 
-@app.route("/volunteer/profile", methods=["GET", "PUT"])
-def api_volunteer_profile():
-    user = current_user()
-    if not user:
-        return jsonify(success=False, message="Unauthorized"), 401
 
-    # 先在 users 里找到当前登录用户
-    user_doc = users.find_one({"_id": ObjectId(user["id"])})
-    if not user_doc or "volunteer_id" not in user_doc:
-        return jsonify(success=False, message="Not a volunteer account"), 403
+# @app.route("/volunteer/profile", methods=["GET", "PUT"])
+# def api_volunteer_profile():
+#     user = current_user()
+#     if not user:
+#         return jsonify(success=False, message="Unauthorized"), 401
 
-    vol_id = user_doc["volunteer_id"]
-    if isinstance(vol_id, str):
-        vol_id = ObjectId(vol_id)
+#     # 先在 users 里找到当前登录用户
+#     user_doc = users.find_one({"_id": ObjectId(user["id"])})
+#     if not user_doc or "volunteer_id" not in user_doc:
+#         return jsonify(success=False, message="Not a volunteer account"), 403
 
-    # ---------- GET：读取资料并返回给前端自动填充 ----------
-    if request.method == "GET":
-        vol = volunteers.find_one({"_id": vol_id})
-        if not vol:
-            return jsonify(success=False, message="Volunteer profile not found"), 404
+#     vol_id = user_doc["volunteer_id"]
+#     if isinstance(vol_id, str):
+#         vol_id = ObjectId(vol_id)
 
-        data = {
-            "firstname": vol.get("firstname", ""),
-            "lastname": vol.get("lastname", ""),
-            "gender": vol.get("gender", ""),
-            "phone": vol.get("phone", ""),
-            "city": vol.get("city", ""),
-            "address": vol.get("address", ""),
-            "background": vol.get("background", ""),
-            "language": vol.get("language", []),
-            "availabilities": vol.get("availabilities", []),
-            "skills": vol.get("skills", []),
-            "self_description": vol.get("self_description", ""),
-            "email": user_doc.get("email", ""),
-            "photo_url": vol.get("photo_url", "")
-        }
-        return jsonify(success=True, data=data)
+#     # ---------- GET：读取资料并返回给前端自动填充 ----------
+#     if request.method == "GET":
+#         vol = volunteers.find_one({"_id": vol_id})
+#         if not vol:
+#             return jsonify(success=False, message="Volunteer profile not found"), 404
 
-    # ---------- PUT：局部更新志愿者资料 ----------
-    data = request.get_json(silent=True) or {}
+#         data = {
+#             "firstname": vol.get("firstname", ""),
+#             "lastname": vol.get("lastname", ""),
+#             "gender": vol.get("gender", ""),
+#             "phone": vol.get("phone", ""),
+#             "city": vol.get("city", ""),
+#             "address": vol.get("address", ""),
+#             "background": vol.get("background", ""),
+#             "language": vol.get("language", []),
+#             "availabilities": vol.get("availabilities", []),
+#             "skills": vol.get("skills", []),
+#             "self_description": vol.get("self_description", ""),
+#             "email": user_doc.get("email", ""),
+#             "photo_url": vol.get("photo_url", "")
+#         }
+#         return jsonify(success=True, data=data)
 
-    allowed_scalar = ["gender", "phone", "city", "address", "self_description"]
-    allowed_array_client = ["language", "availability", "skills"]
+#     # ---------- PUT：局部更新志愿者资料 ----------
+#     data = request.get_json(silent=True) or {}
 
-    update_fields = {}
+#     allowed_scalar = ["gender", "phone", "city", "address", "self_description"]
+#     allowed_array_client = ["language", "availability", "skills"]
 
-    # 文本类字段：只有在请求里出现的才更新
-    for key in allowed_scalar:
-        if key in data:
-            val = (data.get(key) or "").strip()
-            update_fields[key] = val
+#     update_fields = {}
 
-    # 数组类字段：language / availability / skills
-    for key in allowed_array_client:
-        if key in data:
-            val = data.get(key) or []
-            if key == "availability":
-                # 数据库里叫 availabilities
-                update_fields["availabilities"] = val
-            else:
-                update_fields[key] = val
+#     # 文本类字段：只有在请求里出现的才更新
+#     for key in allowed_scalar:
+#         if key in data:
+#             val = (data.get(key) or "").strip()
+#             update_fields[key] = val
 
-    if update_fields:
-        update_fields["updated_at"] = datetime.datetime.now(datetime.timezone.utc)
-        volunteers.update_one({"_id": vol_id}, {"$set": update_fields})
+#     # 数组类字段：language / availability / skills
+#     for key in allowed_array_client:
+#         if key in data:
+#             val = data.get(key) or []
+#             if key == "availability":
+#                 # 数据库里叫 availabilities
+#                 update_fields["availabilities"] = val
+#             else:
+#                 update_fields[key] = val
 
-    return jsonify(success=True)
+#     if update_fields:
+#         update_fields["updated_at"] = datetime.datetime.now(datetime.timezone.utc)
+#         volunteers.update_one({"_id": vol_id}, {"$set": update_fields})
+
+#     return jsonify(success=True)
+
+# @app.route("/volunteer/photo", methods=["POST"])
+# def api_volunteer_photo():
+#     user = current_user()
+#     if not user:
+#         return jsonify(success=False, message="Unauthorized"), 401
+
+#     user_doc = users.find_one({"_id": ObjectId(user["id"])})
+#     if not user_doc or "volunteer_id" not in user_doc:
+#         return jsonify(success=False, message="Not a volunteer account"), 403
+
+#     vol_id = user_doc["volunteer_id"]
+#     if isinstance(vol_id, str):
+#         vol_id = ObjectId(vol_id)
+
+#     # 检查文件
+#     if "photo" not in request.files:
+#         return jsonify(success=False, message="No file uploaded"), 400
+
+#     file = request.files["photo"]
+#     filename = secure_filename(file.filename)
+
+#     if not filename:
+#         return jsonify(success=False, message="Invalid filename"), 400
+
+#     ext = filename.rsplit(".", 1)[-1].lower()
+#     if ext not in ALLOWED_EXT:
+#         return jsonify(success=False, message="Invalid file type"), 400
+
+#     # 使用用户 ID 命名头像，保证唯一
+#     newname = f"{user['id']}.{ext}"
+#     save_path = os.path.join(UPLOAD_FOLDER, newname)
+
+#     # 保存文件
+#     file.save(save_path)
+
+#     # 前端访问路径（注意前面的 /vs）
+#     photo_url = f"../assets/img/uploads/{newname}"
+
+#     # 更新数据库
+#     volunteers.update_one(
+#         {"_id": vol_id},
+#         {"$set": {"photo_url": photo_url}}
+#     )
+
+#     return jsonify(success=True, url=photo_url)
 
 @app.route("/volunteer/photo", methods=["POST"])
 def api_volunteer_photo():
@@ -544,13 +619,11 @@ def api_volunteer_photo():
     if isinstance(vol_id, str):
         vol_id = ObjectId(vol_id)
 
-    # 检查文件
     if "photo" not in request.files:
         return jsonify(success=False, message="No file uploaded"), 400
 
     file = request.files["photo"]
-    filename = secure_filename(file.filename)
-
+    filename = secure_filename(file.filename or "")
     if not filename:
         return jsonify(success=False, message="Invalid filename"), 400
 
@@ -558,23 +631,136 @@ def api_volunteer_photo():
     if ext not in ALLOWED_EXT:
         return jsonify(success=False, message="Invalid file type"), 400
 
-    # 使用用户 ID 命名头像，保证唯一
-    newname = f"{user['id']}.{ext}"
-    save_path = os.path.join(UPLOAD_FOLDER, newname)
+    content_type = file.mimetype or f"image/{ext}"
+    raw = file.read()
+    if not raw:
+        return jsonify(success=False, message="Empty file"), 400
 
-    # 保存文件
-    file.save(save_path)
+    vol_doc = volunteers.find_one({"_id": vol_id}, {"photo_file_id": 1})
+    old_file_id = vol_doc.get("photo_file_id") if vol_doc else None
+    if old_file_id:
+        try:
+            fs.delete(ObjectId(old_file_id))
+        except Exception:
+            pass
 
-    # 前端访问路径（注意前面的 /vs）
-    photo_url = f"../assets/img/uploads/{newname}"
-
-    # 更新数据库
-    volunteers.update_one(
-        {"_id": vol_id},
-        {"$set": {"photo_url": photo_url}}
+    new_file_id = fs.put(
+        raw,
+        filename=filename,
+        content_type=content_type,
+        metadata={
+            "vol_id": vol_id,
+            "uploaded_by": ObjectId(user["id"]),
+            "uploaded_at": datetime.datetime.now(datetime.timezone.utc)
+        }
     )
 
-    return jsonify(success=True, url=photo_url)
+    volunteers.update_one(
+        {"_id": vol_id},
+        {"$set": {
+            "photo_file_id": str(new_file_id),
+            "updated_at": datetime.datetime.now(datetime.timezone.utc)
+        }}
+    )
+
+    return jsonify(success=True, url="/api/volunteer/photo", file_id=str(new_file_id))
+
+
+@app.route("/volunteer/photo", methods=["GET"])
+def get_current_volunteer_photo():
+    user = current_user()
+    if not user:
+        return abort(401)
+
+    user_doc = users.find_one({"_id": ObjectId(user["id"])})
+    if not user_doc or "volunteer_id" not in user_doc:
+        return abort(403)
+
+    vol_id = user_doc["volunteer_id"]
+    if isinstance(vol_id, str):
+        vol_id = ObjectId(vol_id)
+
+    vol_doc = volunteers.find_one({"_id": vol_id}, {"photo_file_id": 1})
+    if not vol_doc or not vol_doc.get("photo_file_id"):
+        return abort(404)
+
+    try:
+        grid_out = fs.get(ObjectId(vol_doc["photo_file_id"]))
+    except Exception:
+        return abort(404)
+
+    return send_file(
+        io.BytesIO(grid_out.read()),
+        mimetype=grid_out.content_type or "image/jpeg",
+        download_name=grid_out.filename or "photo.jpg",
+        conditional=True
+    )
+
+@app.route("/volunteer/profile", methods=["GET", "PUT"])
+def api_volunteer_profile():
+    user = current_user()
+    if not user:
+        return jsonify(success=False, message="Unauthorized"), 401
+
+    user_doc = users.find_one({"_id": ObjectId(user["id"])})
+    if not user_doc or "volunteer_id" not in user_doc:
+        return jsonify(success=False, message="Not a volunteer account"), 403
+
+    vol_id = user_doc["volunteer_id"]
+    if isinstance(vol_id, str):
+        vol_id = ObjectId(vol_id)
+
+    if request.method == "GET":
+        vol = volunteers.find_one({"_id": vol_id})
+        if not vol:
+            return jsonify(success=False, message="Volunteer profile not found"), 404
+
+        photo_url = ""
+        if vol.get("photo_file_id"):
+            photo_url = "/api/volunteer/photo"
+
+        data = {
+            "firstname": vol.get("firstname", ""),
+            "lastname": vol.get("lastname", ""),
+            "gender": vol.get("gender", ""),
+            "phone": vol.get("phone", ""),
+            "city": vol.get("city", ""),
+            "address": vol.get("address", ""),
+            "background": vol.get("background", ""),
+            "language": vol.get("language", []),
+            "availabilities": vol.get("availabilities", []),
+            "skills": vol.get("skills", []),
+            "self_description": vol.get("self_description", ""),
+            "email": user_doc.get("email", ""),
+            "photo_url": photo_url
+        }
+        return jsonify(success=True, data=data)
+
+    data = request.get_json(silent=True) or {}
+
+    allowed_scalar = ["gender", "phone", "city", "address", "self_description"]
+    allowed_array_client = ["language", "availability", "skills"]
+
+    update_fields = {}
+
+    for key in allowed_scalar:
+        if key in data:
+            val = (data.get(key) or "").strip()
+            update_fields[key] = val
+
+    for key in allowed_array_client:
+        if key in data:
+            val = data.get(key) or []
+            if key == "availability":
+                update_fields["availabilities"] = val
+            else:
+                update_fields[key] = val
+
+    if update_fields:
+        update_fields["updated_at"] = datetime.datetime.now(datetime.timezone.utc)
+        volunteers.update_one({"_id": vol_id}, {"$set": update_fields})
+
+    return jsonify(success=True)
 
 
 
