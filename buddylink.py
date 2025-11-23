@@ -10,6 +10,9 @@ import threading
 import os, re, io
 from bson import ObjectId
 import gridfs
+from datetime import timedelta
+from math import ceil
+
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
@@ -22,8 +25,6 @@ from transformers.utils import logging
 from  src.match import matching
 import werkzeug
 from werkzeug.utils import secure_filename
-
-
 
 logging.set_verbosity_error()
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
@@ -47,6 +48,8 @@ app.config.update(
     SESSION_COOKIE_SECURE=False  # 部署到 HTTPS 后改 True
 )
 
+app.config["SESSION_PERMANENT"] = False
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=1)
 
 BIND_HOST = "127.0.0.1"
 BIND_PORT = 5000
@@ -73,6 +76,8 @@ fs = gridfs.GridFS(db, collection="volunteer_photos")
 
 users.create_index([("email", ASCENDING)], unique=True)
 
+
+HISTORYITEMS_LIMIT=20
 
 
 def normalize_email(email):
@@ -764,6 +769,7 @@ def api_volunteer_profile():
     return jsonify(success=True)
 
 
+
 @app.route("/senior/services", methods=["GET"])
 def get_services():
     user = current_user()
@@ -771,27 +777,22 @@ def get_services():
         return jsonify(success=False, message="Unauthorized"), 401
 
     user_oid = ObjectId(user["id"])
-    user = users.find_one({"_id": user_oid},
-                        {
-                            "_id": 1,
-                            "senior_id": 1,
-                        })
+    user = users.find_one({"_id": user_oid}, {"_id": 1, "senior_id": 1})
     senior_oid = user.get("senior_id")
-    ic(senior_oid)
     if not senior_oid:
         return jsonify(success=False, message="Senior id missing"), 400
 
-
     try:
         page = int(request.args.get("page", 1))
-        limit = int(request.args.get("limit", 20))
+        limit = int(request.args.get("limit", HISTORYITEMS_LIMIT))
         if page < 1: page = 1
-        if limit < 1: limit = 20
+        if limit < 1 or limit > HISTORYITEMS_LIMIT: 
+            limit = HISTORYITEMS_LIMIT
+
     except ValueError:
         return jsonify(success=False, message="Invalid page/limit"), 400
 
     skip = (page - 1) * limit
-
     query = {"senior": senior_oid}
     total = db.services.count_documents(query)
 
@@ -806,38 +807,25 @@ def get_services():
     services_out = []
     for s in cursor:
         v_id = s.get("volunteer")
-
         volunteer_info = None
         if v_id:
-            # 1) 查 volunteer 基础信息
             v_doc = db.volunteers.find_one(
                 {"_id": v_id},
-                {
-                    "firstname": 1,
-                    "lastname": 1,
-                    "gender": 1,
-                    "city": 1,
-                    "language": 1,
-                    "skills": 1,
-                },
+                {"firstname": 1, "lastname": 1, "gender": 1,
+                 "city": 1, "language": 1, "skills": 1},
             )
 
             photo_doc = db["volunteer_photos.files"].find_one(
                 {"metadata.vol_id": v_id},
-                sort=[("uploadDate", DESCENDING)]  
+                sort=[("uploadDate", DESCENDING)]
             )
-
             photo_file_id = str(photo_doc["_id"]) if photo_doc else None
 
-
             if photo_file_id:
-                photo_url = f"/volunteer/photo/{photo_file_id}" 
-                p_url='/api'+ photo_url
-            else :
-                photo_url = None
+                photo_url = f"/volunteer/photo/{photo_file_id}"
+                p_url = '/api' + photo_url
+            else:
                 p_url = None
-
-           
 
             if v_doc:
                 volunteer_info = {
@@ -849,7 +837,7 @@ def get_services():
                     "language": v_doc.get("language", []),
                     "skills": v_doc.get("skills", []),
                     "photo_file_id": photo_file_id,
-                    "photo_url":p_url,
+                    "photo_url": p_url,
                 }
 
         serve_at = s.get("serve_at")
@@ -865,13 +853,17 @@ def get_services():
             "volunteer_info": volunteer_info,
         })
 
-    # ic(services_out)
+    total_pages = ceil(total / limit) if limit else 1
+    has_more = page < total_pages
+
     return jsonify(
         success=True,
         services=services_out,
         page=page,
         limit=limit,
-        total=total
+        total=total,
+        total_pages=total_pages,
+        has_more=has_more
     ), 200
 
 

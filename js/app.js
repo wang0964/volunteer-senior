@@ -1,6 +1,7 @@
 // const API_BASE = 'https://localhost:5000';
 // const endpoint = '/api/register/senior';
 import { i18n } from './language-string.js';
+
 // console.log('i18n loaded:', i18n); 
 
 // ---- Tabs (guarded so pages without tabs won't throw) ----
@@ -74,12 +75,14 @@ function applyI18n(lang){
     if (dict[key] !== undefined) el.placeholder = dict[key];
   });
 
-  localStorage.setItem('lang', lang);
+  // localStorage.setItem('lang', lang);
+  sessionStorage.setItem('lang', lang);
+
   if (langSelect) langSelect.value = lang;
 }
 
 // init language
-const savedLang = localStorage.getItem('lang') || 'en';
+const savedLang = sessionStorage.getItem('lang') || 'en';
 if (langSelect) langSelect.value = savedLang;
 applyI18n(savedLang);
 langSelect?.addEventListener('change', e => applyI18n(e.target.value));
@@ -168,8 +171,10 @@ if (loginForm) {
 
 
       if (data.data) {
-           localStorage.setItem('email', data.data.email);
-           localStorage.setItem('role', data.data.role);
+          //  localStorage.setItem('email', data.data.email);
+          //  localStorage.setItem('role', data.data.role);
+          sessionStorage.setItem('email', data.data.email);
+          sessionStorage.setItem('role', data.data.role);
       }
 
       // const redirectTo = new URLSearchParams(location.search).get('next') || '/';
@@ -320,8 +325,8 @@ function refreshAuthUI() {
   const regLink = document.getElementById('register-nav');
   const avatarEl = document.getElementById('avatar-id');
 
-  const email = localStorage.getItem('email');
-  const role  = localStorage.getItem('role');
+  const email = sessionStorage.getItem('email');
+  const role  = sessionStorage.getItem('role');
   const isLoggedIn = !!email;
 
   // ---------- safe date rendering ----------
@@ -426,8 +431,8 @@ function refreshAuthUI() {
       try {
         await fetch('/api/logout', { method: 'POST', credentials: 'include' }).catch(()=>{});
       } finally {
-        localStorage.removeItem('email');
-        localStorage.removeItem('role');
+        sessionStorage.removeItem('email');
+        sessionStorage.removeItem('role');
         refreshAuthUI();
         location.assign('/vs/index.html');
       }
@@ -628,7 +633,7 @@ handleSubmitToApi('form-ask', 'a-msg', '/api/askfor', (form) => {
     form.querySelectorAll('.checks input[type="checkbox"][name^="need-"]:checked')
   ).map(cb => cb.value);
 
-  const email = localStorage.getItem('email'); 
+  const email = sessionStorage.getItem('email'); 
 
   return {
     email,
