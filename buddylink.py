@@ -1,7 +1,8 @@
+# buddylink.py
+
+
 import datetime
-
 from flask import Flask, Response, request, jsonify, session, send_file, abort
-
 from pymongo import DESCENDING, MongoClient, ASCENDING
 from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo.errors import DuplicateKeyError
@@ -35,7 +36,7 @@ MODEL_PATH = "facebook/bart-large-mnli"
 TOKENIZER = AutoTokenizer.from_pretrained(MODEL_PATH)
 MODEL = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
 
-# --- 基础配置 ---
+# --- Base configuration ---
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/buddylink")
 SECRET_KEY = os.getenv("FLASK_SECRET", "dev-secret-change-me")
 
@@ -46,7 +47,7 @@ app.secret_key = SECRET_KEY
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Lax",
-    SESSION_COOKIE_SECURE=False  # 部署到 HTTPS 后改 True
+    SESSION_COOKIE_SECURE=False  # Set to True when deployed behind HTTPS
 )
 
 app.config["SESSION_PERMANENT"] = False
@@ -91,6 +92,8 @@ class MessageOnlyColorFormatter(logging.Formatter):
         return super().formatMessage(record)
 
 def setup_logging(level=logging.INFO):
+    """Configure the root logger with a message-only color formatter for console output."""
+
     root = logging.getLogger()
     root.setLevel(level)
     root.handlers.clear()
@@ -107,11 +110,12 @@ def setup_logging(level=logging.INFO):
 setup_logging(logging.INFO)
 
 
+# Note: basicConfig() is kept for compatibility; handlers are configured in setup_logging().
 logging.basicConfig(
     level=logging.INFO
 )
 
-# 确保上传目录存在
+# Ensure the upload directory exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # --- Mongo ---
@@ -131,10 +135,14 @@ HISTORYITEMS_LIMIT=20
 
 
 def normalize_email(email):
+    """Normalize an email address for consistent lookup (strip whitespace and lowercase)."""
+
     return (email or "").strip().lower()
 
 
 def current_user():
+    """Return the current logged-in user stored in the session, or None if not authenticated."""
+
     uid = session.get("uid")
     email = session.get("email")
     if not uid or not email:
@@ -163,6 +171,8 @@ _EMAIL_RE = re.compile(
 )
 
 def is_valid_email(email):
+    """Lightweight email validation to catch obviously invalid addresses."""
+
     if not isinstance(email, str):
         return False
 
@@ -185,8 +195,12 @@ def is_valid_email(email):
 
 # --- Routes ---
 
+# --- Authentication endpoints ---
+
 @app.route('/login', methods=['POST'])
 def api_login():
+    """API endpoint: authenticate a user and establish a server-side session."""
+
     data = request.get_json(silent=True) or {}
     email = normalize_email(data.get("email"))
     password = data.get("password") or ""
@@ -218,12 +232,16 @@ def api_login():
 
 @app.post("/logout")
 def api_logout():
+    """API endpoint: clear the current session (log out)."""
+
     session.clear()
     return jsonify(success=True)
 
 
 @app.get("/me")
 def api_me():
+    """API endpoint: return information about the current authenticated user."""
+
     user = current_user()
     if not user:
         return jsonify(success=False, message="Unauthorized"), 401
@@ -232,10 +250,16 @@ def api_me():
 
 @app.get("/health")
 def api_health():
+    """API endpoint: simple health check for monitoring and diagnostics."""
+
     return jsonify(ok=True)
+
+# --- Registration endpoints ---
 
 @app.route('/register/senior', methods=['POST'])
 def api_register_senior():
+    """API endpoint: register a senior account and profile documents in MongoDB."""
+
     print('enter')
     data = request.get_json(silent=True) 
     print(data)
@@ -323,6 +347,8 @@ def api_register_senior():
 
 @app.route('/register/volunteer', methods=['POST'])
 def api_register_volunteer():
+    """API endpoint: register a volunteer account and profile documents in MongoDB."""
+
     print('enter')
     data = request.get_json(silent=True) 
     print(data)
@@ -408,6 +434,8 @@ def api_register_volunteer():
     return jsonify(success=True, data={"type":"volunteer", "volunteerId": str(volunteer_id)})
 
 def parse_weekday(str):
+    """Convert a compact weekday string (e.g., 'mon-1pm') into a readable label."""
+
     dt={
         'mon': 'Monday',
         'tue': 'Tuesday' ,
@@ -419,8 +447,12 @@ def parse_weekday(str):
     }
     return f'{dt[str[:3]]} {str[4:]}'
 
+# --- Service requests & matching ---
+
 @app.route('/askfor', methods=['POST','GET'])
 def ask_for_service():
+    """API endpoint: create a service request for a senior and trigger matching in the background."""
+
     data = request.get_json(silent=True) 
 
     email       = normalize_email(data.get("email"))
@@ -471,6 +503,8 @@ def ask_for_service():
 
 
 def get_matching(appointment, askfor, addition, senior_info, senior_id):
+    """Background task: run the matching pipeline and persist computed candidates to the database."""
+
     logging.info('Start matching... ...')
     addition=re.sub(r'[^0-9A-Za-z,\.!\(\)]', '', addition)
     start=time.time()
@@ -538,8 +572,12 @@ def get_matching(appointment, askfor, addition, senior_info, senior_id):
     match.insert_one(match_doc)
 
 
+# --- Volunteer profile & photos ---
+
 @app.route("/volunteer/photo", methods=["POST"])
 def api_volunteer_photo():
+    """API endpoint: upload the current volunteer's profile photo (multipart/form-data)."""
+
     user = current_user()
     if not user:
         return jsonify(success=False, message="Unauthorized"), 401
@@ -601,6 +639,8 @@ def api_volunteer_photo():
 
 @app.route("/volunteer/photo", methods=["GET"])
 def get_current_volunteer_photo():
+    """API endpoint: fetch the current volunteer's profile photo from GridFS."""
+
     user = current_user()
     if not user:
         return abort(401)
@@ -631,6 +671,8 @@ def get_current_volunteer_photo():
 
 @app.route("/volunteer/profile", methods=["GET", "PUT"])
 def api_volunteer_profile():
+    """API endpoint: get/update the current volunteer's profile information."""
+
     user = current_user()
     if not user:
         return jsonify(success=False, message="Unauthorized"), 401
@@ -697,8 +739,12 @@ def api_volunteer_profile():
 
 
 
+# --- Service history (senior) ---
+
 @app.route("/senior/services", methods=["GET"])
 def get_services():
+    """API endpoint: return paginated service history for the authenticated senior."""
+
     user = current_user()
     if not user:
         return jsonify(success=False, message="Unauthorized"), 401
@@ -796,6 +842,8 @@ def get_services():
 
 @app.route("/volunteer/photo/<file_id>", methods=["GET"])
 def get_volunteer_photo(file_id):
+    """API endpoint: serve a volunteer photo by file id (stored in GridFS)."""
+
     try:
         oid = ObjectId(file_id)
     except Exception:
@@ -818,9 +866,13 @@ def get_volunteer_photo(file_id):
 from bson import ObjectId
 from flask import jsonify
 
+# --- Volunteer request management ---
+
 @app.route("/api/volunteer/requests", methods=["GET"])
 @app.route("/volunteer/requests", methods=["GET"])
 def api_volunteer_requests():
+    """API endpoint: list pending/available requests for the authenticated volunteer."""
+
     user = current_user()
     if not user:
         return jsonify(success=False, message="Unauthorized"), 401
@@ -867,9 +919,13 @@ def api_volunteer_requests():
     return jsonify(success=True, data=enriched), 200
 
 
+# --- Volunteer actions (accept) ---
+
 @app.post("/requests/<req_id>/accept")
 @app.post("/api/requests/<req_id>/accept")
 def api_accept_request(req_id):
+    """API endpoint: allow a volunteer to accept a request and notify the senior."""
+
     user = current_user()
     if not user:
         return jsonify(success=False, message="Unauthorized"), 401
@@ -910,7 +966,7 @@ def api_accept_request(req_id):
         askfor = req.get("askfor", [])
         appointment = req.get("appointment", [])
 
-        # senior-info email）
+        # Senior user's email address (recipient)
         senior_doc = seniors.find_one({"_id": senior_id}) or {}
         senior_user = users.find_one({"senior_id": senior_id}, {"email": 1}) or {}
         senior_email = senior_user.get("email", "(no email found)")
@@ -921,7 +977,7 @@ def api_accept_request(req_id):
         vol_phone = vol_doc.get("phone", "(no phone)")
 
         # create email
-        subject = "BuddyLink Notification — A volunteer accepted your request"
+        subject = "BuddyLink Notification - A volunteer accepted your request"
         body = f"""
             Hello {senior_doc.get('firstname', 'Senior')},
 
@@ -945,9 +1001,6 @@ def api_accept_request(req_id):
     return jsonify(success=True)
 
 
-from bson import ObjectId
-from flask import jsonify, session
-
 @app.route("/api/volunteer/upcoming", methods=["GET"])
 def volunteer_upcoming():
     """Return accepted requests for the logged-in volunteer."""
@@ -969,7 +1022,7 @@ def volunteer_upcoming():
     if isinstance(vol_id, str):
         vol_id = ObjectId(vol_id)
 
-    # 这个 volunteer 接受的所有服务
+    # All accepted requests for this volunteer
     reqs = list(db.match.find({
         "accepted_volunteer_id": vol_id,
         "status": "accepted"
@@ -993,8 +1046,12 @@ def volunteer_upcoming():
 
     return jsonify({"success": True, "data": results})
 
+# --- Ratings ---
+
 @app.route("/services/<service_id>/rating", methods=["PATCH"])
 def update_service_rating(service_id):
+    """API endpoint: update the rating for a completed service (PATCH)."""
+
     user = current_user()
     if not user:
         return jsonify(success=False, message="Unauthorized"), 401

@@ -39,7 +39,20 @@ DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sun
 TIMES = ["morning", "afternoon", "evening"]
 
 
+
 def extract_info(s,patt):
+    """
+        Extract tagged tokens from a text string.
+
+        patt controls which tag pair is searched:
+        - '@#'  -> @@## ... @@## (service tokens)
+        - '@'   -> @@@@ ... @@@@ (location tokens)
+        - '#'   -> #### ... #### (time tokens)
+
+        Returns a list of tokens. For '@' (locations), tokens are split by '/';
+        for others, tokens are split by ','.
+    """
+
     if patt=='@#':
         pattern=r'@@##(.*?)@@##'
     elif patt=='@':
@@ -58,6 +71,13 @@ def extract_info(s,patt):
 
 
 def get_match_score(vol_text, senior_text,patt):
+    """
+        Compute a simple overlap score between the volunteer text and the senior need text.
+
+        The score is (matched_needed / total_needed). If the senior has no required tokens for
+        the requested pattern, returns 1.0.
+    """
+
     vol_services = extract_info(vol_text,patt)
     need_services = extract_info(senior_text,patt)
 
@@ -75,6 +95,13 @@ def get_match_score(vol_text, senior_text,patt):
 
 
 def split_senior_need(text):
+    """
+        Split a senior request into (core_need_text, extra_requirement_text).
+
+        Looks for phrases like 'my addition requirement is' and returns everything before it
+        as the core request, and the trailing clause as additional constraints.
+    """
+
     lower = text.lower()
     keywords = [
         "my addition requirement is",
@@ -96,6 +123,13 @@ def split_senior_need(text):
 
 
 def nli_label_probs(model, tokenizer, premise, hypothesis):
+    """
+        Run an NLI model to obtain probabilities for labels such as entailment/neutral/contradiction.
+
+        premise: volunteer profile text
+        hypothesis: senior need or additional requirement
+    """
+
     inputs = tokenizer(premise, hypothesis, return_tensors="pt", truncation=True)
     with torch.no_grad():
         logits = model(**inputs).logits
@@ -110,6 +144,15 @@ def nli_label_probs(model, tokenizer, premise, hypothesis):
 
 
 def compute_final_score(vol_text, core_need_text, entail_core, entail_extra):
+    """
+        Combine rule-based scores and NLI scores into a final ranking score.
+
+        If an additional requirement exists and its entailment score is below a threshold,
+        the candidate is disqualified (final_score=0.0).
+
+        Returns a dictionary with detailed components for debugging/UI display.
+    """
+
     svc_score = get_match_score(vol_text, core_need_text,'@#')
     time_score = get_match_score(vol_text, core_need_text,'#')
     loc_score = get_match_score(vol_text, core_need_text,'@')
@@ -150,6 +193,14 @@ def compute_final_score(vol_text, core_need_text, entail_core, entail_extra):
 import math
 
 def get_score(prob, ratio_threshold=10.0, eps=1e-6):
+    """
+        Convert NLI label probabilities into a single 0..1 score.
+
+        Starts from a weighted linear combination and then applies a penalty/boost based on
+        the log-ratio of entailment vs contradiction. This helps separate strong entailment
+        from ambiguous predictions.
+    """
+
     w_c = -1.0
     w_n = 0.01
     w_e = 1.0
@@ -183,12 +234,22 @@ def get_score(prob, ratio_threshold=10.0, eps=1e-6):
 
 
 def matching(senior_text, candidate_labels, tokenizer,model):
+    """
+        Rank volunteer candidates for a given senior request.
+
+        1) Split senior text into core + extra requirements.
+        2) Compute NLI for core (+ extra if present).
+        3) Compute composite score and sort descending.
+
+        Returns a list of tuples: (final_score, score_breakdown, nli_core, nli_extra, index, original_text).
+    """
+
     core_need_text, extra_req_text = split_senior_need(senior_text)
     results = []
-    core_need_text_clr=core_need_text.replace('@@@@','').replace('####','').replace('@@##','')
+    core_need_text_clr = core_need_text.replace('@@@@','').replace('####','').replace('@@##','')  # Remove tag markers before NLI
 
     for i, volunteer in enumerate(candidate_labels):
-        v_clr=volunteer.replace('@@@@','').replace('####','').replace('@@##','')
+        v_clr = volunteer.replace('@@@@','').replace('####','').replace('@@##','')  # Remove tag markers before NLI
         nli_core = nli_label_probs(model, tokenizer, v_clr, core_need_text_clr)
         entail_core=get_score(nli_core)
 
@@ -206,7 +267,7 @@ def matching(senior_text, candidate_labels, tokenizer,model):
             entail_extra,
         )
 
-        results.append((scores["final_score"], scores, nli_core, nli_extra, i, volunteer))
+        results.append((scores["final_score"], scores, nli_core, nli_extra, i, volunteer))  # Keep raw texts for downstream display
 
 
     results.sort(reverse=True, key=lambda x: x[0])

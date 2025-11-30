@@ -1,372 +1,518 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Volunteer Profile — BuddyLink</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Volunteer Profile — BuddyLink</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../css/styles.css" />
+  </head>
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
-  <link rel="stylesheet" href="../css/styles.css" />
-</head>
+  <body>
+    <div class="register0">
+      <header>
+        <nav class="nav" aria-label="Primary">
+          <div class="first-line">
+            <div class="logo">
+              <div class="logo2">
+                <a href="../index.html">
+                  <img src="../assets/img/logo.png" alt="logo" />
+                </a>
+                <a href="../index.html">
+                  <span>BuddyLink</span>
+                </a>
+              </div>
+            </div>
 
-<body>
-<div class="register0">
-  <header>
-    <nav class="nav" aria-label="Primary">
-      <div class="first-line">
-        
-          <div class="logo">
-            <div class="logo2">
-              <a href="../index.html">
-              <img src="../assets/img/logo.png" alt="logo" />
-              </a>
-              <a href="../index.html">
-              <span>BuddyLink</span>
+            <a
+              id="avatar-link"
+              href="volunteer-dashboard.html"
+              aria-label="Volunteer dashboard"
+            >
+              <img
+                id="avatar-id"
+                style="
+                  width: 36px;
+                  height: 36px;
+                  border-radius: 50%;
+                  object-fit: cover;
+                  cursor: pointer;
+                "
+              />
             </a>
-            </div>
           </div>
-        
-      <a id="avatar-link" href="volunteer-dashboard.html" aria-label="Volunteer dashboard">
-        <img id="avatar-id"
-            style="width:36px;height:36px;border-radius:50%;object-fit:cover;cursor:pointer;">
-      </a>
+          <div class="menu">
+            <nav class="sub-menu">
+              <a
+                href="../pages/volunteer-dashboard.html"
+                aria-label="Dashboard"
+                data-i18n="backtodash"
+                >Dashboard</a
+              >
 
-      </div>
-      <div class="menu">
-        <nav class="sub-menu">
-          <a href="../pages/volunteer-dashboard.html" aria-label="Dashboard" data-i18n="backtodash">Dashboard</a>
+              <!-- <a href="../index.html" aria-label="Back to Home" data-i18n="backtohome">Home</a> -->
+              <a class="btn" id="ctaJoin" href="pages/login.html" role="button">
+                <i class="fas fa-hands-helping"></i>
+                <span data-i18n="login">Login</span>
+              </a>
+            </nav>
 
-          <!-- <a href="../index.html" aria-label="Back to Home" data-i18n="backtohome">Home</a> -->
-          <a class="btn" id="ctaJoin" href="pages/login.html" role="button">
-            <i class="fas fa-hands-helping"></i>
-            <span data-i18n="login">Login</span>
-          </a>
-        </nav>
-
-        <label class="lang" aria-label="Language switcher">
-          <i class="fas fa-globe"></i>
-          <select id="langSelect" aria-label="Language">
-            <option value="en">English</option>
-            <option value="fr">Français</option>
-          </select>
-        </label>
-      </div>
-    </nav>
-  </header>
-
-  <main>
-    <section id="profile" aria-labelledby="profile-title">
-      <div class="wrap">
-        <h2 id="profile-title">My Volunteer Profile</h2>
-
-        <p class="section-sub">
-          <strong id="profile-name"></strong><br>
-          <span id="profile-email" class="muted"></span>
-        </p>
-
-        <div>
-          <label data-i18n="photoLabel">Profile photo (optional)</label>
-          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
-            <img id="profile-photo-preview"
-                 src="../assets/img/unknown.jpg"
-                 alt="Profile photo"
-                 style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:1px solid #ddd;">
-            <div>
-              <input type="file" id="photo-file" accept="image/*" />
-              <p class="muted" style="margin-top:4px;">JPEG/PNG, max 2MB.</p>
-            </div>
-          </div>
-        </div>
-
-        <form id="form-vol-profile">
-
-          <div class="row cols-2">
-            <div>
-              <label for="v-phone" data-i18n="phone">Phone</label>
-              <input id="v-phone" name="phone" inputmode="tel"
-                     data-i18n-placeholder="phonePh"
-                     placeholder="647-123-4567" />
-            </div>
-
-            <div>
-              <label for="v-gender" data-i18n="gender">Gender</label>
-              <select id="v-gender" name="gender">
-                <option value="male" data-i18n="male">Male</option>
-                <option value="female" data-i18n="female">Female</option>
-                <option value="other" data-i18n="other">Other / Prefer not to say</option>
+            <label class="lang" aria-label="Language switcher">
+              <i class="fas fa-globe"></i>
+              <select id="langSelect" aria-label="Language">
+                <option value="en">English</option>
+                <option value="fr">Français</option>
               </select>
-            </div>
+            </label>
+          </div>
+        </nav>
+      </header>
+
+      <main>
+        <section id="profile" aria-labelledby="profile-title">
+          <div class="wrap">
+            <h2 id="profile-title">My Volunteer Profile</h2>
+
+            <p class="section-sub">
+              <strong id="profile-name"></strong><br />
+              <span id="profile-email" class="muted"></span>
+            </p>
 
             <div>
-              <label for="v-city" data-i18n="city">City / Area</label>
-              <input id="v-city" name="city"
-                     data-i18n-placeholder="cityPh"
-                     placeholder="Toronto / North York" />
-            </div>
-
-            <div>
-              <label for="v-address" data-i18n="address">Address</label>
-              <input id="v-address" name="address"
-                     data-i18n-placeholder="addressPh" />
-            </div>
-          </div>
-
-          <!-- background 只读 -->
-          <div class="row cols-2">
-            <div>
-              <label data-i18n="background">Background check</label>
-              <p id="bg-status" class="muted"></p>
-            </div>
-          </div>
-
-          <!-- Services / skills -->
-          <div>
-            <label data-i18n="skills">Services you can provide (multi-select)</label>
-            <div class="checks" aria-label="skills">
-              <label class="chip"><input type="checkbox" name="skill-chat" value="chat"><span data-i18n="needChat">Friendly chat</span></label>
-              <label class="chip"><input type="checkbox" name="skill-video" value="video"><span data-i18n="needVideo">Video companionship</span></label>
-              <label class="chip"><input type="checkbox" name="skill-read" value="read"><span data-i18n="needRead">Read letters/news</span></label>
-              <label class="chip"><input type="checkbox" name="skill-grocery" value="grocery"><span data-i18n="needGrocery">Groceries</span></label>
-              <label class="chip"><input type="checkbox" name="skill-health" value="health"><span data-i18n="needHealth">Health</span></label>
-              <label class="chip"><input type="checkbox" name="skill-tech" value="tech"><span data-i18n="needTech">Tech help</span></label>
-            </div>
-          </div>
-
-          <!-- Language -->
-          <div>
-            <label data-i18n="language">Language</label>
-            <div class="checks" aria-label="language">
-              <label class="chip"><input type="checkbox" name="lang-english" value="en"><span data-i18n="english">English</span></label>
-              <label class="chip"><input type="checkbox" name="lang-french" value="fr"><span data-i18n="french">French</span></label>
-            </div>
-          </div>
-
-          <div class="availability-picker-block">
-            <section class="picker-card" role="group" aria-label="Weekly Time Picker">
-              <div class="picker-card-head one-line">
-                <label data-i18n="availability">Availability</label>
-                <button type="button" class="btn outline" id="wp-clear" data-i18n="clear">Clear</button>
+              <label data-i18n="photoLabel">Profile photo (optional)</label>
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 1rem;
+                  margin-bottom: 1rem;
+                "
+              >
+                <img
+                  id="profile-photo-preview"
+                  src="../assets/img/unknown.jpg"
+                  alt="Profile photo"
+                  style="
+                    width: 90px;
+                    height: 90px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    border: 1px solid #ddd;
+                  "
+                />
+                <div>
+                  <input type="file" id="photo-file" accept="image/*" />
+                  <p class="muted" style="margin-top: 4px">
+                    JPEG/PNG, max 2MB.
+                  </p>
+                </div>
               </div>
-              <div class="picker-scroller">
-                <table class="picker-grid" id="scheduleTable" aria-describedby="desc">
-                  <thead>
-                    <tr>
-                      <th class="picker-head-day"><span data-i18n="day">Day</span></th>
-                      <th class="picker-head-col" data-col="morning"><span data-i18n="morning">Morning</span></th>
-                      <th class="picker-head-col" data-col="afternoon"><span data-i18n="afternoon">Afternoon</span></th>
-                      <th class="picker-head-col" data-col="evening"><span data-i18n="evening">Evening</span></th>
-                    </tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
+            </div>
+
+            <form id="form-vol-profile">
+              <div class="row cols-2">
+                <div>
+                  <label for="v-phone" data-i18n="phone">Phone</label>
+                  <input
+                    id="v-phone"
+                    name="phone"
+                    inputmode="tel"
+                    data-i18n-placeholder="phonePh"
+                    placeholder="647-123-4567"
+                  />
+                </div>
+
+                <div>
+                  <label for="v-gender" data-i18n="gender">Gender</label>
+                  <select id="v-gender" name="gender">
+                    <option value="male" data-i18n="male">Male</option>
+                    <option value="female" data-i18n="female">Female</option>
+                    <option value="other" data-i18n="other">
+                      Other / Prefer not to say
+                    </option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="v-city" data-i18n="city">City / Area</label>
+                  <input
+                    id="v-city"
+                    name="city"
+                    data-i18n-placeholder="cityPh"
+                    placeholder="Toronto / North York"
+                  />
+                </div>
+
+                <div>
+                  <label for="v-address" data-i18n="address">Address</label>
+                  <input
+                    id="v-address"
+                    name="address"
+                    data-i18n-placeholder="addressPh"
+                  />
+                </div>
               </div>
-            </section>
+
+              <!-- background 只读 -->
+              <div class="row cols-2">
+                <div>
+                  <label data-i18n="background">Background check</label>
+                  <p id="bg-status" class="muted"></p>
+                </div>
+              </div>
+
+              <!-- Services / skills -->
+              <div>
+                <label data-i18n="skills"
+                  >Services you can provide (multi-select)</label
+                >
+                <div class="checks" aria-label="skills">
+                  <label class="chip"
+                    ><input
+                      type="checkbox"
+                      name="skill-chat"
+                      value="chat"
+                    /><span data-i18n="needChat">Friendly chat</span></label
+                  >
+                  <label class="chip"
+                    ><input
+                      type="checkbox"
+                      name="skill-video"
+                      value="video"
+                    /><span data-i18n="needVideo"
+                      >Video companionship</span
+                    ></label
+                  >
+                  <label class="chip"
+                    ><input
+                      type="checkbox"
+                      name="skill-read"
+                      value="read"
+                    /><span data-i18n="needRead">Read letters/news</span></label
+                  >
+                  <label class="chip"
+                    ><input
+                      type="checkbox"
+                      name="skill-grocery"
+                      value="grocery"
+                    /><span data-i18n="needGrocery">Groceries</span></label
+                  >
+                  <label class="chip"
+                    ><input
+                      type="checkbox"
+                      name="skill-health"
+                      value="health"
+                    /><span data-i18n="needHealth">Health</span></label
+                  >
+                  <label class="chip"
+                    ><input
+                      type="checkbox"
+                      name="skill-tech"
+                      value="tech"
+                    /><span data-i18n="needTech">Tech help</span></label
+                  >
+                </div>
+              </div>
+
+              <!-- Language -->
+              <div>
+                <label data-i18n="language">Language</label>
+                <div class="checks" aria-label="language">
+                  <label class="chip"
+                    ><input
+                      type="checkbox"
+                      name="lang-english"
+                      value="en"
+                    /><span data-i18n="english">English</span></label
+                  >
+                  <label class="chip"
+                    ><input
+                      type="checkbox"
+                      name="lang-french"
+                      value="fr"
+                    /><span data-i18n="french">French</span></label
+                  >
+                </div>
+              </div>
+
+              <div class="availability-picker-block">
+                <section
+                  class="picker-card"
+                  role="group"
+                  aria-label="Weekly Time Picker"
+                >
+                  <div class="picker-card-head one-line">
+                    <label data-i18n="availability">Availability</label>
+                    <button
+                      type="button"
+                      class="btn outline"
+                      id="wp-clear"
+                      data-i18n="clear"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                  <div class="picker-scroller">
+                    <table
+                      class="picker-grid"
+                      id="scheduleTable"
+                      aria-describedby="desc"
+                    >
+                      <thead>
+                        <tr>
+                          <th class="picker-head-day">
+                            <span data-i18n="day">Day</span>
+                          </th>
+                          <th class="picker-head-col" data-col="morning">
+                            <span data-i18n="morning">Morning</span>
+                          </th>
+                          <th class="picker-head-col" data-col="afternoon">
+                            <span data-i18n="afternoon">Afternoon</span>
+                          </th>
+                          <th class="picker-head-col" data-col="evening">
+                            <span data-i18n="evening">Evening</span>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </section>
+              </div>
+
+              <div>
+                <label for="v-self-description" data-i18n="description"
+                  >Self-description</label
+                >
+                <textarea
+                  id="v-self-description"
+                  rows="6"
+                  name="description"
+                  data-i18n-placeholder="descriptionPh"
+                  placeholder="Describe your experience, availability, and what kind of support you like to offer."
+                ></textarea>
+              </div>
+
+              <div class="form-actions">
+                <button class="btn" type="submit">
+                  <i class="fas fa-save"></i>
+                  <span data-i18n="saveProfile">Save profile</span>
+                </button>
+              </div>
+            </form>
           </div>
+        </section>
+      </main>
 
-          <div>
-            <label for="v-self-description" data-i18n="description">Self-description</label>
-            <textarea id="v-self-description" rows="6" name="description"
-                      data-i18n-placeholder="descriptionPh"
-                      placeholder="Describe your experience, availability, and what kind of support you like to offer."></textarea>
-          </div>
+      <footer><p>&copy; 2025</p></footer>
+    </div>
 
-          <div class="form-actions">
-            <button class="btn" type="submit">
-              <i class="fas fa-save"></i>
-              <span data-i18n="saveProfile">Save profile</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </section>
-  </main>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="../js/app.js"></script>
+    <script type="module" src="../js/weekly-picker.js"></script>
 
-  <footer><p>&copy; 2025</p></footer>
-</div>
+    <script type="module">
+      const form = document.getElementById("form-vol-profile");
+      const photoInput = document.getElementById("photo-file");
+      const previewImg = document.getElementById("profile-photo-preview");
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script type="module" src="../js/app.js"></script>
-<script type="module" src="../js/weekly-picker.js"></script>
+      let originalProfile = null;
 
-<script type="module">
-  const form = document.getElementById("form-vol-profile");
-  const photoInput = document.getElementById("photo-file");
-  const previewImg = document.getElementById("profile-photo-preview");
-
-  let originalProfile = null;
-
-  function getChecked(selector) {
-    return Array.from(document.querySelectorAll(selector + ":checked")).map(x => x.value);
-  }
-
-  function setChecked(selector, values) {
-    const S = new Set(values || []);
-    document.querySelectorAll(selector).forEach(cb => {
-      cb.checked = S.has(cb.value);
-    });
-  }
-
-  function setAvailability(values) {
-    const S = new Set(values || []);
-    document.querySelectorAll("#scheduleTable input[type='checkbox']").forEach(cb => {
-      cb.checked = S.has(cb.name);
-    });
-  }
-
-  async function loadProfile() {
-    try {
-      const res = await fetch("/api/volunteer/profile", {
-        credentials: "include"
-      });
-
-      if (res.status === 401 || res.status === 403) return;
-      if (!res.ok) return;
-
-      const json = await res.json();
-      if (!json.success) return;
-
-      const v = json.data || {};
-      originalProfile = { ...v };
-
-      const fullName = `${v.firstname || ""} ${v.lastname || ""}`.trim();
-      document.getElementById("profile-name").textContent = fullName || "Volunteer";
-      document.getElementById("profile-email").textContent = v.email || "";
-
-      if (v.photo_url) {
-        previewImg.src = v.photo_url + "?t=" + Date.now();
-      } else {
-        previewImg.src = "../assets/img/unknown.jpg";
+      function getChecked(selector) {
+        return Array.from(document.querySelectorAll(selector + ":checked")).map(
+          (x) => x.value
+        );
       }
 
-      document.getElementById("v-phone").value = v.phone || "";
-      document.getElementById("v-gender").value = v.gender || "other";
-      document.getElementById("v-city").value = v.city || "";
-      document.getElementById("v-address").value = v.address || "";
-      document.getElementById("v-self-description").value = v.self_description || "";
-
-      const bg = v.background || "no";
-      let bgText = "Not yet";
-      if (bg === "inprogress") bgText = "In progress";
-      if (bg === "yes") bgText = "Completed";
-      document.getElementById("bg-status").textContent = bgText;
-
-      setChecked('.checks input[name^="skill-"]', v.skills || []);
-      setChecked('.checks input[name^="lang-"]',  v.language || []);
-      setAvailability(v.availabilities || []);
-
-    } catch (err) {
-      console.error("Failed to load profile", err);
-    }
-  }
-
-  if (photoInput) {
-    photoInput.addEventListener("change", () => {
-      const file = photoInput.files && photoInput.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        if (e.target.result) previewImg.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const current = {
-      phone: document.getElementById("v-phone").value.trim(),
-      gender: document.getElementById("v-gender").value,
-      city: document.getElementById("v-city").value.trim(),
-      address: document.getElementById("v-address").value.trim(),
-      language: getChecked('.checks input[name^="lang-"]'),
-      availability: Array.from(
-        document.querySelectorAll("#scheduleTable input[type='checkbox']:checked")
-      ).map(cb => cb.name),
-      skills: getChecked('.checks input[name^="skill-"]'),
-      self_description: document.getElementById("v-self-description").value.trim()
-    };
-
-    const payload = {};
-    for (const [key, value] of Object.entries(current)) {
-      let old;
-      if (originalProfile) {
-        old = (key === "availability")
-          ? originalProfile.availabilities
-          : originalProfile[key];
-      }
-
-      const isArray = Array.isArray(value) || Array.isArray(old);
-      const changed = isArray
-        ? JSON.stringify(value || []) !== JSON.stringify(old || [])
-        : (value ?? "") !== (old ?? "");
-
-      if (!changed) continue;
-      if (value === "" && (old === undefined || old === null || old === "")) continue;
-
-      payload[key] = value;
-    }
-
-    const hasPhoto = photoInput && photoInput.files && photoInput.files[0];
-
-    if (Object.keys(payload).length === 0 && !hasPhoto) {
-      await Swal.fire({ icon: "info", title: "Profile", text: "No changes to save." });
-      return;
-    }
-
-    try {
-      if (Object.keys(payload).length > 0) {
-        const res = await fetch("/api/volunteer/profile", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(payload)
+      function setChecked(selector, values) {
+        const S = new Set(values || []);
+        document.querySelectorAll(selector).forEach((cb) => {
+          cb.checked = S.has(cb.value);
         });
-        const json = await res.json();
-        if (!json.success) throw new Error(json.message || "Save failed");
       }
 
-      if (hasPhoto) {
-        const fd = new FormData();
-        fd.append("photo", photoInput.files[0]);
+      function setAvailability(values) {
+        const S = new Set(values || []);
+        document
+          .querySelectorAll("#scheduleTable input[type='checkbox']")
+          .forEach((cb) => {
+            cb.checked = S.has(cb.name);
+          });
+      }
 
-        const up = await fetch("/api/volunteer/photo", {
-          method: "POST",
-          credentials: "include",
-          body: fd
+      async function loadProfile() {
+        try {
+          const res = await fetch("/api/volunteer/profile", {
+            credentials: "include",
+          });
+
+          if (res.status === 401 || res.status === 403) return;
+          if (!res.ok) return;
+
+          const json = await res.json();
+          if (!json.success) return;
+
+          const v = json.data || {};
+          originalProfile = { ...v };
+
+          const fullName = `${v.firstname || ""} ${v.lastname || ""}`.trim();
+          document.getElementById("profile-name").textContent =
+            fullName || "Volunteer";
+          document.getElementById("profile-email").textContent = v.email || "";
+
+          if (v.photo_url) {
+            previewImg.src = v.photo_url + "?t=" + Date.now();
+          } else {
+            previewImg.src = "../assets/img/unknown.jpg";
+          }
+
+          document.getElementById("v-phone").value = v.phone || "";
+          document.getElementById("v-gender").value = v.gender || "other";
+          document.getElementById("v-city").value = v.city || "";
+          document.getElementById("v-address").value = v.address || "";
+          document.getElementById("v-self-description").value =
+            v.self_description || "";
+
+          const bg = v.background || "no";
+          let bgText = "Not yet";
+          if (bg === "inprogress") bgText = "In progress";
+          if (bg === "yes") bgText = "Completed";
+          document.getElementById("bg-status").textContent = bgText;
+
+          setChecked('.checks input[name^="skill-"]', v.skills || []);
+          setChecked('.checks input[name^="lang-"]', v.language || []);
+          setAvailability(v.availabilities || []);
+        } catch (err) {
+          console.error("Failed to load profile", err);
+        }
+      }
+
+      if (photoInput) {
+        photoInput.addEventListener("change", () => {
+          const file = photoInput.files && photoInput.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            if (e.target.result) previewImg.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
         });
-        const pjson = await up.json().catch(() => ({}));
-        if (!up.ok || !pjson.success) {
-          throw new Error(pjson.message || "Photo upload failed");
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const current = {
+          phone: document.getElementById("v-phone").value.trim(),
+          gender: document.getElementById("v-gender").value,
+          city: document.getElementById("v-city").value.trim(),
+          address: document.getElementById("v-address").value.trim(),
+          language: getChecked('.checks input[name^="lang-"]'),
+          availability: Array.from(
+            document.querySelectorAll(
+              "#scheduleTable input[type='checkbox']:checked"
+            )
+          ).map((cb) => cb.name),
+          skills: getChecked('.checks input[name^="skill-"]'),
+          self_description: document
+            .getElementById("v-self-description")
+            .value.trim(),
+        };
+
+        const payload = {};
+        for (const [key, value] of Object.entries(current)) {
+          let old;
+          if (originalProfile) {
+            old =
+              key === "availability"
+                ? originalProfile.availabilities
+                : originalProfile[key];
+          }
+
+          const isArray = Array.isArray(value) || Array.isArray(old);
+          const changed = isArray
+            ? JSON.stringify(value || []) !== JSON.stringify(old || [])
+            : (value ?? "") !== (old ?? "");
+
+          if (!changed) continue;
+          if (value === "" && (old === undefined || old === null || old === ""))
+            continue;
+
+          payload[key] = value;
         }
 
-        if (pjson.url) {
-          previewImg.src = pjson.url + "?t=" + Date.now();
+        const hasPhoto = photoInput && photoInput.files && photoInput.files[0];
+
+        if (Object.keys(payload).length === 0 && !hasPhoto) {
+          await Swal.fire({
+            icon: "info",
+            title: "Profile",
+            text: "No changes to save.",
+          });
+          return;
         }
 
-        photoInput.value = "";
-      }
+        try {
+          if (Object.keys(payload).length > 0) {
+            const res = await fetch("/api/volunteer/profile", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify(payload),
+            });
+            const json = await res.json();
+            if (!json.success) throw new Error(json.message || "Save failed");
+          }
 
-      await Swal.fire({ icon: "success", title: "Profile", text: "Your profile has been updated." });
+          if (hasPhoto) {
+            const fd = new FormData();
+            fd.append("photo", photoInput.files[0]);
 
-      loadProfile();
+            const up = await fetch("/api/volunteer/photo", {
+              method: "POST",
+              credentials: "include",
+              body: fd,
+            });
+            const pjson = await up.json().catch(() => ({}));
+            if (!up.ok || !pjson.success) {
+              throw new Error(pjson.message || "Photo upload failed");
+            }
 
-    } catch (err) {
-      console.error(err);
-      await Swal.fire({
-        icon: "error",
-        title: "Profile",
-        text: err?.message || "Failed to update profile."
+            if (pjson.url) {
+              previewImg.src = pjson.url + "?t=" + Date.now();
+            }
+
+            photoInput.value = "";
+          }
+
+          await Swal.fire({
+            icon: "success",
+            title: "Profile",
+            text: "Your profile has been updated.",
+          });
+
+          loadProfile();
+        } catch (err) {
+          console.error(err);
+          await Swal.fire({
+            icon: "error",
+            title: "Profile",
+            text: err?.message || "Failed to update profile.",
+          });
+        }
       });
-    }
-  });
 
-  document.addEventListener("DOMContentLoaded", () => {
-    setTimeout(loadProfile, 200);
-  });
-</script>
-
-</body>
+      document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(loadProfile, 200);
+      });
+    </script>
+  </body>
 </html>

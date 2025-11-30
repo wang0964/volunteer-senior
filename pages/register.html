@@ -1,60 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Register — Volunteer & Senior</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
-  <link rel="stylesheet" href="../css/styles.css" />
-</head>
-<body>
-<div class="register0">
-  <header>
-    <nav class="nav" aria-label="Primary">
-      <div class="logo">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register — Volunteer & Senior</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../css/styles.css" />
+  </head>
+  <body>
+    <div class="register0">
+      <header>
+        <nav class="nav" aria-label="Primary">
+          <div class="logo">
             <div class="logo2">
               <a href="../index.html">
-              <img src="../assets/img/logo.png" alt="logo" />
+                <img src="../assets/img/logo.png" alt="logo" />
               </a>
               <a href="../index.html">
-              <span>BuddyLink</span>
-            </a>
+                <span>BuddyLink</span>
+              </a>
             </div>
 
-        <div id="forservice" style="display:none">
-          <nav class="flex items-center justify-between">
-          <a href="askforservice.html" aria-label="ask for services">Ask for<br>Services</a>
-          </nav>
-        </div>
-      </div>
-      <div class="menu-login">
-
-        <nav class="flex items-center justify-between">
-          <a href="../index.html" aria-label="Back to Home"  data-i18n="backtohome">Home</a>
+            <div id="forservice" style="display: none">
+              <nav class="flex items-center justify-between">
+                <a href="askforservice.html" aria-label="ask for services"
+                  >Ask for<br />Services</a
+                >
+              </nav>
+            </div>
+          </div>
+          <div class="menu-login">
+            <nav class="flex items-center justify-between">
+              <a
+                href="../index.html"
+                aria-label="Back to Home"
+                data-i18n="backtohome"
+                >Home</a
+              >
+            </nav>
+            <label class="lang" aria-label="Language switcher">
+              <i class="fas fa-globe"></i>
+              <select id="langSelect" aria-label="Language">
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+              </select>
+            </label>
+          </div>
         </nav>
-        <label class="lang" aria-label="Language switcher">
-          <i class="fas fa-globe"></i>
-          <select id="langSelect" aria-label="Language">
-            <option value="en">English</option>
-            <option value="fr">Français</option>
-          </select>
-        </label>
+      </header>
+
+      <div class="register-choose">
+        <a class="btn" href="register-s.html" data-i18n="signup_senior">
+          Senior Sign-up
+        </a>
+        <a
+          class="btn outline"
+          href="register-v.html"
+          data-i18n="signup_volunteer"
+        >
+          Volunteer Sign-up
+        </a>
       </div>
-    </nav>
-  </header>
 
-
-        <div class="register-choose">
-          <a class="btn" href="register-s.html" data-i18n="signup_senior"> Senior Sign-up </a>
-          <a class="btn outline" href="register-v.html" data-i18n="signup_volunteer"> Volunteer Sign-up </a>
-        </div>
-
-  <footer>
-    <p>&copy; 2025</p>
-  </footer>
-</div>
-  <script type="module"  src="../js/app.js"></script>
-  <script type="module" src="../js/weekly-picker.js"></script>
-</body>
+      <footer>
+        <p>&copy; 2025</p>
+      </footer>
+    </div>
+    <script type="module" src="../js/app.js"></script>
+    <script type="module" src="../js/weekly-picker.js"></script>
+  </body>
 </html>
