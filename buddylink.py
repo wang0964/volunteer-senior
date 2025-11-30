@@ -12,6 +12,7 @@ from bson import ObjectId
 import gridfs
 from datetime import timedelta
 from math import ceil
+import logging, sys
 
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
@@ -20,13 +21,13 @@ os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 from icecream import ic
 
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
-from transformers.utils import logging
+from transformers.utils import logging as tf_logging
 
 from  src.match import matching
 import werkzeug
 from werkzeug.utils import secure_filename
 
-logging.set_verbosity_error()
+tf_logging.set_verbosity_error()
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 
@@ -61,6 +62,55 @@ RANK_LIMIT = 4
 UPLOAD_FOLDER = "assets/img/uploads"
 ALLOWED_EXT = {"png", "jpg", "jpeg"}
 
+import logging
+import sys
+
+try:
+    import colorama
+    colorama.just_fix_windows_console()
+except Exception:
+    pass
+
+class MessageOnlyColorFormatter(logging.Formatter):
+    RESET = "\x1b[0m"
+    COLORS = {
+        logging.DEBUG:    "\x1b[90m",  # gray
+        logging.INFO:     "\x1b[32m",  # green
+        logging.WARNING:  "\x1b[33m",  # yellow
+        logging.ERROR:    "\x1b[31m",  # red
+        logging.CRITICAL: "\x1b[31m",  # red
+    }
+
+    def formatMessage(self, record: logging.LogRecord) -> str:
+        msg = record.getMessage()
+        color = self.COLORS.get(record.levelno, "")
+        if color:
+            msg = f"{color}{msg}{self.RESET}"
+
+        record.message = msg
+        return super().formatMessage(record)
+
+def setup_logging(level=logging.INFO):
+    root = logging.getLogger()
+    root.setLevel(level)
+    root.handlers.clear()
+
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(level)
+
+    fmt = "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
+    datefmt = "%H:%M:%S"
+    handler.setFormatter(MessageOnlyColorFormatter(fmt=fmt, datefmt=datefmt))
+
+    root.addHandler(handler)
+
+setup_logging(logging.INFO)
+
+
+logging.basicConfig(
+    level=logging.INFO
+)
+
 # 确保上传目录存在
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -90,6 +140,16 @@ def current_user():
     if not uid or not email:
         return None
     return {"id": uid, "email": email}
+
+def send_email(to_email: str, subject: str, body: str):
+    """
+    Simulate sending email by printing content to console.
+    """
+    print("\n================= EMAIL SIMULATION =================")
+    print("TO:", to_email)
+    print("SUBJECT:", subject)
+    print(body)
+    print("===================================================\n")
 
 
 _EMAIL_RE = re.compile(
@@ -399,38 +459,24 @@ def ask_for_service():
                                 "notes": 1,
                             }
                         )
-    # ic(email, appointment, askfor, addition, senior_info)
-
 
     threading.Thread(target=get_matching,
                         args=(appointment, askfor, addition, senior_info, senior_id),
                         daemon=True
                     ).start()
 
-    # get_matching()
-    # ic(requirement)
+
     return jsonify(success=True)
 
-# def parse_skill(str):
-#     dt={
-#         'chat':'chatting',
-#         'video':'video chatting',
-#         'read':'reading',
-#         'grocery':'groceries-taking',
-#         'health':'health consulting',
-#         'tech':'technique supporting',
-#     }
-#     return dt[str]
+
 
 def get_matching(appointment, askfor, addition, senior_info, senior_id):
-    print('Start ... ...')
+    logging.info('Start matching... ...')
     addition=re.sub(r'[^0-9A-Za-z,\.!\(\)]', '', addition)
     start=time.time()
 
     requirement = f"I live in @@@@{senior_info['city']}@@@@, I speak in {'English' if (senior_info['language']=='en') else 'French'}, "
-    # requirement +=  f'I need {','.join([parse_skill(item) for item in askfor])} service'
     requirement +=  f"I need @@##{','.join(askfor)}@@## service"
-    # requirement +=  f' on {', '.join([parse_weekday(item)  for item in appointment])}.' if len(appointment)>0 else ''
     requirement +=  f" on ####{', '.join(appointment)}####." if len(appointment)>0 else ''
     requirement +=  f" My addition requirement is {addition}" if len(addition)>0 else ''
 
@@ -439,10 +485,7 @@ def get_matching(appointment, askfor, addition, senior_info, senior_id):
     lookup_dict={}
     candidates=[]
     for i, vol in enumerate(all_volunteers):
-        # ic(askfor,vol['skills'])
-
         s = f"I live in @@@@{vol['city']}@@@@, I am a {vol['gender']}, "
-        # s += f'I can provide service on {', '.join([parse_weekday(item)  for item in vol['availabilities']])}. ' 
         s += f"I can provide service on ####{', '.join(vol['availabilities'])}####"
 
         if len(vol['language'])>=1:
@@ -450,7 +493,6 @@ def get_matching(appointment, askfor, addition, senior_info, senior_id):
         if len(vol['language'])==2:
             s += f"I speak in {'English' if (vol['language'])[1]=='en' else 'French'}. "
 
-        # s += f"I can provide {', '.join([parse_skill(item) for item in vol['skills']])} service. " 
         s += f"I can provide @@##{', '.join(vol['skills'])}@@## service. " 
         s += f"My description is: "+ vol['self_description']
         
@@ -465,25 +507,25 @@ def get_matching(appointment, askfor, addition, senior_info, senior_id):
         candidates.append(lookup_dict[idx])
 
     for rank, (final_score, scores, nli_core, nli_extra, idx, vol) in enumerate(results, start=1):
-        print(f"Rank {rank}  (candidate #{idx})")
-        print(f"  _id     = {lookup_dict[idx]}")
-        print(f"  final_score     = {final_score:.4f}")
-        print(f"  entail_core     = {scores['entail_core']:.4f}")
-        print(f"  service_match   = {scores['service_match']:.4f}")
-        print(f"  time_overlap    = {scores['time_overlap']:.4f}")
-        print(f"  location_match  = {scores['location_match']:.4f}")
-        print(f"  addition_req    = {scores['addition_req']:.4f}")
-        print(f"  disqualified    = {scores.get('disqualified', False)}")
-        print(f"  NLI core probs  = {nli_core}")
+        logging.info(f"Rank {rank}  (candidate #{idx})")
+        logging.info(f"  _id     = {lookup_dict[idx]}")
+        logging.info(f"  final_score     = {final_score:.4f}")
+        logging.info(f"  entail_core     = {scores['entail_core']:.4f}")
+        logging.info(f"  service_match   = {scores['service_match']:.4f}")
+        logging.info(f"  time_overlap    = {scores['time_overlap']:.4f}")
+        logging.info(f"  location_match  = {scores['location_match']:.4f}")
+        logging.info(f"  addition_req    = {scores['addition_req']:.4f}")
+        logging.info(f"  disqualified    = {scores.get('disqualified', False)}")
+        logging.info(f"  NLI core probs  = {nli_core}")
         if nli_extra is not None:
-            print(f"  NLI extra probs = {nli_extra}")
+            logging.info(f"  NLI extra probs = {nli_extra}")
         else:
-            print("  NLI extra probs = (no extra requirement)")
-        # print(f"  volunteer snippet: {vol[:120]}...")
-        print("-" * 80)
+            logging.info("  NLI extra probs = (no extra requirement)")
 
-    print('End')
-    print("Elapsed time:", time.time() - start, "seconds")
+        logging.info("-" * 80)
+
+    logging.info('End matching')
+    logging.info(f"Elapsed time: {time.time() - start} seconds")
 
     match_doc={
         'senior_id': senior_id,
@@ -495,121 +537,6 @@ def get_matching(appointment, askfor, addition, senior_info, senior_id):
 
     match.insert_one(match_doc)
 
-
-
-# @app.route("/volunteer/profile", methods=["GET", "PUT"])
-# def api_volunteer_profile():
-#     user = current_user()
-#     if not user:
-#         return jsonify(success=False, message="Unauthorized"), 401
-
-#     # 先在 users 里找到当前登录用户
-#     user_doc = users.find_one({"_id": ObjectId(user["id"])})
-#     if not user_doc or "volunteer_id" not in user_doc:
-#         return jsonify(success=False, message="Not a volunteer account"), 403
-
-#     vol_id = user_doc["volunteer_id"]
-#     if isinstance(vol_id, str):
-#         vol_id = ObjectId(vol_id)
-
-#     # ---------- GET：读取资料并返回给前端自动填充 ----------
-#     if request.method == "GET":
-#         vol = volunteers.find_one({"_id": vol_id})
-#         if not vol:
-#             return jsonify(success=False, message="Volunteer profile not found"), 404
-
-#         data = {
-#             "firstname": vol.get("firstname", ""),
-#             "lastname": vol.get("lastname", ""),
-#             "gender": vol.get("gender", ""),
-#             "phone": vol.get("phone", ""),
-#             "city": vol.get("city", ""),
-#             "address": vol.get("address", ""),
-#             "background": vol.get("background", ""),
-#             "language": vol.get("language", []),
-#             "availabilities": vol.get("availabilities", []),
-#             "skills": vol.get("skills", []),
-#             "self_description": vol.get("self_description", ""),
-#             "email": user_doc.get("email", ""),
-#             "photo_url": vol.get("photo_url", "")
-#         }
-#         return jsonify(success=True, data=data)
-
-#     # ---------- PUT：局部更新志愿者资料 ----------
-#     data = request.get_json(silent=True) or {}
-
-#     allowed_scalar = ["gender", "phone", "city", "address", "self_description"]
-#     allowed_array_client = ["language", "availability", "skills"]
-
-#     update_fields = {}
-
-#     # 文本类字段：只有在请求里出现的才更新
-#     for key in allowed_scalar:
-#         if key in data:
-#             val = (data.get(key) or "").strip()
-#             update_fields[key] = val
-
-#     # 数组类字段：language / availability / skills
-#     for key in allowed_array_client:
-#         if key in data:
-#             val = data.get(key) or []
-#             if key == "availability":
-#                 # 数据库里叫 availabilities
-#                 update_fields["availabilities"] = val
-#             else:
-#                 update_fields[key] = val
-
-#     if update_fields:
-#         update_fields["updated_at"] = datetime.datetime.now(datetime.timezone.utc)
-#         volunteers.update_one({"_id": vol_id}, {"$set": update_fields})
-
-#     return jsonify(success=True)
-
-# @app.route("/volunteer/photo", methods=["POST"])
-# def api_volunteer_photo():
-#     user = current_user()
-#     if not user:
-#         return jsonify(success=False, message="Unauthorized"), 401
-
-#     user_doc = users.find_one({"_id": ObjectId(user["id"])})
-#     if not user_doc or "volunteer_id" not in user_doc:
-#         return jsonify(success=False, message="Not a volunteer account"), 403
-
-#     vol_id = user_doc["volunteer_id"]
-#     if isinstance(vol_id, str):
-#         vol_id = ObjectId(vol_id)
-
-#     # 检查文件
-#     if "photo" not in request.files:
-#         return jsonify(success=False, message="No file uploaded"), 400
-
-#     file = request.files["photo"]
-#     filename = secure_filename(file.filename)
-
-#     if not filename:
-#         return jsonify(success=False, message="Invalid filename"), 400
-
-#     ext = filename.rsplit(".", 1)[-1].lower()
-#     if ext not in ALLOWED_EXT:
-#         return jsonify(success=False, message="Invalid file type"), 400
-
-#     # 使用用户 ID 命名头像，保证唯一
-#     newname = f"{user['id']}.{ext}"
-#     save_path = os.path.join(UPLOAD_FOLDER, newname)
-
-#     # 保存文件
-#     file.save(save_path)
-
-#     # 前端访问路径（注意前面的 /vs）
-#     photo_url = f"../assets/img/uploads/{newname}"
-
-#     # 更新数据库
-#     volunteers.update_one(
-#         {"_id": vol_id},
-#         {"$set": {"photo_url": photo_url}}
-#     )
-
-#     return jsonify(success=True, url=photo_url)
 
 @app.route("/volunteer/photo", methods=["POST"])
 def api_volunteer_photo():
@@ -888,7 +815,183 @@ def get_volunteer_photo(file_id):
         }
     )
 
+from bson import ObjectId
+from flask import jsonify
 
+@app.route("/api/volunteer/requests", methods=["GET"])
+@app.route("/volunteer/requests", methods=["GET"])
+def api_volunteer_requests():
+    user = current_user()
+    if not user:
+        return jsonify(success=False, message="Unauthorized"), 401
+
+    try:
+        uid = ObjectId(user["id"])
+    except Exception:
+        return jsonify(success=False, message="Bad user id"), 400
+
+    user_doc = users.find_one({"_id": uid}, {"volunteer_id": 1})
+    if not user_doc:
+        return jsonify(success=False, message="User not found"), 404
+
+    vol_id = user_doc.get("volunteer_id")
+    if not vol_id:
+        return jsonify(success=False, message="Not a volunteer account"), 403
+
+    if isinstance(vol_id, str):
+        vol_id = ObjectId(vol_id)
+
+    reqs = list(match.find(
+        {
+            "status": "pending",
+            "candidates": vol_id
+        },
+        {
+            "requirements": 1,
+            "senior_id": 1
+        }
+    ))
+
+    enriched = []
+    for r in reqs:
+        senior = seniors.find_one({"_id": r.get("senior_id")}, {"notes": 1}) or {}
+        req = r.get("requirements", {}) or {}
+
+        enriched.append({
+            "request_id":  str(r["_id"]),
+            "askfor":      req.get("askfor", []),
+            "appointment": req.get("appointment", []),
+            "notes":       senior.get("notes", "")
+        })
+
+    return jsonify(success=True, data=enriched), 200
+
+
+@app.post("/requests/<req_id>/accept")
+@app.post("/api/requests/<req_id>/accept")
+def api_accept_request(req_id):
+    user = current_user()
+    if not user:
+        return jsonify(success=False, message="Unauthorized"), 401
+
+    uid = ObjectId(user["id"])
+    user_doc = users.find_one({"_id": uid}, {"volunteer_id": 1})
+
+    try:
+        vol_id = ObjectId(user_doc.get("volunteer_id"))
+    except:
+        return jsonify(success=False, message="Invalid volunteer id"), 400
+
+    rid = ObjectId(req_id)
+
+    result = match.update_one(
+        {
+            "_id": rid,
+            "status": "pending",
+            "candidates": vol_id
+        },
+        {
+            "$set": {
+                "status": "accepted",
+                "accepted_volunteer_id": vol_id
+            }
+        }
+    )
+
+    if result.modified_count == 0:
+        return jsonify(success=False, message="This request is no longer available"), 409
+
+
+    # ==================== Simulate sending emails ====================
+    m = match.find_one({"_id": rid})
+    if m:
+        senior_id = m.get("senior_id")
+        req = m.get("requirements", {}) or {}
+        askfor = req.get("askfor", [])
+        appointment = req.get("appointment", [])
+
+        # senior-info email）
+        senior_doc = seniors.find_one({"_id": senior_id}) or {}
+        senior_user = users.find_one({"senior_id": senior_id}, {"email": 1}) or {}
+        senior_email = senior_user.get("email", "(no email found)")
+
+        # volunteer info
+        vol_doc = volunteers.find_one({"_id": vol_id}) or {}
+        vol_name = f"{vol_doc.get('firstname', '')} {vol_doc.get('lastname', '')}".strip()
+        vol_phone = vol_doc.get("phone", "(no phone)")
+
+        # create email
+        subject = "BuddyLink Notification — A volunteer accepted your request"
+        body = f"""
+            Hello {senior_doc.get('firstname', 'Senior')},
+
+            Your request has been accepted.
+
+            Volunteer Info:
+            - Name: {vol_name}
+            - Phone: {vol_phone}
+
+            Service Requested:
+            - {", ".join(askfor) if askfor else "N/A"}
+
+            Preferred Time:
+            - {", ".join(appointment) if appointment else "N/A"}
+
+            (This is a simulated email for demo. No real email was sent.)
+        """
+
+        send_email(senior_email, subject, body)
+
+    return jsonify(success=True)
+
+
+from bson import ObjectId
+from flask import jsonify, session
+
+@app.route("/api/volunteer/upcoming", methods=["GET"])
+def volunteer_upcoming():
+    """Return accepted requests for the logged-in volunteer."""
+    user = session.get("user")
+    if not user:
+        return jsonify(success=False, message="Unauthorized"), 401
+    try:
+        uid = ObjectId(user["id"])
+    except Exception:
+        return jsonify(success=False, message="Bad user id"), 400
+
+    user_doc = users.find_one({"_id": uid}, {"volunteer_id": 1})
+    if not user_doc:
+        return jsonify(success=False, message="User not found"), 404
+
+    vol_id = ObjectId(user["volunteer_id"])
+    if not vol_id:
+        return jsonify(success=False, message="Not a volunteer account"), 403
+    if isinstance(vol_id, str):
+        vol_id = ObjectId(vol_id)
+
+    # 这个 volunteer 接受的所有服务
+    reqs = list(db.match.find({
+        "accepted_volunteer_id": vol_id,
+        "status": "accepted"
+    }))
+
+    results = []
+    for r in reqs:
+        senior = db.seniors.find_one({"_id": r["senior_id"]}) or {}
+
+        results.append({
+            "request_id": str(r["_id"]),
+            "requirements": r.get("requirements", {}),
+            "booking_at": r.get("booking_at"),
+            "senior_info": {
+                "firstname": senior.get("firstname", ""),
+                "lastname": senior.get("lastname", ""),
+                "city": senior.get("city", ""),
+                "phone": senior.get("phone", "")
+            }
+        })
+
+    return jsonify({"success": True, "data": results})
 
 @app.route("/services/<service_id>/rating", methods=["PATCH"])
 def update_service_rating(service_id):
@@ -937,4 +1040,5 @@ def update_service_rating(service_id):
     return jsonify(success=True, rating=rating), 200
 
 if __name__ == "__main__":
+    logging.info('Lauching...')
     app.run(host=BIND_HOST, port=BIND_PORT, debug=True)

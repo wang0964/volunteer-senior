@@ -12,28 +12,29 @@
 <header>
   <nav class="nav" aria-label="Primary">
     <div class="first-line">
-    <div class="logo">
-            <div class="logo2">
-              <a href="../index.html">
-              <img src="../assets/img/logo.png" alt="logo" />
-              </a>
-              <a href="../index.html">
-              <span>BuddyLink</span>
-            </a>
-            </div>
+      <div class="logo">
+        <div class="logo2">
+          <a href="../index.html">
+            <img src="../assets/img/logo.png" alt="logo" />
+          </a>
+          <a href="../index.html">
+            <span>BuddyLink</span>
+          </a>
+        </div>
+      </div>
+      <img id="avatar-id"
+           style="width:36px;height:36px;border-radius:50%;object-fit:cover;cursor:pointer;">
     </div>
-        <img id="avatar-id"
-            style="width:36px;height:36px;border-radius:50%;object-fit:cover;cursor:pointer;">
-    </div>
+
     <div class="menu">
       <nav class="sub-menu">
-        
+
         <a href="volunteer-profile.html" aria-label="My profile" data-i18n="navProfile">My profile</a>
         <a href="../index.html" aria-label="Back to Home" data-i18n="backtohome">Home</a>
-          <a class="btn" id="ctaJoin" href="pages/login.html" role="button">
-            <i class="fas fa-hands-helping"></i>
-            <span data-i18n="login">Login</span>
-          </a>
+        <a class="btn" id="ctaJoin" href="pages/login.html" role="button">
+          <i class="fas fa-hands-helping"></i>
+          <span data-i18n="login">Login</span>
+        </a>
       </nav>
 
 
@@ -50,6 +51,7 @@
 </header>
 
 <main class="container">
+  <!-- 顶部 Dashboard 卡片 -->
   <section class="card p-6 my-8" aria-labelledby="dash-title">
     <div class="wrap dash-hero">
       <!-- photo -->
@@ -96,7 +98,24 @@
       </div>
     </div>
   </section>
-</main>
+
+  <!-- Pending requests for this volunteer -->
+  <section id="section-requests" class="card p-6 my-8">
+    <div class="wrap">
+      <h2 class="section-sub">Requests waiting for your response</h2>
+      <p id="request-empty" class="muted">Loading…</p>
+    <div id="request-list"></div>
+  </div>
+</section>
+
+  <!-- Upcoming accepted services -->
+  <section class="card p-6 my-8">
+    <div class="wrap">
+      <h2 class="section-sub">Your upcoming services</h2>
+      <p id="upcoming-empty" class="muted">Loading…</p>
+    <div id="upcoming-list"></div>
+  </div>
+  </section>
 
 <footer class="container py-8">
   <p>&copy; 2025 BuddyLink</p>
@@ -106,7 +125,10 @@
 <script type="module" src="../js/app.js"></script>
 
 <script type="module">
-  // from /api/volunteer/profile get first + last + email + photo
+    // from /api/volunteer/profile get first + last + email + photo
+  /* -----------------------------------------------------------
+     Load Volunteer Dashboard Info
+  ------------------------------------------------------------*/
   async function loadVolunteerDashboard() {
     try {
       const res = await fetch("/api/volunteer/profile", {
@@ -144,7 +166,180 @@
     }
   }
 
-  document.addEventListener("DOMContentLoaded", loadVolunteerDashboard);
+  /* -----------------------------------------------------------
+     Load Volunteer Requests (Pending)
+  ------------------------------------------------------------*/
+  async function loadVolunteerRequests() {
+    const listEl  = document.getElementById("request-list");
+    const emptyEl = document.getElementById("request-empty");
+
+    if (!listEl || !emptyEl) return;
+
+    emptyEl.textContent = "Loading…";
+    emptyEl.hidden = false;
+    listEl.innerHTML = "";
+
+    try {
+      const res = await fetch("/api/volunteer/requests", { credentials: "include" });
+      const json = await res.json();
+
+      if (!json.success) throw new Error(json.message || "Failed to load pending requests");
+
+      const items = json.data || [];
+      if (!items.length) {
+        emptyEl.textContent = "No pending requests right now.";
+        return;
+      }
+
+      emptyEl.hidden = true;
+
+      listEl.innerHTML = items.map(r => {
+        const ask  = Array.isArray(r.askfor) ? r.askfor.join(", ") : "";
+        const time = Array.isArray(r.appointment) ? r.appointment.join(", ") : "";
+        const notes = r.notes || "";
+
+        return `
+          <article class="card p-4 hover" data-request-id="${r.request_id}">
+            <h3>${ask || "Support request"}</h3>
+            <p><strong>Time:</strong> ${time || "Flexible"}</p>
+            <p><strong>Notes:</strong> ${notes || "—"}</p>
+            <div class="form-actions mt-2">
+              <button class="btn btn-accept" type="button">Accept this request</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+    } catch (err) {
+      console.error(err);
+      emptyEl.textContent = "Failed to load requests.";
+      listEl.innerHTML = "";
+    }
+  }
+
+  /* -----------------------------------------------------------
+     Load Upcoming Services
+  ------------------------------------------------------------*/
+  async function loadVolunteerUpcoming() {
+    const listEl  = document.getElementById("upcoming-list");
+    const emptyEl = document.getElementById("upcoming-empty");
+
+    if (!listEl || !emptyEl) return;
+
+    emptyEl.textContent = "Loading…";
+    emptyEl.hidden = false;
+    listEl.innerHTML = "";
+
+    try {
+      const res = await fetch("/api/volunteer/upcoming", { credentials: "include" });
+      const json = await res.json().catch(() => ({}));
+
+      if (!res.ok || json.success === false) {
+        throw new Error(json.message || "Failed to load upcoming services");
+      }
+
+      const items = json.data || [];
+      if (!items.length) {
+        emptyEl.textContent = "No upcoming services yet.";
+        return;
+      }
+
+      emptyEl.hidden = true;
+
+      listEl.innerHTML = items.map(r => {
+        const req = r.requirements || {};
+        const ask = Array.isArray(req.askfor) ? req.askfor.join(", ") : "";
+        const time = Array.isArray(req.appointment) ? req.appointment.join(", ") : "";
+
+        const s = r.senior_info || {};
+        const name = (s.firstname && s.lastname)
+          ? `${s.firstname} ${s.lastname}`
+          : "Senior";
+
+        const city  = s.city || "";
+        const phone = s.phone || "N/A";
+
+        return `
+          <div class="card p-3" style="margin-bottom:1rem;">
+            <div><strong>Service:</strong> ${ask || "Support"}</div>
+            <div><strong>Time:</strong> ${time || r.booking_at || ""}</div>
+            <div><strong>Senior:</strong> ${name}${city ? ` (${city})` : ""}</div>
+            <div><strong>Phone:</strong> ${phone}</div>
+            <div><strong>Booking at:</strong> ${r.booking_at || ""}</div>
+          </div>
+        `;
+      }).join("");
+
+    } catch (err) {
+      console.error(err);
+      emptyEl.textContent = "Failed to load upcoming services.";
+    }
+  }
+
+  /* -----------------------------------------------------------
+     Accept Request
+  ------------------------------------------------------------*/
+  async function acceptRequest(requestId, cardEl, btnEl) {
+    try {
+      btnEl.disabled = true;
+      btnEl.textContent = "Accepting…";
+
+      const res = await fetch(`/api/requests/${requestId}/accept`, {
+        method: "POST",
+        credentials: "include"
+      });
+
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || json.success === false) {
+        throw new Error(json.message || "Failed to accept this request");
+      }
+
+      // 后端会模拟“发邮件”到 console
+      // 前端这边更新列表
+      cardEl.remove();
+      await loadVolunteerRequests();
+      await loadVolunteerUpcoming();
+
+      // 也可以加一个提示
+      Swal.fire({
+        icon: "success",
+        title: "Request accepted",
+        text: "The senior will receive a notification email (simulated)."
+      });
+
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+      btnEl.disabled = false;
+      btnEl.textContent = "Accept this request";
+    }
+  }
+
+  /* -----------------------------------------------------------
+     EVENT: Accept Button Handler
+  ------------------------------------------------------------*/
+  document.addEventListener("click", e => {
+    const btn = e.target.closest(".btn-accept");
+    if (!btn) return;
+
+    const card = btn.closest("[data-request-id]");
+    if (!card) return;
+
+    const requestId = card.dataset.requestId;
+    if (!requestId) return;
+
+    acceptRequest(requestId, card, btn);
+  });
+
+  /* -----------------------------------------------------------
+     Init on Page Load
+  ------------------------------------------------------------*/
+  document.addEventListener("DOMContentLoaded", () => {
+    loadVolunteerDashboard();
+    loadVolunteerRequests();
+    loadVolunteerUpcoming();
+  });
 </script>
+
 </body>
 </html>
