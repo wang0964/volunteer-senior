@@ -69,3 +69,7 @@ Excute the following command to launch the backend service:
 python buddylink.py
 ```
 
+### Deployment
+Because this project uses the transformers module, the first time you run the program it will automatically download the model <strong>facebook/bart-large-mnli</strong> from <strong>Hugging Face</strong>. Please be patient during this process.
+The download and installation time depends on your network speed and computer performance, and may take 10 to 40 minutes. Thank you for your patience.
+
